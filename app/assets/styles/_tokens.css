@@ -1,0 +1,38 @@
+:root {
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.25rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+  --space-10: 2.5rem;
+  --space-12: 3rem;
+  --space-16: 4rem;
+
+  --radius-sm: 3px;
+  --radius-md: 6px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+
+  --duration-fast: 120ms;
+  --duration-base: 220ms;
+  --duration-slow: 400ms;
+  --duration-chart: 600ms;
+
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+
+  --chart-1: #6366f1;
+  --chart-2: #10b981;
+  --chart-3: #f59e0b;
+  --chart-4: #ef4444;
+  --chart-5: #8b5cf6;
+  --chart-6: #06b6d4;
+
+  --chart-1-muted: #6366f130;
+  --chart-2-muted: #10b98130;
+  --chart-3-muted: #f59e0b30;
+  --chart-4-muted: #ef444430;
+  --chart-5-muted: #8b5cf630;
+  --chart-6-muted: #06b6d430;
+}
