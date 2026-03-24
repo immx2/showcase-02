@@ -8,6 +8,17 @@ import {
   type InstanceState,
 } from '~/data/analytics'
 
+export interface BarGroupValue {
+  key: string
+  value: number
+  color: string
+}
+
+export interface BarGroup {
+  label: string
+  values: BarGroupValue[]
+}
+
 export type Period = '7d' | '30d' | '90d'
 export type Project = 'all' | 'infra' | 'web' | 'data'
 export type SortKey = 'name' | 'state' | 'project' | 'cpuCount' | 'memGiB' | 'cpuPct' | 'memPct'
@@ -51,6 +62,11 @@ const STATE_ORDER: Record<InstanceState, number> = {
   stopped: 3,
 }
 
+// Live simulation state — module-level so it persists across hot reloads
+const liveSamples = ref([...metricSamples])
+const isLive = ref(false)
+let liveInterval: ReturnType<typeof setInterval> | undefined
+
 export function useDashboard() {
   const period = ref<Period>('30d')
   const selectedProject = ref<Project>('all')
@@ -65,12 +81,47 @@ export function useDashboard() {
     loadTimer = setTimeout(() => { isLoading.value = false }, 350)
   })
 
+  function startLive() {
+    if (isLive.value) return
+    isLive.value = true
+    liveInterval = setInterval(() => {
+      const last = liveSamples.value[liveSamples.value.length - 1]
+      const rng = Math.random
+      const newCpu  = Math.min(95, Math.max(5,    last.cpu     + (rng() - 0.48) * 6))
+      const newMem  = Math.min(92, Math.max(20,   last.mem     + (rng() - 0.45) * 3))
+      const newNet  = Math.min(8,  Math.max(0.2,  last.netGbps + (rng() - 0.5)  * 0.3))
+      const newDisk = Math.min(30000, Math.max(2000, last.diskIops + (rng() - 0.5) * 800))
+      const now = new Date()
+      liveSamples.value = [
+        ...liveSamples.value.slice(-89),
+        {
+          date:     now.toISOString().split('T')[0],
+          cpu:      Math.round(newCpu * 10) / 10,
+          mem:      Math.round(newMem * 10) / 10,
+          netGbps:  Math.round(newNet * 100) / 100,
+          diskIops: Math.round(newDisk),
+        },
+      ]
+    }, 3000)
+  }
+
+  function stopLive() {
+    isLive.value = false
+    clearInterval(liveInterval)
+    liveInterval = undefined
+  }
+
+  function toggleLive() {
+    if (isLive.value) stopLive()
+    else startLive()
+  }
+
   const filteredMetrics = computed(() =>
-    slice(metricSamples, PERIOD_DAYS[period.value]),
+    slice(liveSamples.value, PERIOD_DAYS[period.value]),
   )
 
   const previousMetrics = computed(() =>
-    prevSlice(metricSamples, PERIOD_DAYS[period.value]),
+    prevSlice(liveSamples.value, PERIOD_DAYS[period.value]),
   )
 
   // KPIs
@@ -166,8 +217,28 @@ export function useDashboard() {
     filteredMetrics.value.map(d => ({ date: d.date, value: d.mem })),
   )
 
+  // Full series for the context chart (always 90 days)
+  const allCpuSeries = computed(() =>
+    liveSamples.value.map(d => ({ date: d.date, value: d.cpu })),
+  )
+
+  const allMemSeries = computed(() =>
+    liveSamples.value.map(d => ({ date: d.date, value: d.mem })),
+  )
+
   const sledBarData = computed(() =>
     sledUsage.map(s => ({ label: s.sled, value: s.cpuPct, color: s.color })),
+  )
+
+  const sledMultiBarData = computed<BarGroup[]>(() =>
+    sledUsage.map(s => ({
+      label: s.sled,
+      values: [
+        { key: 'CPU',  value: s.cpuPct,  color: 'var(--chart-1)' },
+        { key: 'Mem',  value: s.memPct,  color: 'var(--chart-2)' },
+        { key: 'Disk', value: s.diskPct, color: 'var(--chart-3)' },
+      ],
+    })),
   )
 
   const storageDonutData = computed(() =>
@@ -180,12 +251,17 @@ export function useDashboard() {
     sortKey,
     sortDir,
     isLoading,
+    isLive: readonly(isLive),
     kpis,
     filteredInstances,
     toggleSort,
+    toggleLive,
     cpuSeries,
     memSeries,
+    allCpuSeries,
+    allMemSeries,
     sledBarData,
+    sledMultiBarData,
     storageDonutData,
     heatmapData,
   }

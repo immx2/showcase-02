@@ -1,5 +1,6 @@
 <script setup lang="ts">
 const colorMode = useColorMode()
+const { open: openPalette } = useCommandPalette()
 
 function setMode(pref: 'system' | 'light' | 'dark') {
   colorMode.preference = pref
@@ -15,6 +16,15 @@ function setMode(pref: 'system' | 'light' | 'dark') {
       console
     </span>
     <div class="nav-end">
+      <button class="cmd-hint" aria-label="Open command palette" @click="openPalette">
+        <svg width="12" height="12" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+          <circle cx="6" cy="6" r="4.5" stroke="currentColor" stroke-width="1.4"/>
+          <line x1="9.5" y1="9.5" x2="13" y2="13" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+        </svg>
+        <span>Search</span>
+        <kbd>⌘K</kbd>
+      </button>
+
       <div id="color-mode-pill" class="mode-pill" role="group" aria-label="Color mode">
         <button title="Auto (device)" aria-label="Auto (device)" @click="setMode('system')">
           <svg width="12" height="12" viewBox="0 0 14 14" fill="none" aria-hidden="true">
@@ -127,5 +137,38 @@ function setMode(pref: 'system' | 'light' | 'dark') {
 
 .back-link:hover {
   color: var(--color-text);
+}
+
+.cmd-hint {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  height: 26px;
+  padding: 0 var(--space-3);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: transparent;
+  color: var(--color-text-muted);
+  font-size: var(--text-xs);
+  font-family: var(--font-mono);
+  cursor: pointer;
+  transition: background var(--duration-fast), color var(--duration-fast), border-color var(--duration-fast);
+}
+
+.cmd-hint:hover {
+  background: var(--color-surface-2);
+  color: var(--color-text);
+  border-color: var(--color-border);
+}
+
+.cmd-hint kbd {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  padding: 1px 4px;
+  border: 1px solid var(--color-border);
+  border-radius: 3px;
+  background: var(--color-surface-2);
+  color: var(--color-text-muted);
+  line-height: 1.4;
 }
 </style>

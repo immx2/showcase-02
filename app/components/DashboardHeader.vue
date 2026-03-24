@@ -1,12 +1,14 @@
 <script setup lang="ts">
 import type { Period } from '~/composables/useDashboard'
 
-defineProps<{
+const props = defineProps<{
   period: Period
+  isLive: boolean
 }>()
 
 const emit = defineEmits<{
   'update:period': [value: Period]
+  'toggle-live': []
 }>()
 
 const periods: { value: Period; label: string }[] = [
@@ -20,18 +22,38 @@ const periods: { value: Period; label: string }[] = [
   <header class="dash-header">
     <div>
       <h1 class="dash-title">System Overview</h1>
-      <p class="dash-subtitle">Rack 01 — 6 sleds · 24 instances · Updated just now</p>
+      <p class="dash-subtitle">
+        Rack 01 — 6 sleds · 24 instances ·
+        <span v-if="isLive" class="live-indicator" aria-live="polite">
+          <span class="live-dot" aria-hidden="true" />
+          Streaming live
+        </span>
+        <span v-else>Updated just now</span>
+      </p>
     </div>
 
-    <div class="period-pill" role="group" aria-label="Time period">
+    <div class="header-controls">
       <button
-        v-for="p in periods"
-        :key="p.value"
-        :class="{ active: period === p.value }"
-        @click="emit('update:period', p.value)"
+        :class="['live-btn', { active: isLive }]"
+        :aria-pressed="isLive"
+        title="Toggle live mode (L)"
+        @click="emit('toggle-live')"
       >
-        {{ p.label }}
+        <span class="live-btn-dot" aria-hidden="true" />
+        {{ isLive ? 'Live' : 'Live' }}
+        <kbd class="btn-kbd">L</kbd>
       </button>
+
+      <div class="period-pill" role="group" aria-label="Time period">
+        <button
+          v-for="p in periods"
+          :key="p.value"
+          :class="{ active: period === p.value }"
+          @click="emit('update:period', p.value)"
+        >
+          {{ p.label }}
+        </button>
+      </div>
     </div>
   </header>
 </template>
@@ -58,8 +80,91 @@ const periods: { value: Period; label: string }[] = [
   color: var(--color-text-muted);
   font-family: var(--font-mono);
   margin-top: var(--space-1);
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
 }
 
+.live-indicator {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  color: var(--color-status-running);
+}
+
+.live-dot {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--color-status-running);
+  animation: live-pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes live-pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%       { opacity: 0.5; transform: scale(0.75); }
+}
+
+.header-controls {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+/* Live button */
+.live-btn {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  height: 30px;
+  padding: 0 var(--space-3);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: transparent;
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+  font-family: var(--font-mono);
+  font-weight: 500;
+  cursor: pointer;
+  transition: all var(--duration-fast);
+}
+
+.live-btn:hover {
+  background: var(--color-surface-2);
+  color: var(--color-text);
+}
+
+.live-btn.active {
+  border-color: var(--color-status-running);
+  color: var(--color-status-running);
+  background: color-mix(in srgb, var(--color-status-running) 8%, transparent);
+}
+
+.live-btn-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+  flex-shrink: 0;
+  transition: background var(--duration-fast);
+}
+
+.live-btn.active .live-btn-dot {
+  animation: live-pulse 1.5s ease-in-out infinite;
+}
+
+.btn-kbd {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  padding: 1px 4px;
+  border: 1px solid currentColor;
+  border-radius: 3px;
+  opacity: 0.6;
+  line-height: 1.4;
+}
+
+/* Period pill */
 .period-pill {
   display: flex;
   align-items: center;

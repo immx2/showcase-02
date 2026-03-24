@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { Instance } from '~/data/analytics'
+import { instanceSparklines } from '~/data/analytics'
 import type { SortKey, SortDir } from '~/composables/useDashboard'
 
 const props = defineProps<{
@@ -10,6 +11,7 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   sort: [key: SortKey]
+  select: [instance: Instance]
 }>()
 
 interface Column {
@@ -21,19 +23,25 @@ interface Column {
 }
 
 const columns: Column[] = [
-  { key: 'name',     label: 'Name',    align: 'left',  width: '22%' },
-  { key: 'state',    label: 'State',   align: 'left',  width: '10%' },
-  { key: 'project',  label: 'Project', align: 'left',  width: '8%'  },
-  { key: 'cpuCount', label: 'vCPUs',   align: 'right', mono: true, width: '7%' },
-  { key: 'memGiB',   label: 'Memory',  align: 'right', mono: true, width: '8%' },
-  { key: 'cpuPct',   label: 'CPU %',   align: 'right', mono: true, width: '14%' },
-  { key: null,       label: 'IPv4',    align: 'left',  mono: true, width: '14%' },
-  { key: null,       label: 'Uptime',  align: 'right', mono: true, width: '10%' },
+  { key: 'name',     label: 'Name',    align: 'left',  width: '20%' },
+  { key: 'state',    label: 'State',   align: 'left',  width: '9%'  },
+  { key: 'project',  label: 'Project', align: 'left',  width: '7%'  },
+  { key: 'cpuCount', label: 'vCPUs',   align: 'right', mono: true, width: '6%'  },
+  { key: 'memGiB',   label: 'Memory',  align: 'right', mono: true, width: '7%'  },
+  { key: 'cpuPct',   label: 'CPU %',   align: 'right', mono: true, width: '11%' },
+  { key: 'memPct',   label: 'Mem %',   align: 'right', mono: true, width: '11%' },
+  { key: null,       label: 'IPv4',    align: 'left',  mono: true, width: '13%' },
+  { key: null,       label: 'Uptime',  align: 'right', mono: true, width: '9%'  },
 ]
 
 function ariaSortAttr(key: SortKey | null): 'ascending' | 'descending' | 'none' {
   if (!key || key !== props.sortKey) return 'none'
   return props.sortDir === 'asc' ? 'ascending' : 'descending'
+}
+
+function sparklineColor(state: Instance['state']): string {
+  if (state === 'starting') return 'var(--color-status-starting)'
+  return 'var(--chart-1)'
 }
 </script>
 
@@ -77,11 +85,26 @@ function ariaSortAttr(key: SortKey | null): 'ascending' | 'descending' | 'none' 
           v-for="inst in instances"
           :key="inst.id"
           :class="['row', inst.state]"
+          tabindex="0"
+          @click="emit('select', inst)"
+          @keydown.enter="emit('select', inst)"
         >
-          <!-- Name + ID -->
+          <!-- Name + ID + sparkline -->
           <td class="td-name">
-            <span class="inst-name">{{ inst.name }}</span>
-            <span class="inst-id">{{ inst.id }}</span>
+            <div class="name-cell">
+              <div class="name-meta">
+                <span class="inst-name">{{ inst.name }}</span>
+                <span class="inst-id">{{ inst.id }}</span>
+              </div>
+              <SparklineChart
+                v-if="inst.state !== 'stopped' && inst.state !== 'faulted'"
+                :data="instanceSparklines[inst.id] ?? []"
+                :width="44"
+                :height="20"
+                :color="sparklineColor(inst.state)"
+                aria-hidden="true"
+              />
+            </div>
           </td>
 
           <!-- State badge -->
@@ -101,17 +124,31 @@ function ariaSortAttr(key: SortKey | null): 'ascending' | 'descending' | 'none' 
           <td class="td-mono td-right">{{ inst.memGiB }} GiB</td>
 
           <!-- CPU % with inline bar -->
-          <td class="td-cpu">
-            <div class="cpu-cell">
+          <td class="td-bar-cell">
+            <div class="bar-cell">
               <span class="td-mono">{{ inst.cpuPct }}%</span>
-              <div class="cpu-bar-track" aria-hidden="true">
+              <div class="bar-track" aria-hidden="true">
                 <div
-                  class="cpu-bar-fill"
+                  class="bar-fill cpu"
                   :style="{ width: `${inst.cpuPct}%` }"
                   :class="{
                     high: inst.cpuPct >= 80,
                     med: inst.cpuPct >= 50 && inst.cpuPct < 80,
                   }"
+                />
+              </div>
+            </div>
+          </td>
+
+          <!-- Mem % with inline bar -->
+          <td class="td-bar-cell">
+            <div class="bar-cell">
+              <span class="td-mono">{{ inst.memPct }}%</span>
+              <div class="bar-track" aria-hidden="true">
+                <div
+                  class="bar-fill mem"
+                  :style="{ width: `${inst.memPct}%` }"
+                  :class="{ high: inst.memPct >= 90 }"
                 />
               </div>
             </div>
@@ -187,10 +224,18 @@ th.active { color: var(--color-text); }
 tbody tr {
   border-bottom: 1px solid var(--color-border-subtle);
   transition: background var(--duration-fast);
+  cursor: pointer;
+  outline: none;
 }
 
 tbody tr:last-child { border-bottom: none; }
+
 tbody tr:hover { background: var(--color-surface-2); }
+
+tbody tr:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: -2px;
+}
 
 /* Faulted row gets a left-border accent */
 tbody tr.faulted {
@@ -206,16 +251,29 @@ td:first-child { padding-left: var(--space-5); }
 td:last-child  { padding-right: var(--space-5); }
 
 /* Name cell */
-.td-name {
+.td-name { min-width: 160px; }
+
+.name-cell {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.name-meta {
   display: flex;
   flex-direction: column;
   gap: 2px;
+  min-width: 0;
 }
 
 .inst-name {
   font-size: var(--text-sm);
   font-weight: 500;
   color: var(--color-text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .inst-id {
@@ -255,18 +313,18 @@ td:last-child  { padding-right: var(--space-5); }
   letter-spacing: 0.02em;
 }
 
-/* CPU bar cell */
-.td-cpu { min-width: 120px; }
+/* Shared bar cell (CPU & Mem) */
+.td-bar-cell { min-width: 110px; }
 
-.cpu-cell {
+.bar-cell {
   display: flex;
   align-items: center;
   gap: var(--space-3);
   justify-content: flex-end;
 }
 
-.cpu-bar-track {
-  width: 60px;
+.bar-track {
+  width: 52px;
   height: 4px;
   background: var(--color-border);
   border-radius: 2px;
@@ -274,15 +332,17 @@ td:last-child  { padding-right: var(--space-5); }
   flex-shrink: 0;
 }
 
-.cpu-bar-fill {
+.bar-fill {
   height: 100%;
   border-radius: 2px;
-  background: var(--color-accent);
   transition: width var(--duration-slow) var(--ease-out);
 }
 
-.cpu-bar-fill.high { background: var(--color-status-faulted); }
-.cpu-bar-fill.med  { background: var(--color-status-starting); }
+.bar-fill.cpu         { background: var(--color-accent); }
+.bar-fill.cpu.med     { background: var(--color-status-starting); }
+.bar-fill.cpu.high    { background: var(--color-status-faulted); }
+.bar-fill.mem         { background: var(--chart-2); }
+.bar-fill.mem.high    { background: var(--color-status-faulted); }
 
 /* Empty state */
 .empty-state {

@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { Project } from '~/composables/useDashboard'
+import type { Instance } from '~/data/analytics'
 
 const {
   period,
@@ -7,17 +8,54 @@ const {
   sortKey,
   sortDir,
   isLoading,
+  isLive,
   kpis,
   filteredInstances,
   toggleSort,
+  toggleLive,
   cpuSeries,
   memSeries,
-  sledBarData,
+  allCpuSeries,
+  allMemSeries,
+  sledMultiBarData,
   storageDonutData,
   heatmapData,
 } = useDashboard()
 
+const brushRange = ref<[Date, Date] | null>(null)
+
+const brushDescription = computed(() => {
+  if (!brushRange.value) return 'Average across all running instances · % used'
+  const fmt = (d: Date) => d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+  return `Zoomed: ${fmt(brushRange.value[0])} – ${fmt(brushRange.value[1])} · % used`
+})
+
 useHead({ title: 'Rack 01 — Oxide Infrastructure Console' })
+
+const selectedInstance = ref<Instance | null>(null)
+const instancesView = ref<'table' | 'rack'>('table')
+
+// Global keyboard shortcuts for page-level actions
+useEventListener('keydown', (e: KeyboardEvent) => {
+  const focused = document.activeElement
+  const inInput = focused && (focused.tagName === 'INPUT' || focused.tagName === 'TEXTAREA' || (focused as HTMLElement).isContentEditable)
+  if (inInput) return
+
+  if (e.key === 'r' || e.key === 'R') {
+    instancesView.value = instancesView.value === 'table' ? 'rack' : 'table'
+  }
+  if (e.key === 'l' || e.key === 'L') {
+    toggleLive()
+  }
+  if (e.key === 'ArrowLeft') {
+    e.preventDefault()
+    period.value = period.value === '90d' ? '30d' : period.value === '30d' ? '7d' : '7d'
+  }
+  if (e.key === 'ArrowRight') {
+    e.preventDefault()
+    period.value = period.value === '7d' ? '30d' : period.value === '30d' ? '90d' : '90d'
+  }
+})
 
 const projects: { value: Project; label: string }[] = [
   { value: 'all',   label: 'All projects' },
@@ -37,7 +75,11 @@ const storageTotal = computed(() => {
     <AppNav />
 
     <main class="dashboard-content">
-      <DashboardHeader v-model:period="period" />
+      <DashboardHeader
+        v-model:period="period"
+        :is-live="isLive"
+        @toggle-live="toggleLive"
+      />
 
       <!-- KPI row -->
       <section class="kpi-grid" aria-label="Key metrics">
@@ -52,18 +94,21 @@ const storageTotal = computed(() => {
       <!-- CPU + Memory time series -->
       <ChartCard
         title="CPU &amp; Memory Utilization"
-        description="Average across all running instances · % used"
+        :description="brushDescription"
       >
         <ClientOnly>
           <LineChart
             v-if="!isLoading"
             :data="cpuSeries"
             :data2="memSeries"
+            :full-data="allCpuSeries"
+            :full-data2="allMemSeries"
             color="var(--chart-1)"
             color2="var(--chart-2)"
             :series-meta="[{ label: 'CPU', color: 'var(--chart-1)' }, { label: 'Mem', color: 'var(--chart-2)' }]"
             :format-value="(v: number) => `${v.toFixed(1)}%`"
             :height="240"
+            @update:brush-range="brushRange = $event"
           />
           <SkeletonLoader v-else height="240px" />
         </ClientOnly>
@@ -71,11 +116,11 @@ const storageTotal = computed(() => {
 
       <!-- Sled + Storage side by side -->
       <section class="chart-row">
-        <ChartCard title="CPU Utilization by Sled" description="Current period average · % used">
+        <ChartCard title="Resource Utilization by Sled" description="Current period average · CPU / Mem / Disk">
           <ClientOnly>
             <BarChart
               v-if="!isLoading"
-              :data="sledBarData"
+              :groups="sledMultiBarData"
               :format-value="(v: number) => `${v}%`"
               :height="240"
             />
@@ -96,33 +141,82 @@ const storageTotal = computed(() => {
         </ChartCard>
       </section>
 
-      <!-- Instance table -->
+      <!-- Instance table / rack view -->
       <section class="instances-section" aria-labelledby="instances-heading">
         <div class="instances-header">
           <h2 id="instances-heading" class="instances-title">Instances</h2>
-          <div class="project-filter" role="group" aria-label="Filter by project">
-            <button
-              v-for="p in projects"
-              :key="p.value"
-              :class="{ active: selectedProject === p.value }"
-              @click="selectedProject = p.value"
+          <div class="instances-controls">
+            <!-- View toggle -->
+            <div class="view-toggle" role="group" aria-label="View mode">
+              <button
+                :class="{ active: instancesView === 'table' }"
+                aria-pressed="true"
+                title="Table view (R)"
+                @click="instancesView = 'table'"
+              >
+                <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">
+                  <rect x="1" y="2" width="10" height="2" rx="0.5" fill="currentColor"/>
+                  <rect x="1" y="5" width="10" height="2" rx="0.5" fill="currentColor"/>
+                  <rect x="1" y="8" width="10" height="2" rx="0.5" fill="currentColor"/>
+                </svg>
+                Table
+              </button>
+              <button
+                :class="{ active: instancesView === 'rack' }"
+                aria-pressed="false"
+                title="Rack view (R)"
+                @click="instancesView = 'rack'"
+              >
+                <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">
+                  <rect x="1" y="1" width="10" height="4" rx="1" stroke="currentColor" stroke-width="1.2"/>
+                  <rect x="1" y="7" width="10" height="4" rx="1" stroke="currentColor" stroke-width="1.2"/>
+                  <rect x="2.5" y="2.5" width="2" height="1" rx="0.3" fill="currentColor"/>
+                  <rect x="2.5" y="8.5" width="2" height="1" rx="0.3" fill="currentColor"/>
+                </svg>
+                Rack
+              </button>
+            </div>
+
+            <!-- Project filter (table only) -->
+            <div
+              v-show="instancesView === 'table'"
+              class="project-filter"
+              role="group"
+              aria-label="Filter by project"
             >
-              {{ p.label }}
-            </button>
+              <button
+                v-for="p in projects"
+                :key="p.value"
+                :class="{ active: selectedProject === p.value }"
+                @click="selectedProject = p.value"
+              >
+                {{ p.label }}
+              </button>
+            </div>
           </div>
         </div>
 
-        <ClientOnly>
-          <InstanceTable
-            :instances="filteredInstances"
-            :sort-key="sortKey"
-            :sort-dir="sortDir"
-            @sort="toggleSort"
-          />
-          <template #fallback>
-            <SkeletonLoader height="320px" />
-          </template>
-        </ClientOnly>
+        <Transition name="view-fade" mode="out-in">
+          <ClientOnly v-if="instancesView === 'table'" key="table">
+            <InstanceTable
+              :instances="filteredInstances"
+              :sort-key="sortKey"
+              :sort-dir="sortDir"
+              @sort="toggleSort"
+              @select="selectedInstance = $event"
+            />
+            <template #fallback>
+              <SkeletonLoader height="320px" />
+            </template>
+          </ClientOnly>
+
+          <ClientOnly v-else key="rack">
+            <RackTopology @select-instance="selectedInstance = $event" />
+            <template #fallback>
+              <SkeletonLoader height="400px" />
+            </template>
+          </ClientOnly>
+        </Transition>
       </section>
 
       <!-- API request heatmap -->
@@ -140,6 +234,18 @@ const storageTotal = computed(() => {
         </ClientOnly>
       </ChartCard>
     </main>
+
+    <CommandPalette
+      @select-instance="selectedInstance = $event"
+      @set-period="period = $event"
+      @toggle-view="instancesView = instancesView === 'table' ? 'rack' : 'table'"
+      @toggle-live="toggleLive"
+    />
+
+    <InstanceDrawer
+      :instance="selectedInstance"
+      @close="selectedInstance = null"
+    />
   </div>
 </template>
 
@@ -188,6 +294,54 @@ const storageTotal = computed(() => {
   flex-wrap: wrap;
 }
 
+.instances-controls {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+}
+
+/* View toggle (Table / Rack) */
+.view-toggle {
+  display: flex;
+  align-items: center;
+  height: 28px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+.view-toggle button {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  height: 100%;
+  padding: 0 var(--space-3);
+  border: none;
+  background: transparent;
+  color: var(--color-text-muted);
+  font-size: var(--text-xs);
+  font-weight: 500;
+  font-family: var(--font-mono);
+  cursor: pointer;
+  transition: background var(--duration-fast), color var(--duration-fast);
+  white-space: nowrap;
+}
+
+.view-toggle button + button {
+  border-left: 1px solid var(--color-border);
+}
+
+.view-toggle button.active {
+  background: var(--color-active-bg);
+  color: var(--color-active-text);
+}
+
+.view-toggle button:not(.active):hover {
+  background: var(--color-surface-2);
+  color: var(--color-text);
+}
+
 .instances-title {
   font-family: var(--font-display);
   font-size: var(--text-base);
@@ -231,6 +385,17 @@ const storageTotal = computed(() => {
 .project-filter button:not(.active):hover {
   background: var(--color-surface-2);
   color: var(--color-text);
+}
+
+/* View transition */
+.view-fade-enter-active,
+.view-fade-leave-active {
+  transition: opacity var(--duration-base) var(--ease-out);
+}
+
+.view-fade-enter-from,
+.view-fade-leave-to {
+  opacity: 0;
 }
 
 /* Responsive */

@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import * as d3 from 'd3'
-import { useElementSize } from '@vueuse/core'
 import type { HeatmapCell } from '~/data/analytics'
 
 const props = withDefaults(defineProps<{
