@@ -1,54 +1,122 @@
 /* ─────────────────────────────────────────────────────────────────────────
-   Color tokens
-   Light = clean neutral; Dark = Oxide-adjacent dark teal-black
-   JS always writes data-color-mode="light"|"dark" on <html>
+   1. Primitive palette
+      Raw OKLCH steps — mode-agnostic named values.
+      Neutral hue 260 = Oxide --color-neutral-* alignment (light mode).
+      Teal hue ~205   = Oxide console dark aesthetic (dark mode).
+      Green hue 163.7 = exact Oxide --color-green-* hue match.
+      Red hue 22, amber hue 62–75 = Oxide --color-red/yellow-* alignment.
    ───────────────────────────────────────────────────────────────────────── */
-
-/* Light */
 :root {
-  --color-bg:              #f4f4f5;
-  --color-surface:         #ffffff;
-  --color-surface-2:       #e4e4e7;
-  --color-text:            #09090b;
-  --color-text-muted:      #71717a;
-  --color-accent:          #059669;
-  --color-border:          #d4d4d8;
-  --color-border-subtle:   #e4e4e7;
-  /* Selected pills: soft charcoal — not pure black (easier on the eyes in light mode) */
-  --color-active-bg:       #52525b;
-  --color-active-text:     #fafafa;
+  /* Neutrals — light (hue 260) */
+  --palette-neutral-50:  oklch(0.985 0.000 260);
+  --palette-neutral-100: oklch(0.969 0.001 260);
+  --palette-neutral-200: oklch(0.924 0.003 260);
+  --palette-neutral-300: oklch(0.853 0.004 260);
+  --palette-neutral-500: oklch(0.694 0.007 260);
+  --palette-neutral-600: oklch(0.551 0.011 260);
+  --palette-neutral-700: oklch(0.421 0.011 260);
+  --palette-neutral-900: oklch(0.099 0.003 260);
+  --palette-white:       oklch(1.000 0.000   0);
 
-  --color-status-running:  #10b981;
-  --color-status-starting: #d97706;
-  --color-status-stopped:  #a1a1aa;
-  --color-status-faulted:  #ef4444;
+  /* Teal — dark (hue 205, Oxide console dark aesthetic) */
+  --palette-teal-0:   oklch(0.090 0.018 205);
+  --palette-teal-50:  oklch(0.145 0.025 205);
+  --palette-teal-100: oklch(0.185 0.025 205);
+  --palette-teal-150: oklch(0.175 0.022 208);
+  --palette-teal-200: oklch(0.220 0.030 205);
+  --palette-teal-500: oklch(0.488 0.048 205);
+  --palette-teal-600: oklch(0.668 0.045 200);
+  --palette-teal-900: oklch(0.954 0.012 195);
 
-  --color-positive:        #10b981;
-  --color-negative:        #ef4444;
+  /* Green (hue 163.7 — exact Oxide --color-green-* hue) */
+  --palette-green-600: oklch(0.627 0.171 163.7);
+  --palette-green-700: oklch(0.736 0.179 163.7);
+  --palette-green-800: oklch(0.812 0.155 163.7);
 
-  --nav-height: 48px;
+  /* Red (hue 22 — Oxide --color-red-* aligned) */
+  --palette-red-600: oklch(0.647 0.212 22);
+  --palette-red-700: oklch(0.704 0.175 22);
+
+  /* Amber (hue 62–75 — Oxide --color-yellow-* aligned) */
+  --palette-amber-600: oklch(0.672 0.162 62);
+  --palette-amber-700: oklch(0.809 0.170 75);
 }
 
-/* Dark — Oxide-adjacent: near-black with teal tint */
+/* ─────────────────────────────────────────────────────────────────────────
+   2. Semantic tokens — light mode
+      surface / content / stroke / status
+      Mirrors Oxide's three-layer token architecture.
+   ───────────────────────────────────────────────────────────────────────── */
+:root {
+  --surface-default:   var(--palette-neutral-100);
+  --surface-raise:     var(--palette-white);
+  --surface-secondary: var(--palette-neutral-200);
+  --surface-selected:  var(--palette-neutral-700);
+
+  --content-default:   var(--palette-neutral-900);
+  --content-secondary: var(--palette-neutral-600);
+  --content-selected:  var(--palette-neutral-50);
+
+  --stroke-default:    var(--palette-neutral-300);
+  --stroke-subtle:     var(--palette-neutral-200);
+
+  --content-accent:    var(--palette-green-600);
+  --content-success:   var(--palette-green-700);
+  --content-notice:    var(--palette-amber-600);
+  --content-error:     var(--palette-red-600);
+  --content-stopped:   var(--palette-neutral-500);
+}
+
+/* ─────────────────────────────────────────────────────────────────────────
+   3. Semantic tokens — dark mode overrides
+      Only semantic tokens change; component tokens resolve automatically.
+   ───────────────────────────────────────────────────────────────────────── */
 [data-color-mode="dark"] {
-  --color-bg:              #080f11;
-  --color-surface:         #0e1c1f;
-  --color-surface-2:       #152225;
-  --color-text:            #e4eded;
-  --color-text-muted:      #7a9ea3;
-  --color-accent:          #48d597;
-  --color-border:          #1e3035;
-  --color-border-subtle:   #142028;
-  --color-active-bg:       #1e3035;
-  --color-active-text:     #e4eded;
+  --surface-default:   var(--palette-teal-0);
+  --surface-raise:     var(--palette-teal-50);
+  --surface-secondary: var(--palette-teal-100);
+  --surface-selected:  var(--palette-teal-200);
 
-  --color-status-running:  #48d597;
-  --color-status-starting: #fbbf24;
-  --color-status-stopped:  #4d6e74;
-  --color-status-faulted:  #f87171;
+  --content-default:   var(--palette-teal-900);
+  --content-secondary: var(--palette-teal-600);
+  --content-selected:  var(--palette-teal-900);
 
-  --color-positive:        #48d597;
-  --color-negative:        #f87171;
+  --stroke-default:    var(--palette-teal-200);
+  --stroke-subtle:     var(--palette-teal-150);
+
+  --content-accent:    var(--palette-green-800);
+  --content-success:   var(--palette-green-800);
+  --content-notice:    var(--palette-amber-700);
+  --content-error:     var(--palette-red-700);
+  --content-stopped:   var(--palette-teal-500);
+}
+
+/* ─────────────────────────────────────────────────────────────────────────
+   4. Component tokens
+      Stable --color-* API; aliases semantic layer.
+      Color-mode is handled in layer 2/3 — nothing here needs overriding.
+   ───────────────────────────────────────────────────────────────────────── */
+:root {
+  --color-bg:              var(--surface-default);
+  --color-surface:         var(--surface-raise);
+  --color-surface-2:       var(--surface-secondary);
+  --color-text:            var(--content-default);
+  --color-text-muted:      var(--content-secondary);
+  --color-accent:          var(--content-accent);
+  --color-border:          var(--stroke-default);
+  --color-border-subtle:   var(--stroke-subtle);
+  --color-active-bg:       var(--surface-selected);
+  --color-active-text:     var(--content-selected);
+
+  --color-status-running:  var(--content-success);
+  --color-status-starting: var(--content-notice);
+  --color-status-stopped:  var(--content-stopped);
+  --color-status-faulted:  var(--content-error);
+
+  --color-positive:        var(--content-success);
+  --color-negative:        var(--content-error);
+
+  --nav-height: 48px;
 }
 
 html[data-color-pref="system"] #color-mode-pill button[aria-label="Auto (device)"],

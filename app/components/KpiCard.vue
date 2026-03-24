@@ -47,7 +47,7 @@ const isPositive = computed(() =>
     </div>
     <template v-else>
       <div class="kpi-top">
-        <span class="kpi-label">{{ kpi.label }}</span>
+        <span class="kpi-label text-mono-label">{{ kpi.label }}</span>
         <span class="kpi-trend" :class="isPositive ? 'positive' : 'negative'">
           <svg width="8" height="8" viewBox="0 0 8 8" aria-hidden="true">
             <path v-if="isPositive" d="M4 1L7 6H1L4 1Z" fill="currentColor" />
@@ -90,11 +90,7 @@ const isPositive = computed(() =>
 }
 
 .kpi-label {
-  font-size: var(--text-xs);
-  font-weight: 500;
   color: var(--color-text-muted);
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
 }
 
 .kpi-trend {

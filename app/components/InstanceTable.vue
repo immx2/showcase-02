@@ -53,6 +53,7 @@ function sparklineColor(state: Instance['state']): string {
           <th
             v-for="col in columns"
             :key="col.label"
+            class="text-mono-label"
             :style="{ width: col.width, textAlign: col.align }"
             :aria-sort="col.key ? ariaSortAttr(col.key) : undefined"
             :class="{ sortable: !!col.key, active: col.key && col.key === sortKey }"
@@ -190,11 +191,7 @@ thead {
 
 th {
   padding: var(--space-2) var(--space-4);
-  font-size: var(--text-xs);
-  font-weight: 500;
   color: var(--color-text-muted);
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
   white-space: nowrap;
   background: var(--color-surface);
   user-select: none;

@@ -7,7 +7,7 @@ defineProps<{
 </script>
 
 <template>
-  <span class="badge" :class="status" :aria-label="`State: ${status}`">
+  <span class="badge text-mono-label" :class="status" :aria-label="`State: ${status}`">
     <span class="dot" aria-hidden="true" />
     {{ status }}
   </span>
@@ -18,10 +18,6 @@ defineProps<{
   display: inline-flex;
   align-items: center;
   gap: 5px;
-  font-family: var(--font-mono);
-  font-size: var(--text-xs);
-  font-weight: 500;
-  letter-spacing: 0.02em;
 }
 
 .dot {
