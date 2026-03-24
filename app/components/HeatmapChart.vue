@@ -10,6 +10,9 @@ const props = withDefaults(defineProps<{
   height: 200,
 })
 
+const colorMode = useColorMode()
+const isDark = computed(() => colorMode.value === 'dark')
+
 const containerRef = ref<HTMLElement>()
 const { width: cw } = useElementSize(containerRef)
 
@@ -35,10 +38,16 @@ const yScale = computed(() =>
 
 const maxCount = computed(() => d3.max(props.data, d => d.count) ?? 1)
 
+// Dark mode: low values fade into the surface background, highs glow in Oxide green.
+// Light mode: standard D3 blues scale.
 const colorScale = computed(() =>
   d3.scaleSequential()
     .domain([0, maxCount.value])
-    .interpolator(d3.interpolateBlues),
+    .interpolator(
+      isDark.value
+        ? d3.interpolateRgbBasis(['#0e1c1f', '#144030', '#48d597'])
+        : d3.interpolateBlues,
+    ),
 )
 
 const cells = computed(() =>
@@ -143,8 +152,8 @@ onMounted(() => {
 .day-label,
 .hour-label {
   fill: var(--color-text-muted);
-  font-size: 10px;
-  font-family: 'Inter', system-ui, sans-serif;
+  font-size: var(--text-xs);
+  font-family: var(--font-mono);
 }
 
 .heat-cell {
@@ -165,9 +174,10 @@ onMounted(() => {
   border-radius: var(--radius-md);
   padding: var(--space-1) var(--space-3);
   pointer-events: none;
-  font-size: 11px;
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
   white-space: nowrap;
-  box-shadow: 0 4px 12px rgb(0 0 0 / 0.08);
+  box-shadow: 0 4px 12px rgb(0 0 0 / 0.12);
   z-index: 10;
 }
 </style>

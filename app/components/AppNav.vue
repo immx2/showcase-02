@@ -9,7 +9,11 @@ function setMode(pref: 'system' | 'light' | 'dark') {
 
 <template>
   <nav class="nav">
-    <span class="brand">showcase-02</span>
+    <span class="brand">
+      oxide
+      <span class="brand-slash" aria-hidden="true">/</span>
+      console
+    </span>
     <div class="nav-end">
       <div id="color-mode-pill" class="mode-pill" role="group" aria-label="Color mode">
         <button title="Auto (device)" aria-label="Auto (device)" @click="setMode('system')">
@@ -62,10 +66,16 @@ function setMode(pref: 'system' | 'light' | 'dark') {
 }
 
 .brand {
-  font-size: 13px;
+  font-size: var(--text-sm);
   font-weight: 500;
-  letter-spacing: 0.02em;
+  font-family: var(--font-mono);
+  letter-spacing: 0.01em;
   color: var(--color-text);
+}
+
+.brand-slash {
+  color: var(--color-accent);
+  padding: 0 2px;
 }
 
 .nav-end {
@@ -79,7 +89,7 @@ function setMode(pref: 'system' | 'light' | 'dark') {
   align-items: center;
   height: 26px;
   border: 1px solid var(--color-border);
-  border-radius: 99px;
+  border-radius: var(--radius-md);
   overflow: hidden;
 }
 
@@ -92,7 +102,6 @@ function setMode(pref: 'system' | 'light' | 'dark') {
   border: none;
   background: transparent;
   color: var(--color-text-muted);
-  cursor: pointer;
   padding: 0;
   flex-shrink: 0;
   transition: background var(--duration-fast), color var(--duration-fast);
@@ -111,7 +120,7 @@ function setMode(pref: 'system' | 'light' | 'dark') {
   display: flex;
   align-items: center;
   gap: var(--space-2);
-  font-size: 12px;
+  font-size: var(--text-xs);
   color: var(--color-text-muted);
   transition: color var(--duration-fast);
 }

@@ -14,7 +14,7 @@ const props = withDefaults(defineProps<{
   height?: number
 }>(), {
   height: 260,
-  formatValue: (v: number) => v >= 1000 ? `$${(v / 1000).toFixed(1)}k` : `$${v}`,
+  formatValue: (v: number) => `${v}%`,
 })
 
 const containerRef = ref<HTMLElement>()
@@ -131,8 +131,8 @@ function onBarLeave() {
 
 .bar-chart-wrap :deep(.axis text) {
   fill: var(--color-text-muted);
-  font-size: 11px;
-  font-family: 'Inter', system-ui, sans-serif;
+  font-size: var(--text-xs);
+  font-family: var(--font-mono);
 }
 
 .bar-rect {
@@ -147,8 +147,8 @@ function onBarLeave() {
 
 .bar-label {
   fill: var(--color-text-muted);
-  font-size: 11px;
-  font-family: 'Inter', system-ui, sans-serif;
+  font-size: var(--text-xs);
+  font-family: var(--font-mono);
   transition: y var(--duration-chart) var(--ease-out);
 }
 
@@ -168,6 +168,6 @@ function onBarLeave() {
   z-index: 10;
 }
 
-.tooltip strong { font-size: 13px; font-weight: 600; }
-.tooltip span { font-size: 11px; color: var(--color-text-muted); }
+.tooltip strong { font-family: var(--font-mono); font-size: var(--text-sm); font-weight: 600; }
+.tooltip span { font-family: var(--font-mono); font-size: var(--text-xs); color: var(--color-text-muted); }
 </style>

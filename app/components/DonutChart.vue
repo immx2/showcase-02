@@ -69,7 +69,9 @@ onMounted(() => {
       <li v-for="seg in data" :key="seg.label" class="legend-item">
         <span class="legend-dot" :style="{ background: seg.color }" />
         <span class="legend-label">{{ seg.label }}</span>
-        <span class="legend-value">{{ seg.value.toLocaleString() }}</span>
+        <span class="legend-value">
+          {{ seg.value >= 1024 ? `${(seg.value / 1024).toFixed(1)} TiB` : `${seg.value} GiB` }}
+        </span>
       </li>
     </ul>
   </div>
@@ -99,18 +101,18 @@ onMounted(() => {
 
 .center-value {
   fill: var(--color-text);
-  font-size: 22px;
+  font-size: var(--text-xl);
   font-weight: 700;
-  font-family: 'Inter', system-ui, sans-serif;
+  font-family: var(--font-mono);
 }
 
 .center-label {
   fill: var(--color-text-muted);
-  font-size: 11px;
+  font-size: var(--text-xs);
   font-weight: 500;
   text-transform: uppercase;
   letter-spacing: 0.06em;
-  font-family: 'Inter', system-ui, sans-serif;
+  font-family: var(--font-sans);
 }
 
 .legend {
@@ -124,7 +126,7 @@ onMounted(() => {
   display: flex;
   align-items: center;
   gap: var(--space-2);
-  font-size: 13px;
+  font-size: var(--text-sm);
 }
 
 .legend-dot {
@@ -140,7 +142,8 @@ onMounted(() => {
 }
 
 .legend-value {
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
   font-weight: 600;
-  font-variant-numeric: tabular-nums;
 }
 </style>

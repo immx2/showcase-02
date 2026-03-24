@@ -1,34 +1,4 @@
-export interface DailyMetric {
-  date: string
-  revenue: number
-  activeUsers: number
-  sessions: number
-  newSignups: number
-  conversionRate: number
-  churnRate: number
-}
-
-export interface TrafficSource {
-  source: string
-  sessions: number
-  conversions: number
-  revenue: number
-  color: string
-}
-
-export interface PlanRevenue {
-  plan: string
-  mrr: number
-  users: number
-  color: string
-}
-
-export interface HeatmapCell {
-  day: number
-  hour: number
-  count: number
-}
-
+// Seeded PRNG for deterministic data across renders
 function mulberry32(seed: number) {
   return () => {
     seed |= 0
@@ -39,84 +9,157 @@ function mulberry32(seed: number) {
   }
 }
 
-function generateDailyMetrics(): DailyMetric[] {
-  const rng = mulberry32(42)
-  const data: DailyMetric[] = []
-  const start = new Date(2025, 2, 25)
+// ─── Metric time-series ────────────────────────────────────────────────────
 
-  let baseRevenue = 35200
-  let baseUsers = 9100
+export interface MetricSample {
+  date: string
+  cpu: number      // percent 0–100
+  mem: number      // percent 0–100
+  netGbps: number  // aggregate network throughput
+  diskIops: number // aggregate disk IOPS
+}
 
-  for (let i = 0; i < 365; i++) {
+function generateMetricSamples(): MetricSample[] {
+  const rng = mulberry32(7)
+  const samples: MetricSample[] = []
+  const start = new Date(2025, 5, 7) // June 7 2025
+
+  let baseCpu = 42
+  let baseMem = 58
+  let baseNet = 1.4
+  let baseDisk = 8200
+
+  for (let i = 0; i < 90; i++) {
     const d = new Date(start)
     d.setDate(d.getDate() + i)
-    const dow = d.getDay()
 
-    baseRevenue *= 1 + (0.0008 + rng() * 0.0018)
-    baseUsers *= 1 + (0.0004 + rng() * 0.0009)
+    baseCpu = Math.min(92, Math.max(18, baseCpu + (rng() - 0.48) * 4))
+    baseMem = Math.min(88, Math.max(32, baseMem + (rng() - 0.45) * 2.5))
+    baseNet = Math.min(6.5, Math.max(0.4, baseNet + (rng() - 0.5) * 0.25))
+    baseDisk = Math.min(24000, Math.max(3000, baseDisk + (rng() - 0.5) * 600))
 
-    const weekendFactor = dow === 0 || dow === 6 ? 0.72 + rng() * 0.08 : 1
-    const noise = 0.93 + rng() * 0.14
-
-    const revenue = Math.round(baseRevenue * noise * weekendFactor)
-    const activeUsers = Math.round(baseUsers * noise * weekendFactor)
-    const sessions = Math.round(activeUsers * (1.4 + rng() * 0.6))
-    const newSignups = Math.round(activeUsers * (0.018 + rng() * 0.012))
-
-    data.push({
+    samples.push({
       date: d.toISOString().split('T')[0],
-      revenue,
-      activeUsers,
-      sessions,
-      newSignups,
-      conversionRate: Math.round((2.4 + rng() * 2.2) * 100) / 100,
-      churnRate: Math.round((1.4 + rng() * 1.6) * 100) / 100,
+      cpu: Math.round(baseCpu * 10) / 10,
+      mem: Math.round(baseMem * 10) / 10,
+      netGbps: Math.round(baseNet * 100) / 100,
+      diskIops: Math.round(baseDisk),
     })
   }
 
-  return data
+  return samples
+}
+
+export const metricSamples: MetricSample[] = generateMetricSamples()
+
+// ─── Instances ────────────────────────────────────────────────────────────
+
+export type InstanceState = 'running' | 'starting' | 'stopped' | 'faulted'
+
+export interface Instance {
+  id: string
+  name: string
+  state: InstanceState
+  project: 'infra' | 'web' | 'data'
+  cpuCount: number
+  memGiB: number
+  cpuPct: number
+  memPct: number
+  ipv4: string
+  uptime: string
+}
+
+export const instances: Instance[] = [
+  { id: 'inst-4a8f2e1b', name: 'api-gateway-01',     state: 'running',  project: 'infra', cpuCount: 8,  memGiB: 32,  cpuPct: 38,  memPct: 61, ipv4: '172.20.0.10', uptime: '42d 7h' },
+  { id: 'inst-7c3d9f0a', name: 'api-gateway-02',     state: 'running',  project: 'infra', cpuCount: 8,  memGiB: 32,  cpuPct: 41,  memPct: 58, ipv4: '172.20.0.11', uptime: '42d 7h' },
+  { id: 'inst-b2e5c8d3', name: 'postgres-primary',   state: 'running',  project: 'data',  cpuCount: 16, memGiB: 128, cpuPct: 72,  memPct: 84, ipv4: '172.20.1.20', uptime: '89d 3h' },
+  { id: 'inst-1f6a4b7c', name: 'postgres-replica-a', state: 'running',  project: 'data',  cpuCount: 16, memGiB: 128, cpuPct: 18,  memPct: 79, ipv4: '172.20.1.21', uptime: '89d 3h' },
+  { id: 'inst-9d0e2f3a', name: 'postgres-replica-b', state: 'running',  project: 'data',  cpuCount: 16, memGiB: 128, cpuPct: 14,  memPct: 77, ipv4: '172.20.1.22', uptime: '72d 18h' },
+  { id: 'inst-c5b8d1e6', name: 'web-frontend-01',    state: 'running',  project: 'web',   cpuCount: 4,  memGiB: 16,  cpuPct: 24,  memPct: 44, ipv4: '172.20.2.30', uptime: '31d 12h' },
+  { id: 'inst-3e7f9a0b', name: 'web-frontend-02',    state: 'running',  project: 'web',   cpuCount: 4,  memGiB: 16,  cpuPct: 21,  memPct: 42, ipv4: '172.20.2.31', uptime: '31d 12h' },
+  { id: 'inst-d4c2b8f1', name: 'web-frontend-03',    state: 'running',  project: 'web',   cpuCount: 4,  memGiB: 16,  cpuPct: 27,  memPct: 46, ipv4: '172.20.2.32', uptime: '14d 5h' },
+  { id: 'inst-6a1e5d9c', name: 'redis-cache-01',     state: 'running',  project: 'infra', cpuCount: 4,  memGiB: 32,  cpuPct: 9,   memPct: 91, ipv4: '172.20.0.50', uptime: '61d 22h' },
+  { id: 'inst-2b7f0e4d', name: 'redis-cache-02',     state: 'running',  project: 'infra', cpuCount: 4,  memGiB: 32,  cpuPct: 8,   memPct: 89, ipv4: '172.20.0.51', uptime: '61d 22h' },
+  { id: 'inst-8c3a6f1e', name: 'worker-batch-01',    state: 'running',  project: 'data',  cpuCount: 32, memGiB: 64,  cpuPct: 88,  memPct: 52, ipv4: '172.20.1.60', uptime: '7d 14h' },
+  { id: 'inst-e9d5b2a7', name: 'worker-batch-02',    state: 'running',  project: 'data',  cpuCount: 32, memGiB: 64,  cpuPct: 91,  memPct: 55, ipv4: '172.20.1.61', uptime: '7d 14h' },
+  { id: 'inst-f1c4e8b0', name: 'worker-batch-03',    state: 'running',  project: 'data',  cpuCount: 32, memGiB: 64,  cpuPct: 83,  memPct: 49, ipv4: '172.20.1.62', uptime: '7d 14h' },
+  { id: 'inst-0a8d3c5f', name: 'metrics-collector',  state: 'running',  project: 'infra', cpuCount: 4,  memGiB: 8,   cpuPct: 15,  memPct: 38, ipv4: '172.20.0.70', uptime: '42d 7h' },
+  { id: 'inst-7e2b4d9a', name: 'log-aggregator',     state: 'running',  project: 'infra', cpuCount: 8,  memGiB: 16,  cpuPct: 31,  memPct: 67, ipv4: '172.20.0.71', uptime: '42d 7h' },
+  { id: 'inst-5f1c8e3b', name: 'search-index-01',    state: 'running',  project: 'web',   cpuCount: 8,  memGiB: 32,  cpuPct: 44,  memPct: 73, ipv4: '172.20.2.80', uptime: '28d 1h' },
+  { id: 'inst-a3d6f0c9', name: 'search-index-02',    state: 'running',  project: 'web',   cpuCount: 8,  memGiB: 32,  cpuPct: 39,  memPct: 71, ipv4: '172.20.2.81', uptime: '28d 1h' },
+  { id: 'inst-4b9e7a2f', name: 'cdn-origin-proxy',   state: 'running',  project: 'web',   cpuCount: 4,  memGiB: 8,   cpuPct: 12,  memPct: 31, ipv4: '172.20.2.90', uptime: '55d 9h' },
+  { id: 'inst-c8f3b1d4', name: 'etl-pipeline-01',    state: 'starting', project: 'data',  cpuCount: 16, memGiB: 32,  cpuPct: 4,   memPct: 12, ipv4: '172.20.1.40', uptime: '0d 0h' },
+  { id: 'inst-6d2a9f5e', name: 'etl-pipeline-02',    state: 'starting', project: 'data',  cpuCount: 16, memGiB: 32,  cpuPct: 2,   memPct: 8,  ipv4: '172.20.1.41', uptime: '0d 0h' },
+  { id: 'inst-1e8c4b7a', name: 'qa-runner-03',       state: 'stopped',  project: 'infra', cpuCount: 4,  memGiB: 8,   cpuPct: 0,   memPct: 0,  ipv4: '172.20.0.92', uptime: '—' },
+  { id: 'inst-9b5f2e0d', name: 'staging-web-01',     state: 'stopped',  project: 'web',   cpuCount: 4,  memGiB: 16,  cpuPct: 0,   memPct: 0,  ipv4: '172.20.2.44', uptime: '—' },
+  { id: 'inst-3a7c1f6b', name: 'staging-db',         state: 'stopped',  project: 'data',  cpuCount: 8,  memGiB: 32,  cpuPct: 0,   memPct: 0,  ipv4: '172.20.1.45', uptime: '—' },
+  { id: 'inst-e2d4a8c5', name: 'worker-ml-01',       state: 'faulted',  project: 'data',  cpuCount: 32, memGiB: 128, cpuPct: 0,   memPct: 0,  ipv4: '172.20.1.55', uptime: '—' },
+]
+
+// ─── Sled utilization ─────────────────────────────────────────────────────
+
+export interface SledUsage {
+  sled: string
+  cpuPct: number
+  memPct: number
+  diskPct: number
+  color: string
+}
+
+export const sledUsage: SledUsage[] = [
+  { sled: 'sled-01', cpuPct: 68, memPct: 74, diskPct: 42, color: 'var(--chart-1)' },
+  { sled: 'sled-02', cpuPct: 81, memPct: 62, diskPct: 38, color: 'var(--chart-2)' },
+  { sled: 'sled-03', cpuPct: 44, memPct: 55, diskPct: 61, color: 'var(--chart-3)' },
+  { sled: 'sled-04', cpuPct: 72, memPct: 88, diskPct: 35, color: 'var(--chart-4)' },
+  { sled: 'sled-05', cpuPct: 29, memPct: 41, diskPct: 28, color: 'var(--chart-5)' },
+  { sled: 'sled-06', cpuPct: 56, memPct: 63, diskPct: 54, color: 'var(--chart-6)' },
+]
+
+// ─── Storage breakdown ────────────────────────────────────────────────────
+
+export interface StorageBreakdown {
+  label: string
+  gib: number
+  color: string
+}
+
+export const storageBreakdown: StorageBreakdown[] = [
+  { label: 'Data disks',  gib: 18432, color: 'var(--chart-1)' },
+  { label: 'Snapshots',   gib: 8192,  color: 'var(--chart-2)' },
+  { label: 'OS images',   gib: 3072,  color: 'var(--chart-3)' },
+  { label: 'Reserved',    gib: 2048,  color: 'var(--chart-4)' },
+]
+
+// ─── Heatmap (API request rate) ───────────────────────────────────────────
+
+export interface HeatmapCell {
+  day: number
+  hour: number
+  count: number
 }
 
 function generateHeatmap(): HeatmapCell[] {
-  const rng = mulberry32(99)
+  const rng = mulberry32(17)
   const cells: HeatmapCell[] = []
 
   for (let day = 0; day < 7; day++) {
     const isWeekend = day >= 5
     for (let hour = 0; hour < 24; hour++) {
-      const isPeak = hour >= 9 && hour <= 17
-      const isEvening = hour >= 19 && hour <= 22
-      const baseLine = isWeekend ? 40 : 80
+      const isPeak = hour >= 8 && hour <= 18
+      const isNight = hour < 5
 
-      let intensity = baseLine
-      if (isPeak) intensity = isWeekend ? 120 : 380
-      else if (isEvening) intensity = isWeekend ? 100 : 200
-      else if (hour < 6) intensity = isWeekend ? 15 : 25
+      let base = isWeekend ? 35 : 80
+      if (isPeak) base = isWeekend ? 110 : 420
+      else if (isNight) base = isWeekend ? 12 : 22
 
       cells.push({
         day,
         hour,
-        count: Math.round(intensity * (0.7 + rng() * 0.6)),
+        count: Math.round(base * (0.7 + rng() * 0.6)),
       })
     }
   }
   return cells
 }
-
-export const dailyMetrics: DailyMetric[] = generateDailyMetrics()
-
-export const trafficSources: TrafficSource[] = [
-  { source: 'Organic Search', sessions: 48420, conversions: 1694, revenue: 18900, color: 'var(--chart-1)' },
-  { source: 'Direct',         sessions: 27650, conversions: 1106, revenue: 12400, color: 'var(--chart-2)' },
-  { source: 'Referral',       sessions: 20730, conversions: 828,  revenue: 9200,  color: 'var(--chart-3)' },
-  { source: 'Paid',           sessions: 12680, conversions: 634,  revenue: 7800,  color: 'var(--chart-4)' },
-  { source: 'Social',         sessions: 5760,  conversions: 230,  revenue: 2600,  color: 'var(--chart-5)' },
-]
-
-export const planRevenue: PlanRevenue[] = [
-  { plan: 'Starter',    mrr: 19720, users: 680, color: 'var(--chart-1)' },
-  { plan: 'Pro',        mrr: 23760, users: 240, color: 'var(--chart-2)' },
-  { plan: 'Enterprise', mrr: 8372,  users: 28,  color: 'var(--chart-3)' },
-]
 
 export const heatmapData: HeatmapCell[] = generateHeatmap()

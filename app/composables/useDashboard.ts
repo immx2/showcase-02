@@ -1,48 +1,61 @@
 import {
-  dailyMetrics,
-  trafficSources,
-  planRevenue,
+  metricSamples,
+  instances,
+  sledUsage,
+  storageBreakdown,
   heatmapData,
-  type DailyMetric,
+  type MetricSample,
+  type InstanceState,
 } from '~/data/analytics'
 
-export type Period = '7d' | '30d' | '90d' | '12m'
+export type Period = '7d' | '30d' | '90d'
+export type Project = 'all' | 'infra' | 'web' | 'data'
+export type SortKey = 'name' | 'state' | 'project' | 'cpuCount' | 'memGiB' | 'cpuPct' | 'memPct'
+export type SortDir = 'asc' | 'desc'
 
 export interface Kpi {
   label: string
   value: number
   previousValue: number
-  format: 'currency' | 'number' | 'percent'
+  format: 'number' | 'percent' | 'bytes' | 'throughput'
   trend: number
+  trendPositiveWhenDown?: boolean
   sparkline: number[]
+  unit?: string
 }
 
 const PERIOD_DAYS: Record<Period, number> = {
   '7d': 7,
   '30d': 30,
   '90d': 90,
-  '12m': 365,
 }
 
 function avg(arr: number[]): number {
   return arr.length ? arr.reduce((a, b) => a + b, 0) / arr.length : 0
 }
 
-function sum(arr: number[]): number {
-  return arr.reduce((a, b) => a + b, 0)
-}
-
-function slice(metrics: DailyMetric[], days: number): DailyMetric[] {
+function slice(metrics: MetricSample[], days: number): MetricSample[] {
   return metrics.slice(Math.max(0, metrics.length - days))
 }
 
-function prevSlice(metrics: DailyMetric[], days: number): DailyMetric[] {
+function prevSlice(metrics: MetricSample[], days: number): MetricSample[] {
   const end = Math.max(0, metrics.length - days)
   return metrics.slice(Math.max(0, end - days), end)
 }
 
+// State ordering for sort
+const STATE_ORDER: Record<InstanceState, number> = {
+  faulted: 0,
+  starting: 1,
+  running: 2,
+  stopped: 3,
+}
+
 export function useDashboard() {
   const period = ref<Period>('30d')
+  const selectedProject = ref<Project>('all')
+  const sortKey = ref<SortKey>('cpuPct')
+  const sortDir = ref<SortDir>('desc')
   const isLoading = ref(false)
 
   let loadTimer: ReturnType<typeof setTimeout> | undefined
@@ -53,72 +66,127 @@ export function useDashboard() {
   })
 
   const filteredMetrics = computed(() =>
-    slice(dailyMetrics, PERIOD_DAYS[period.value]),
+    slice(metricSamples, PERIOD_DAYS[period.value]),
   )
 
   const previousMetrics = computed(() =>
-    prevSlice(dailyMetrics, PERIOD_DAYS[period.value]),
+    prevSlice(metricSamples, PERIOD_DAYS[period.value]),
   )
 
+  // KPIs
   const kpis = computed<Kpi[]>(() => {
     const cur = filteredMetrics.value
     const prev = previousMetrics.value
 
-    const curRevenue = sum(cur.map(d => d.revenue))
-    const prevRevenue = sum(prev.map(d => d.revenue))
+    const runningNow = instances.filter(i => i.state === 'running').length
+    const runningPrev = runningNow - 2
 
-    const curUsers = avg(cur.map(d => d.activeUsers))
-    const prevUsers = avg(prev.map(d => d.activeUsers))
+    const curCpu = avg(cur.map(d => d.cpu))
+    const prevCpu = avg(prev.map(d => d.cpu))
 
-    const curConv = avg(cur.map(d => d.conversionRate))
-    const prevConv = avg(prev.map(d => d.conversionRate))
+    const curNet = avg(cur.map(d => d.netGbps))
+    const prevNet = avg(prev.map(d => d.netGbps))
 
-    const curSignups = sum(cur.map(d => d.newSignups))
-    const prevSignups = sum(prev.map(d => d.newSignups))
+    // Total storage in GiB
+    const totalGib = storageBreakdown.reduce((s, d) => s + d.gib, 0)
+    const prevTotalGib = totalGib * 0.91
 
     return [
       {
-        label: 'Revenue',
-        value: curRevenue,
-        previousValue: prevRevenue,
-        format: 'currency',
-        trend: prevRevenue ? ((curRevenue - prevRevenue) / prevRevenue) * 100 : 0,
-        sparkline: cur.map(d => d.revenue),
-      },
-      {
-        label: 'Active Users',
-        value: curUsers,
-        previousValue: prevUsers,
+        label: 'Running Instances',
+        value: runningNow,
+        previousValue: runningPrev,
         format: 'number',
-        trend: prevUsers ? ((curUsers - prevUsers) / prevUsers) * 100 : 0,
-        sparkline: cur.map(d => d.activeUsers),
+        trend: runningPrev ? ((runningNow - runningPrev) / runningPrev) * 100 : 0,
+        sparkline: cur.map(d => 18 + Math.round(d.cpu / 14)),
       },
       {
-        label: 'Conversion Rate',
-        value: curConv,
-        previousValue: prevConv,
+        label: 'Avg CPU Util',
+        value: curCpu,
+        previousValue: prevCpu,
         format: 'percent',
-        trend: prevConv ? ((curConv - prevConv) / prevConv) * 100 : 0,
-        sparkline: cur.map(d => d.conversionRate),
+        trend: prevCpu ? ((curCpu - prevCpu) / prevCpu) * 100 : 0,
+        sparkline: cur.map(d => d.cpu),
       },
       {
-        label: 'New Signups',
-        value: curSignups,
-        previousValue: prevSignups,
-        format: 'number',
-        trend: prevSignups ? ((curSignups - prevSignups) / prevSignups) * 100 : 0,
-        sparkline: cur.map(d => d.newSignups),
+        label: 'Network Throughput',
+        value: curNet,
+        previousValue: prevNet,
+        format: 'throughput',
+        trend: prevNet ? ((curNet - prevNet) / prevNet) * 100 : 0,
+        sparkline: cur.map(d => d.netGbps),
+        unit: 'Gbps',
+      },
+      {
+        label: 'Storage Used',
+        value: totalGib,
+        previousValue: prevTotalGib,
+        format: 'bytes',
+        trend: prevTotalGib ? ((totalGib - prevTotalGib) / prevTotalGib) * 100 : 0,
+        sparkline: cur.map((_, i) => prevTotalGib + ((totalGib - prevTotalGib) * i / cur.length)),
       },
     ]
   })
 
+  // Instance table: filter then sort
+  const filteredInstances = computed(() => {
+    let rows = selectedProject.value === 'all'
+      ? instances
+      : instances.filter(i => i.project === selectedProject.value)
+
+    return [...rows].sort((a, b) => {
+      const dir = sortDir.value === 'asc' ? 1 : -1
+      const key = sortKey.value
+
+      if (key === 'state') {
+        return (STATE_ORDER[a.state] - STATE_ORDER[b.state]) * dir
+      }
+      if (key === 'name' || key === 'project') {
+        return a[key].localeCompare(b[key]) * dir
+      }
+      return ((a[key] as number) - (b[key] as number)) * dir
+    })
+  })
+
+  function toggleSort(key: SortKey) {
+    if (sortKey.value === key) {
+      sortDir.value = sortDir.value === 'asc' ? 'desc' : 'asc'
+    } else {
+      sortKey.value = key
+      sortDir.value = 'desc'
+    }
+  }
+
+  // Chart data derived from metrics
+  const cpuSeries = computed(() =>
+    filteredMetrics.value.map(d => ({ date: d.date, value: d.cpu })),
+  )
+
+  const memSeries = computed(() =>
+    filteredMetrics.value.map(d => ({ date: d.date, value: d.mem })),
+  )
+
+  const sledBarData = computed(() =>
+    sledUsage.map(s => ({ label: s.sled, value: s.cpuPct, color: s.color })),
+  )
+
+  const storageDonutData = computed(() =>
+    storageBreakdown.map(s => ({ label: s.label, value: s.gib, color: s.color })),
+  )
+
   return {
     period,
+    selectedProject,
+    sortKey,
+    sortDir,
     isLoading,
-    filteredMetrics,
     kpis,
-    trafficSources,
-    planRevenue,
+    filteredInstances,
+    toggleSort,
+    cpuSeries,
+    memSeries,
+    sledBarData,
+    storageDonutData,
     heatmapData,
   }
 }

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { Period } from '~/composables/useDashboard'
 
-const props = defineProps<{
+defineProps<{
   period: Period
 }>()
 
@@ -10,18 +10,17 @@ const emit = defineEmits<{
 }>()
 
 const periods: { value: Period; label: string }[] = [
-  { value: '7d', label: '7 D' },
+  { value: '7d',  label: '7 D'  },
   { value: '30d', label: '30 D' },
   { value: '90d', label: '90 D' },
-  { value: '12m', label: '12 M' },
 ]
 </script>
 
 <template>
   <header class="dash-header">
     <div>
-      <h1 class="dash-title">Analytics</h1>
-      <p class="dash-subtitle">Pulse SaaS — key metrics and performance overview</p>
+      <h1 class="dash-title">System Overview</h1>
+      <p class="dash-subtitle">Rack 01 — 6 sleds · 24 instances · Updated just now</p>
     </div>
 
     <div class="period-pill" role="group" aria-label="Time period">
@@ -47,24 +46,26 @@ const periods: { value: Period; label: string }[] = [
 }
 
 .dash-title {
-  font-size: 20px;
-  font-weight: 600;
-  letter-spacing: -0.01em;
+  font-family: var(--font-display);
+  font-size: var(--text-lg);
+  font-weight: 700;
+  letter-spacing: -0.02em;
   line-height: 1.2;
 }
 
 .dash-subtitle {
-  font-size: 13px;
+  font-size: var(--text-sm);
   color: var(--color-text-muted);
+  font-family: var(--font-mono);
   margin-top: var(--space-1);
 }
 
 .period-pill {
   display: flex;
   align-items: center;
-  height: 32px;
+  height: 30px;
   border: 1px solid var(--color-border);
-  border-radius: 99px;
+  border-radius: var(--radius-md);
   overflow: hidden;
 }
 
@@ -74,8 +75,9 @@ const periods: { value: Period; label: string }[] = [
   border: none;
   background: transparent;
   color: var(--color-text-muted);
-  font-size: 12px;
+  font-size: var(--text-sm);
   font-weight: 500;
+  font-family: var(--font-mono);
   cursor: pointer;
   transition: background var(--duration-fast), color var(--duration-fast);
 }

@@ -18,7 +18,11 @@ export default defineNuxtConfig({
   },
   css: ['~/assets/styles/main.css'],
   fonts: {
-    families: [{ name: 'Inter', provider: 'google' }],
+    families: [
+      { name: 'Inter', provider: 'google' },
+      { name: 'JetBrains Mono', provider: 'google' },
+      { name: 'Montserrat', provider: 'google' },
+    ],
   },
   vite: {
     optimizeDeps: {

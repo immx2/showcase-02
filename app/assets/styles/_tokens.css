@@ -1,38 +1,68 @@
 :root {
-  --space-1: 0.25rem;
-  --space-2: 0.5rem;
-  --space-3: 0.75rem;
-  --space-4: 1rem;
-  --space-5: 1.25rem;
-  --space-6: 1.5rem;
-  --space-8: 2rem;
+  /* ── Spacing ──────────────────────────────────────────────── */
+  --space-1:  0.25rem;
+  --space-2:  0.5rem;
+  --space-3:  0.75rem;
+  --space-4:  1rem;
+  --space-5:  1.25rem;
+  --space-6:  1.5rem;
+  --space-8:  2rem;
   --space-10: 2.5rem;
   --space-12: 3rem;
   --space-16: 4rem;
 
-  --radius-sm: 3px;
-  --radius-md: 6px;
-  --radius-lg: 12px;
-  --radius-xl: 16px;
+  /* ── Border radius ────────────────────────────────────────── */
+  --radius-sm: 2px;
+  --radius-md: 4px;
+  --radius-lg: 8px;
+  --radius-xl: 12px;
 
-  --duration-fast: 120ms;
-  --duration-base: 220ms;
-  --duration-slow: 400ms;
-  --duration-chart: 600ms;
+  /* ── Duration ─────────────────────────────────────────────── */
+  --duration-fast:  100ms;
+  --duration-base:  180ms;
+  --duration-slow:  350ms;
+  --duration-chart: 550ms;
 
+  /* ── Easing ───────────────────────────────────────────────── */
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
 
-  --chart-1: #6366f1;
-  --chart-2: #10b981;
-  --chart-3: #f59e0b;
-  --chart-4: #ef4444;
-  --chart-5: #8b5cf6;
-  --chart-6: #06b6d4;
+  /* ── Type scale ───────────────────────────────────────────── */
+  /*    xs   → tiny metadata: IDs, secondary annotations        */
+  /*    sm   → descriptions, axis ticks, table metadata         */
+  /*    base → body text, table rows, general UI                */
+  /*    md   → slightly prominent labels                        */
+  /*    lg   → section headings                                 */
+  /*    xl   → KPI values, display numbers                      */
+  /*    2xl  → large display                                    */
+  --text-xs:   11px;
+  --text-sm:   12px;
+  --text-base: 14px;
+  --text-md:   15px;
+  --text-lg:   18px;
+  --text-xl:   22px;
+  --text-2xl:  28px;
 
-  --chart-1-muted: #6366f130;
-  --chart-2-muted: #10b98130;
-  --chart-3-muted: #f59e0b30;
-  --chart-4-muted: #ef444430;
-  --chart-5-muted: #8b5cf630;
-  --chart-6-muted: #06b6d430;
+  /* ── Font stacks ──────────────────────────────────────────── */
+  --font-sans:    'Inter', system-ui, -apple-system, sans-serif;
+  --font-display: 'Montserrat', system-ui, -apple-system, sans-serif;
+  --font-mono:    'JetBrains Mono', ui-monospace, 'Cascadia Code', Menlo, Consolas, monospace;
+
+  /* ── Chart colors — infrastructure-semantic ──────────────── */
+  /*    chart-1 = CPU      (green — matches status-running)     */
+  /*    chart-2 = memory   (sky)                                */
+  /*    chart-3 = disk     (amber)                              */
+  /*    chart-4 = network  (violet)                             */
+  --chart-1: #48d597;
+  --chart-2: #38bdf8;
+  --chart-3: #fb923c;
+  --chart-4: #a78bfa;
+  --chart-5: #f472b6;
+  --chart-6: #facc15;
+
+  --chart-1-muted: #48d59730;
+  --chart-2-muted: #38bdf830;
+  --chart-3-muted: #fb923c30;
+  --chart-4-muted: #a78bfa30;
+  --chart-5-muted: #f472b630;
+  --chart-6-muted: #facc1530;
 }

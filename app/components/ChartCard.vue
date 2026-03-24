@@ -21,7 +21,7 @@ defineProps<{
 .chart-card {
   background: var(--color-surface);
   border: 1px solid var(--color-border-subtle);
-  border-radius: var(--radius-lg);
+  border-radius: var(--radius-md);
   padding: var(--space-5);
   display: flex;
   flex-direction: column;
@@ -40,13 +40,16 @@ defineProps<{
 }
 
 .chart-card-title {
-  font-size: 14px;
+  font-family: var(--font-display);
+  font-size: var(--text-base);
   font-weight: 600;
+  letter-spacing: -0.01em;
 }
 
 .chart-card-desc {
-  font-size: 12px;
+  font-size: var(--text-xs);
   color: var(--color-text-muted);
+  font-family: var(--font-mono);
 }
 
 .chart-card-body {

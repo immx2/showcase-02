@@ -12,15 +12,20 @@ const animated = useAnimatedCounter(target)
 
 const formattedValue = computed(() => {
   const v = animated.value
-  if (props.kpi.format === 'currency') {
-    if (v >= 1_000_000) return `$${(v / 1_000_000).toFixed(1)}M`
-    if (v >= 1_000) return `$${(v / 1_000).toFixed(1)}K`
-    return `$${Math.round(v)}`
+  switch (props.kpi.format) {
+    case 'percent':
+      return `${v.toFixed(1)}%`
+    case 'throughput':
+      return `${v.toFixed(2)} ${props.kpi.unit ?? ''}`
+    case 'bytes':
+      if (v >= 1024) return `${(v / 1024).toFixed(1)} TiB`
+      return `${Math.round(v)} GiB`
+    case 'number':
+    default:
+      if (v >= 1_000_000) return `${(v / 1_000_000).toFixed(1)}M`
+      if (v >= 1_000) return `${(v / 1_000).toFixed(1)}K`
+      return Math.round(v).toString()
   }
-  if (props.kpi.format === 'percent') return `${v.toFixed(2)}%`
-  if (v >= 1_000_000) return `${(v / 1_000_000).toFixed(1)}M`
-  if (v >= 1_000) return `${(v / 1_000).toFixed(1)}K`
-  return Math.round(v).toLocaleString()
 })
 
 const trendFormatted = computed(() => {
@@ -28,10 +33,9 @@ const trendFormatted = computed(() => {
   return `${t >= 0 ? '+' : ''}${t.toFixed(1)}%`
 })
 
-const isPositive = computed(() => {
-  if (props.kpi.label === 'Churn Rate') return props.kpi.trend <= 0
-  return props.kpi.trend >= 0
-})
+const isPositive = computed(() =>
+  props.kpi.trendPositiveWhenDown ? props.kpi.trend <= 0 : props.kpi.trend >= 0,
+)
 </script>
 
 <template>
@@ -45,17 +49,9 @@ const isPositive = computed(() => {
       <div class="kpi-top">
         <span class="kpi-label">{{ kpi.label }}</span>
         <span class="kpi-trend" :class="isPositive ? 'positive' : 'negative'">
-          <svg width="10" height="10" viewBox="0 0 10 10" aria-hidden="true">
-            <path
-              v-if="isPositive"
-              d="M5 2L8.5 6.5H1.5L5 2Z"
-              fill="currentColor"
-            />
-            <path
-              v-else
-              d="M5 8L1.5 3.5H8.5L5 8Z"
-              fill="currentColor"
-            />
+          <svg width="8" height="8" viewBox="0 0 8 8" aria-hidden="true">
+            <path v-if="isPositive" d="M4 1L7 6H1L4 1Z" fill="currentColor" />
+            <path v-else            d="M4 7L1 2H7L4 7Z" fill="currentColor" />
           </svg>
           {{ trendFormatted }}
         </span>
@@ -75,8 +71,8 @@ const isPositive = computed(() => {
 .kpi-card {
   background: var(--color-surface);
   border: 1px solid var(--color-border-subtle);
-  border-radius: var(--radius-lg);
-  padding: var(--space-5);
+  border-radius: var(--radius-md);
+  padding: var(--space-4) var(--space-5);
   display: flex;
   flex-direction: column;
   gap: var(--space-2);
@@ -94,18 +90,19 @@ const isPositive = computed(() => {
 }
 
 .kpi-label {
-  font-size: 12px;
+  font-size: var(--text-xs);
   font-weight: 500;
   color: var(--color-text-muted);
   text-transform: uppercase;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.06em;
 }
 
 .kpi-trend {
   display: flex;
   align-items: center;
   gap: 3px;
-  font-size: 11px;
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
   font-weight: 600;
 }
 
@@ -113,9 +110,10 @@ const isPositive = computed(() => {
 .kpi-trend.negative { color: var(--color-negative); }
 
 .kpi-value {
-  font-size: 26px;
+  font-family: var(--font-mono);
+  font-size: var(--text-xl);
   font-weight: 700;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.01em;
   line-height: 1.1;
 }
 
@@ -132,8 +130,8 @@ const isPositive = computed(() => {
   animation: pulse 1.4s ease-in-out infinite;
 }
 
-.skel-label { width: 60%; height: 12px; }
-.skel-value { width: 45%; height: 24px; }
+.skel-label { width: 60%; height: var(--text-xs); }
+.skel-value { width: 45%; height: 22px; }
 .skel-spark { width: 100%; height: 28px; }
 
 @keyframes pulse {
