@@ -146,7 +146,7 @@ const memSparkline = computed(() =>
             <div class="sparklines-row">
               <div class="sparkline-block">
                 <span class="spark-label">CPU</span>
-                <SparklineChart
+                <ChartSparkline
                   :data="cpuSparkline"
                   :width="100"
                   :height="32"
@@ -157,7 +157,7 @@ const memSparkline = computed(() =>
               <div class="sparklines-divider" />
               <div class="sparkline-block">
                 <span class="spark-label">Mem</span>
-                <SparklineChart
+                <ChartSparkline
                   :data="memSparkline"
                   :width="100"
                   :height="32"

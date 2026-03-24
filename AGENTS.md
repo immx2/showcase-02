@@ -18,7 +18,7 @@ Dev server defaults to port 3002 (`devServer.port` in `nuxt.config.ts`; `npm run
 - `selectedProject` + `sortKey` + `sortDir` → `filteredInstances` (instance table)
 - `toggleSort(key)` updates `sortKey` and flips `sortDir` if key matches
 - `sledMultiBarData` → grouped CPU/Mem/Disk bars per sled
-- `allCpuSeries` / `allMemSeries` → full 90-day window for `LineChart` context/brush
+- `allCpuSeries` / `allMemSeries` → full 90-day window for `ChartLine` context/brush
 
 **Global singleton state** (module-level in `useDashboard.ts`):
 - `liveSamples` — reactive copy of `metricSamples`, appended to in live mode
@@ -45,7 +45,7 @@ Dev server defaults to port 3002 (`devServer.port` in `nuxt.config.ts`; `npm run
 - All chart components are wrapped in `ClientOnly` in `index.vue`
 - Chart colors map semantically: chart-1 = CPU (green), chart-2 = memory (sky), chart-3 = disk (amber), chart-4 = network (violet)
 - Axis text uses `var(--font-mono)`
-- `LineChart` supports `fullData`/`fullData2` props for the context minimap + D3 brushX
+- `ChartLine` supports `fullData`/`fullData2` props for the context minimap + D3 brushX
 
 ### Data
 - Infrastructure data lives in `app/data/analytics.ts`
@@ -58,10 +58,10 @@ Dev server defaults to port 3002 (`devServer.port` in `nuxt.config.ts`; `npm run
 ## Patterns
 
 ### Command Palette
-`Ctrl+K` / `⌘K` opens the palette. `?` opens shortcuts view. `AppNav` has a search hint button. `CommandPalette.vue` is mounted inside `index.vue` and emits: `select-instance`, `set-period`, `toggle-view`, `toggle-live`.
+`Ctrl+K` / `⌘K` opens the palette. `?` opens shortcuts view. `App/Nav.vue` has a search hint button. `App/CommandPalette.vue` (`<AppCommandPalette>`) is mounted inside `index.vue` and emits: `select-instance`, `set-period`, `toggle-view`, `toggle-live`.
 
 ### Keyboard shortcuts (global)
-Registered via `useEventListener` in `CommandPalette.vue` (Ctrl+K, ?) and `index.vue` (R, L, ←, →).
+Registered via `useEventListener` in `App/CommandPalette.vue` (Ctrl+K, ?) and `index.vue` (R, L, ←, →).
 
 | Key | Action |
 |-----|--------|
@@ -73,27 +73,38 @@ Registered via `useEventListener` in `CommandPalette.vue` (Ctrl+K, ?) and `index
 | `←` `→` | Change time period |
 
 ### Toast notifications
-`useToast().addToast(message, type, duration?)` from any component. `AppToast.vue` is mounted in `app.vue` via `<Teleport to="body">`.
+`useToast().addToast(message, type, duration?)` from any component. `App/Toast.vue` (`<AppToast>`) is mounted in `app.vue` via `<Teleport to="body">`.
 
 ### Instance detail drawer
-`InstanceDrawer.vue` receives `:instance` from `index.vue`'s `selectedInstance` ref. Opened by clicking a table row, clicking an instance chip in rack view, or selecting from the command palette.
+`Instance/Drawer.vue` (`<InstanceDrawer>`) receives `:instance` from `index.vue`'s `selectedInstance` ref. Opened by clicking a table row, clicking an instance chip in rack view, or selecting from the command palette.
 
 ### Rack topology view
-`RackTopology.vue` reads `instances` + `sledUsage` from `analytics.ts`. Toggle between `instancesView = 'table' | 'rack'` in `index.vue` header controls. Keyboard shortcut `R`.
+`Instance/RackTopology.vue` (`<InstanceRackTopology>`) reads `instances` + `sledUsage` from `analytics.ts`. Toggle between `instancesView = 'table' | 'rack'` in `index.vue` header controls. Keyboard shortcut `R`.
 
 ### Live mode
 `toggleLive()` from `useDashboard` starts/stops a `setInterval` that appends to `liveSamples`. All charts and KPIs update reactively. Keyboard shortcut `L`.
 
-### D3 brush (LineChart)
-Pass `:full-data` and `:full-data2` to `LineChart` to enable the context minimap. Brush emits `update:brush-range` with `[Date, Date] | null`. `index.vue` displays the zoomed range in the `ChartCard` description.
+### D3 brush (ChartLine)
+Pass `:full-data` and `:full-data2` to `<ChartLine>` to enable the context minimap. Brush emits `update:brush-range` with `[Date, Date] | null`. `index.vue` displays the zoomed range in the `<ChartCard>` description.
 
 ### Instance table sort
 Click a column header → `emit('sort', key)` → `useDashboard.toggleSort(key)` → reactive `filteredInstances` re-sorts.
 
+### Component naming (Nuxt auto-import)
+Subdirectory names are prepended to the component name: `Chart/Bar.vue` → `<ChartBar>`. Follow this convention when adding new components.
+
+| Directory | Convention | Example |
+|-----------|------------|---------|
+| `App/` | App chrome | `App/Nav.vue` → `<AppNav>` |
+| `Chart/` | Chart primitives | `Chart/Bar.vue` → `<ChartBar>` |
+| `Dashboard/` | Dashboard composites | `Dashboard/Header.vue` → `<DashboardHeader>` |
+| `Instance/` | Instance UI | `Instance/Drawer.vue` → `<InstanceDrawer>` |
+| root | Shared utilities | `StatusBadge.vue` → `<StatusBadge>` |
+
 ### Adding a new chart
-1. Create a component in `app/components/` following existing chart patterns
+1. Create a component in `app/components/Chart/` following existing chart patterns
 2. Wire data through `useDashboard.ts`
-3. Add inside `ChartCard` + `ClientOnly` in `index.vue`
+3. Add inside `<ChartCard>` + `<ClientOnly>` in `index.vue`
 
 ### Instance states
 Use `<StatusBadge :status="inst.state" />` anywhere you need to display instance health. States: `running` (pulsing green dot), `starting` (pulsing amber dot), `stopped` (static gray dot), `faulted` (static red dot).

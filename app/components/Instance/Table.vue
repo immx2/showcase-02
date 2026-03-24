@@ -97,7 +97,7 @@ function sparklineColor(state: Instance['state']): string {
                 <span class="inst-name">{{ inst.name }}</span>
                 <span class="inst-id">{{ inst.id }}</span>
               </div>
-              <SparklineChart
+              <ChartSparkline
                 v-if="inst.state !== 'stopped' && inst.state !== 'faulted'"
                 :data="instanceSparklines[inst.id] ?? []"
                 :width="44"

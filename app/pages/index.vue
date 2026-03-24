@@ -83,7 +83,7 @@ const storageTotal = computed(() => {
 
       <!-- KPI row -->
       <section class="kpi-grid" aria-label="Key metrics">
-        <KpiCard
+          <DashboardKpiCard
           v-for="kpi in kpis"
           :key="kpi.label"
           :kpi="kpi"
@@ -97,7 +97,7 @@ const storageTotal = computed(() => {
         :description="brushDescription"
       >
         <ClientOnly>
-          <LineChart
+          <ChartLine
             v-if="!isLoading"
             :data="cpuSeries"
             :data2="memSeries"
@@ -118,7 +118,7 @@ const storageTotal = computed(() => {
       <section class="chart-row">
         <ChartCard title="Resource Utilization by Sled" description="Current period average · CPU / Mem / Disk">
           <ClientOnly>
-            <BarChart
+            <ChartBar
               v-if="!isLoading"
               :groups="sledMultiBarData"
               :format-value="(v: number) => `${v}%`"
@@ -130,7 +130,7 @@ const storageTotal = computed(() => {
 
         <ChartCard title="Storage Breakdown" :description="`${storageTotal} total allocated`">
           <ClientOnly>
-            <DonutChart
+            <ChartDonut
               v-if="!isLoading"
               :data="storageDonutData"
               :size="200"
@@ -214,7 +214,7 @@ const storageTotal = computed(() => {
 
           <div v-else key="rack">
             <ClientOnly>
-              <RackTopology @select-instance="selectedInstance = $event" />
+              <InstanceRackTopology @select-instance="selectedInstance = $event" />
               <template #fallback>
                 <SkeletonLoader height="400px" />
               </template>
@@ -229,7 +229,7 @@ const storageTotal = computed(() => {
         description="Requests per hour · last 7 days rolling average"
       >
         <ClientOnly>
-          <HeatmapChart
+          <ChartHeatmap
             v-if="!isLoading"
             :data="heatmapData"
             :height="190"
@@ -239,7 +239,7 @@ const storageTotal = computed(() => {
       </ChartCard>
     </main>
 
-    <CommandPalette
+    <AppCommandPalette
       @select-instance="selectedInstance = $event"
       @set-period="period = $event"
       @toggle-view="instancesView = instancesView === 'table' ? 'rack' : 'table'"

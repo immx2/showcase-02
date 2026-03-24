@@ -57,7 +57,7 @@ const isPositive = computed(() =>
         </span>
       </div>
       <div class="kpi-value">{{ formattedValue }}</div>
-      <SparklineChart
+      <ChartSparkline
         :data="kpi.sparkline"
         :color="isPositive ? 'var(--color-positive)' : 'var(--color-negative)'"
         :width="140"
