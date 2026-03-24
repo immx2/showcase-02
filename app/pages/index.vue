@@ -197,25 +197,29 @@ const storageTotal = computed(() => {
         </div>
 
         <Transition name="view-fade" mode="out-in">
-          <ClientOnly v-if="instancesView === 'table'" key="table">
-            <InstanceTable
-              :instances="filteredInstances"
-              :sort-key="sortKey"
-              :sort-dir="sortDir"
-              @sort="toggleSort"
-              @select="selectedInstance = $event"
-            />
-            <template #fallback>
-              <SkeletonLoader height="320px" />
-            </template>
-          </ClientOnly>
+          <div v-if="instancesView === 'table'" key="table">
+            <ClientOnly>
+              <InstanceTable
+                :instances="filteredInstances"
+                :sort-key="sortKey"
+                :sort-dir="sortDir"
+                @sort="toggleSort"
+                @select="selectedInstance = $event"
+              />
+              <template #fallback>
+                <SkeletonLoader height="320px" />
+              </template>
+            </ClientOnly>
+          </div>
 
-          <ClientOnly v-else key="rack">
-            <RackTopology @select-instance="selectedInstance = $event" />
-            <template #fallback>
-              <SkeletonLoader height="400px" />
-            </template>
-          </ClientOnly>
+          <div v-else key="rack">
+            <ClientOnly>
+              <RackTopology @select-instance="selectedInstance = $event" />
+              <template #fallback>
+                <SkeletonLoader height="400px" />
+              </template>
+            </ClientOnly>
+          </div>
         </Transition>
       </section>
 
