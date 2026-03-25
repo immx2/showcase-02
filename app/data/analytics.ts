@@ -45,7 +45,7 @@ function generateMetricSamples(): MetricSample[] {
     baseDisk = Math.min(24000, Math.max(3000, baseDisk + (rng() - 0.5) * 600))
 
     samples.push({
-      date: d.toISOString().split('T')[0],
+      date: d.toISOString().split('T')[0]!,
       cpu: Math.round(baseCpu * 10) / 10,
       mem: Math.round(baseMem * 10) / 10,
       netGbps: Math.round(baseNet * 100) / 100,

@@ -154,8 +154,7 @@ function actionFlatIdx(localIdx: number): number {
 const actionGroups = computed(() => {
   const groups: Record<string, ActionItem[]> = {}
   for (const a of filteredActions.value) {
-    if (!groups[a.category]) groups[a.category] = []
-    groups[a.category].push(a)
+    ;(groups[a.category] ??= []).push(a)
   }
   return groups
 })

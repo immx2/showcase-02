@@ -41,10 +41,6 @@ const PERIOD_DAYS: Record<Period, number> = {
   '90d': 90,
 }
 
-function avg(arr: number[]): number {
-  return arr.length ? arr.reduce((a, b) => a + b, 0) / arr.length : 0
-}
-
 function slice(metrics: MetricSample[], days: number): MetricSample[] {
   return metrics.slice(Math.max(0, metrics.length - days))
 }
@@ -63,7 +59,7 @@ const STATE_ORDER: Record<InstanceState, number> = {
 }
 
 // Live simulation state — module-level so it persists across hot reloads
-const liveSamples = ref([...metricSamples])
+const liveSamples = shallowRef<MetricSample[]>([...metricSamples])
 const isLive = ref(false)
 let liveInterval: ReturnType<typeof setInterval> | undefined
 
@@ -85,23 +81,24 @@ export function useDashboard() {
     if (isLive.value) return
     isLive.value = true
     liveInterval = setInterval(() => {
-      const last = liveSamples.value[liveSamples.value.length - 1]
+      const buf = liveSamples.value
+      const last = buf[buf.length - 1]
+      if (!last) return
       const rng = Math.random
       const newCpu  = Math.min(95, Math.max(5,    last.cpu     + (rng() - 0.48) * 6))
       const newMem  = Math.min(92, Math.max(20,   last.mem     + (rng() - 0.45) * 3))
       const newNet  = Math.min(8,  Math.max(0.2,  last.netGbps + (rng() - 0.5)  * 0.3))
       const newDisk = Math.min(30000, Math.max(2000, last.diskIops + (rng() - 0.5) * 800))
       const now = new Date()
-      liveSamples.value = [
-        ...liveSamples.value.slice(-89),
-        {
-          date:     now.toISOString().split('T')[0],
-          cpu:      Math.round(newCpu * 10) / 10,
-          mem:      Math.round(newMem * 10) / 10,
-          netGbps:  Math.round(newNet * 100) / 100,
-          diskIops: Math.round(newDisk),
-        },
-      ]
+      if (buf.length >= 90) buf.shift()
+      buf.push({
+        date:     now.toISOString().split('T')[0]!,
+        cpu:      Math.round(newCpu * 10) / 10,
+        mem:      Math.round(newMem * 10) / 10,
+        netGbps:  Math.round(newNet * 100) / 100,
+        diskIops: Math.round(newDisk),
+      })
+      triggerRef(liveSamples)
     }, 3000)
   }
 
@@ -124,7 +121,7 @@ export function useDashboard() {
     prevSlice(liveSamples.value, PERIOD_DAYS[period.value]),
   )
 
-  // KPIs
+  // KPIs (single-pass over current / previous slices for averages + sparklines)
   const kpis = computed<Kpi[]>(() => {
     const cur = filteredMetrics.value
     const prev = previousMetrics.value
@@ -132,15 +129,42 @@ export function useDashboard() {
     const runningNow = instances.filter(i => i.state === 'running').length
     const runningPrev = runningNow - 2
 
-    const curCpu = avg(cur.map(d => d.cpu))
-    const prevCpu = avg(prev.map(d => d.cpu))
+    const n = cur.length
+    let sumCpu = 0
+    let sumNet = 0
+    const sparkRunningStyle: number[] = n ? new Array(n) : []
+    const sparkCpu: number[] = n ? new Array(n) : []
+    const sparkNet: number[] = n ? new Array(n) : []
+    for (let i = 0; i < n; i++) {
+      const d = cur[i]!
+      sumCpu += d.cpu
+      sumNet += d.netGbps
+      sparkRunningStyle[i] = 18 + Math.round(d.cpu / 14)
+      sparkCpu[i] = d.cpu
+      sparkNet[i] = d.netGbps
+    }
+    const curCpu = n ? sumCpu / n : 0
+    const curNet = n ? sumNet / n : 0
 
-    const curNet = avg(cur.map(d => d.netGbps))
-    const prevNet = avg(prev.map(d => d.netGbps))
+    const pn = prev.length
+    let prevSumCpu = 0
+    let prevSumNet = 0
+    for (let i = 0; i < pn; i++) {
+      const d = prev[i]!
+      prevSumCpu += d.cpu
+      prevSumNet += d.netGbps
+    }
+    const prevCpu = pn ? prevSumCpu / pn : 0
+    const prevNet = pn ? prevSumNet / pn : 0
 
-    // Total storage in GiB
     const totalGib = storageBreakdown.reduce((s, d) => s + d.gib, 0)
     const prevTotalGib = totalGib * 0.91
+    const sparkStorage: number[] = n ? new Array(n) : []
+    if (n) {
+      for (let i = 0; i < n; i++) {
+        sparkStorage[i] = prevTotalGib + ((totalGib - prevTotalGib) * i / n)
+      }
+    }
 
     return [
       {
@@ -149,7 +173,7 @@ export function useDashboard() {
         previousValue: runningPrev,
         format: 'number',
         trend: runningPrev ? ((runningNow - runningPrev) / runningPrev) * 100 : 0,
-        sparkline: cur.map(d => 18 + Math.round(d.cpu / 14)),
+        sparkline: sparkRunningStyle,
       },
       {
         label: 'Avg CPU Util',
@@ -157,7 +181,7 @@ export function useDashboard() {
         previousValue: prevCpu,
         format: 'percent',
         trend: prevCpu ? ((curCpu - prevCpu) / prevCpu) * 100 : 0,
-        sparkline: cur.map(d => d.cpu),
+        sparkline: sparkCpu,
       },
       {
         label: 'Network Throughput',
@@ -165,7 +189,7 @@ export function useDashboard() {
         previousValue: prevNet,
         format: 'throughput',
         trend: prevNet ? ((curNet - prevNet) / prevNet) * 100 : 0,
-        sparkline: cur.map(d => d.netGbps),
+        sparkline: sparkNet,
         unit: 'Gbps',
       },
       {
@@ -174,7 +198,7 @@ export function useDashboard() {
         previousValue: prevTotalGib,
         format: 'bytes',
         trend: prevTotalGib ? ((totalGib - prevTotalGib) / prevTotalGib) * 100 : 0,
-        sparkline: cur.map((_, i) => prevTotalGib + ((totalGib - prevTotalGib) * i / cur.length)),
+        sparkline: sparkStorage,
       },
     ]
   })

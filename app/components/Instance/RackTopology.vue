@@ -2,6 +2,16 @@
 import { instances, sledUsage } from '~/data/analytics'
 import type { Instance, SledUsage } from '~/data/analytics'
 
+const instancesBySled = (() => {
+  const m = new Map<string, Instance[]>()
+  for (const inst of instances) {
+    const list = m.get(inst.sledId)
+    if (list) list.push(inst)
+    else m.set(inst.sledId, [inst])
+  }
+  return m
+})()
+
 const emit = defineEmits<{
   'select-instance': [instance: Instance]
 }>()
@@ -14,7 +24,7 @@ interface SledRow {
 
 const sledRows = computed<SledRow[]>(() =>
   sledUsage.map(s => {
-    const sledInsts = instances.filter(i => i.sledId === s.sled)
+    const sledInsts = instancesBySled.get(s.sled) ?? []
     const level: SledRow['healthLevel'] =
       sledInsts.some(i => i.state === 'faulted') ? 'crit'
       : s.cpuPct >= 80 || s.memPct >= 88 ? 'warn'

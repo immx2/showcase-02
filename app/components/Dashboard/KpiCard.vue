@@ -2,13 +2,18 @@
 import type { Kpi } from '~/composables/useDashboard'
 import { useAnimatedCounter } from '~/composables/useAnimatedCounter'
 
-const props = defineProps<{
+const props = withDefaults(defineProps<{
   kpi: Kpi
   loading?: boolean
-}>()
+  /** When true (live mode), numeric display snaps without RAF animation. */
+  live?: boolean
+}>(), {
+  live: false,
+})
 
 const target = computed(() => props.kpi.value)
-const animated = useAnimatedCounter(target)
+const snap = toRef(props, 'live')
+const animated = useAnimatedCounter(target, 600, snap)
 
 const formattedValue = computed(() => {
   const v = animated.value

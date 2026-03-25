@@ -27,7 +27,11 @@ export default defineNuxtConfig({
   },
   vite: {
     optimizeDeps: {
-      include: ['d3'],
+      include: [
+        'd3',
+        '@vue/devtools-core',
+        '@vue/devtools-kit',
+      ],
     },
   },
 })

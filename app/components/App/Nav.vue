@@ -4,7 +4,6 @@ const { open: openPalette } = useCommandPalette()
 
 function setMode(pref: 'system' | 'light' | 'dark') {
   colorMode.preference = pref
-  document.documentElement.setAttribute('data-color-pref', pref)
 }
 </script>
 

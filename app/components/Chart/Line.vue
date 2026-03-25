@@ -169,6 +169,54 @@ const periodX2 = computed(() => {
   return last ? ctxXScale.value(last.date) : innerWidth.value
 })
 
+// Stable fingerprints so we do not watch D3 scale identities (new object every tick).
+function maxValueInSeries(pts: Pt[]): number {
+  let m = 0
+  for (const p of pts) {
+    if (p.value > m) m = p.value
+  }
+  return m
+}
+
+const focusAxisFingerprint = computed(() => {
+  const p = parsed.value
+  const p2 = parsed2.value
+  const br = brushRange.value
+  return [
+    innerWidth.value,
+    p.length,
+    p[0]?.date ?? '',
+    p[p.length - 1]?.date ?? '',
+    Math.max(maxValueInSeries(p), maxValueInSeries(p2)),
+    br ? `${+br[0]},${+br[1]}` : '',
+  ].join('|')
+})
+
+const ctxBrushFingerprint = computed(() => {
+  const fp = fullParsed.value
+  const fp2 = fullParsed2.value
+  return [
+    innerWidth.value,
+    fp.length,
+    fp[0]?.date ?? '',
+    fp[fp.length - 1]?.date ?? '',
+    Math.max(maxValueInSeries(fp), maxValueInSeries(fp2)),
+  ].join('|')
+})
+
+let chartRaf = 0
+let chartNeedsBrush = false
+function scheduleChartUpdate(needsBrush: boolean) {
+  if (needsBrush) chartNeedsBrush = true
+  if (chartRaf) return
+  chartRaf = requestAnimationFrame(() => {
+    chartRaf = 0
+    renderAxes()
+    if (chartNeedsBrush && hasContext.value) initBrush()
+    chartNeedsBrush = false
+  })
+}
+
 // ── Brush init ────────────────────────────────────────────────────────────────
 
 function initBrush() {
@@ -259,26 +307,26 @@ onMounted(() => {
   initBrush()
 })
 
-watch([focusXScale, focusYScale], renderAxes)
-watch(ctxXScale, () => {
-  renderAxes()
-  initBrush()
-})
-watch(innerWidth, () => {
-  renderAxes()
-  initBrush()
+watch(focusAxisFingerprint, () => scheduleChartUpdate(false))
+watch(ctxBrushFingerprint, () => scheduleChartUpdate(true))
+
+onUnmounted(() => {
+  if (chartRaf) {
+    cancelAnimationFrame(chartRaf)
+    chartRaf = 0
+  }
 })
 
 // ── Tooltip ───────────────────────────────────────────────────────────────────
 
 const tooltip = reactive({ show: false, x: 0, y: 0, date: '', value: '', value2: '' })
-const bisector = d3.bisector<Pt, Date>(d => d.date).left
+const bisectDate = d3.bisector<Pt, Date>(d => d.date).left
 
 function onMouseMove(e: MouseEvent) {
   const rect = (e.currentTarget as SVGRectElement).getBoundingClientRect()
   const mx   = e.clientX - rect.left
   const date = focusXScale.value.invert(mx)
-  const idx  = Math.min(bisector(parsed.value, date), parsed.value.length - 1)
+  const idx  = Math.min(bisectDate(parsed.value, date), parsed.value.length - 1)
   const d    = parsed.value[idx]
   if (!d) return
 

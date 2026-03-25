@@ -88,6 +88,7 @@ const storageTotal = computed(() => {
           :key="kpi.label"
           :kpi="kpi"
           :loading="isLoading"
+          :live="isLive"
         />
       </section>
 
@@ -146,38 +147,7 @@ const storageTotal = computed(() => {
         <div class="instances-header">
           <h2 id="instances-heading" class="instances-title">Instances</h2>
           <div class="instances-controls">
-            <!-- View toggle -->
-            <div class="view-toggle" role="group" aria-label="View mode">
-              <button
-                :class="{ active: instancesView === 'table' }"
-                aria-pressed="true"
-                title="Table view (R)"
-                @click="instancesView = 'table'"
-              >
-                <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">
-                  <rect x="1" y="2" width="10" height="2" rx="0.5" fill="currentColor"/>
-                  <rect x="1" y="5" width="10" height="2" rx="0.5" fill="currentColor"/>
-                  <rect x="1" y="8" width="10" height="2" rx="0.5" fill="currentColor"/>
-                </svg>
-                Table
-              </button>
-              <button
-                :class="{ active: instancesView === 'rack' }"
-                aria-pressed="false"
-                title="Rack view (R)"
-                @click="instancesView = 'rack'"
-              >
-                <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">
-                  <rect x="1" y="1" width="10" height="4" rx="1" stroke="currentColor" stroke-width="1.2"/>
-                  <rect x="1" y="7" width="10" height="4" rx="1" stroke="currentColor" stroke-width="1.2"/>
-                  <rect x="2.5" y="2.5" width="2" height="1" rx="0.3" fill="currentColor"/>
-                  <rect x="2.5" y="8.5" width="2" height="1" rx="0.3" fill="currentColor"/>
-                </svg>
-                Rack
-              </button>
-            </div>
-
-            <!-- Project filter (table only) -->
+            <!-- Project filter (table only) — toggle stays to the right when this hides in rack view -->
             <div
               v-show="instancesView === 'table'"
               class="project-filter"
@@ -191,6 +161,36 @@ const storageTotal = computed(() => {
                 @click="selectedProject = p.value"
               >
                 {{ p.label }}
+              </button>
+            </div>
+
+            <div class="view-toggle" role="group" aria-label="View mode">
+              <button
+                :class="{ active: instancesView === 'table' }"
+                :aria-pressed="instancesView === 'table'"
+                title="Table view (R)"
+                @click="instancesView = 'table'"
+              >
+                <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">
+                  <rect x="1" y="2" width="10" height="2" rx="0.5" fill="currentColor"/>
+                  <rect x="1" y="5" width="10" height="2" rx="0.5" fill="currentColor"/>
+                  <rect x="1" y="8" width="10" height="2" rx="0.5" fill="currentColor"/>
+                </svg>
+                Table
+              </button>
+              <button
+                :class="{ active: instancesView === 'rack' }"
+                :aria-pressed="instancesView === 'rack'"
+                title="Rack view (R)"
+                @click="instancesView = 'rack'"
+              >
+                <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">
+                  <rect x="1" y="1" width="10" height="4" rx="1" stroke="currentColor" stroke-width="1.2"/>
+                  <rect x="1" y="7" width="10" height="4" rx="1" stroke="currentColor" stroke-width="1.2"/>
+                  <rect x="2.5" y="2.5" width="2" height="1" rx="0.3" fill="currentColor"/>
+                  <rect x="2.5" y="8.5" width="2" height="1" rx="0.3" fill="currentColor"/>
+                </svg>
+                Rack
               </button>
             </div>
           </div>

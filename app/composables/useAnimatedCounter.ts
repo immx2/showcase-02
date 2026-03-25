@@ -1,9 +1,21 @@
-export function useAnimatedCounter(target: Ref<number>, duration = 600) {
+export function useAnimatedCounter(
+  target: Ref<number>,
+  duration = 600,
+  /** When true, skip easing and snap to the target (e.g. live metric ticks). */
+  snap?: Ref<boolean>,
+) {
   const display = ref(target.value)
   let rafId: number | null = null
 
+  function cancelRaf() {
+    if (rafId !== null) {
+      cancelAnimationFrame(rafId)
+      rafId = null
+    }
+  }
+
   function animate(from: number, to: number) {
-    if (rafId !== null) cancelAnimationFrame(rafId)
+    cancelRaf()
     const diff = to - from
     if (Math.abs(diff) < 0.01) {
       display.value = to
@@ -29,6 +41,11 @@ export function useAnimatedCounter(target: Ref<number>, duration = 600) {
   }
 
   watch(target, (newVal, oldVal) => {
+    if (snap?.value) {
+      cancelRaf()
+      display.value = newVal
+      return
+    }
     animate(oldVal ?? 0, newVal)
   })
 
@@ -37,7 +54,7 @@ export function useAnimatedCounter(target: Ref<number>, duration = 600) {
   })
 
   onUnmounted(() => {
-    if (rafId !== null) cancelAnimationFrame(rafId)
+    cancelRaf()
   })
 
   return display
