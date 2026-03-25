@@ -31,7 +31,8 @@ export default defineNuxtConfig({
         'd3',
         '@vue/devtools-core',
         '@vue/devtools-kit',
-      ],
-    },
-  },
+        '@immx2/portfolio-nav',
+      ]
+    }
+  }
 })

@@ -51,12 +51,6 @@ function setMode(pref: 'system' | 'light' | 'dark') {
         </button>
       </div>
 
-      <a href="http://immanuel-s.vercel.app" class="back-link" target="_blank" rel="noopener">
-        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
-          <path d="M8.5 2.5L4 7l4.5 4.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-        Portfolio
-      </a>
     </div>
   </nav>
 </template>
@@ -122,19 +116,6 @@ function setMode(pref: 'system' | 'light' | 'dark') {
 
 .mode-pill button:not(.active):hover {
   background: var(--color-surface-2);
-  color: var(--color-text);
-}
-
-.back-link {
-  display: flex;
-  align-items: center;
-  gap: var(--space-2);
-  font-size: var(--text-xs);
-  color: var(--color-text-muted);
-  transition: color var(--duration-fast);
-}
-
-.back-link:hover {
   color: var(--color-text);
 }
 

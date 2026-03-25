@@ -10,6 +10,7 @@
     "postinstall": "nuxt prepare"
   },
   "dependencies": {
+    "@immx2/portfolio-nav": "^0.1.0",
     "@nuxt/fonts": "^0.14.0",
     "@nuxtjs/color-mode": "^4.0.0",
     "@vueuse/nuxt": "^14.2.1",
