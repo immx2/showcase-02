@@ -10,7 +10,7 @@ function setMode(pref: 'system' | 'light' | 'dark') {
 <template>
   <nav class="nav">
     <span class="brand">
-      oxide
+      oxide-inspired
       <span class="brand-slash" aria-hidden="true">/</span>
       console
     </span>
