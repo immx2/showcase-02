@@ -135,7 +135,7 @@ onMounted(() => {
     <div
       v-if="tooltip.show"
       class="tooltip"
-      :style="{ left: `${tooltip.x}px`, top: `${tooltip.y}px` }"
+      :style="{ left: `clamp(72px, ${tooltip.x}px, calc(100% - 72px))`, top: `${tooltip.y}px` }"
     >
       {{ tooltip.content }}
     </div>

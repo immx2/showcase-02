@@ -32,11 +32,17 @@ const emit = defineEmits<{
   'update:brushRange': [range: [Date, Date] | null]
 }>()
 
-const containerRef = ref<HTMLElement>()
-const xAxisRef    = ref<SVGGElement>()
-const yAxisRef    = ref<SVGGElement>()
-const ctxXAxisRef = ref<SVGGElement>()
+const containerRef  = ref<HTMLElement>()
+const xAxisRef      = ref<SVGGElement>()
+const yAxisRef      = ref<SVGGElement>()
+const ctxXAxisRef   = ref<SVGGElement>()
 const brushGroupRef = ref<SVGGElement>()
+// Refs to focus-chart path elements so we can update them imperatively during
+// brush drag without going through Vue's reactivity system at all.
+const linePathEl  = ref<SVGPathElement>()
+const areaPathEl  = ref<SVGPathElement>()
+const line2PathEl = ref<SVGPathElement>()
+const area2PathEl = ref<SVGPathElement>()
 
 const { width: cw } = useElementSize(containerRef)
 const uid         = useId()
@@ -86,18 +92,23 @@ const fullParsed2 = computed(() =>
   props.fullData2?.map(d => ({ date: new Date(d.date), value: d.value })) ?? parsed2.value,
 )
 
+// When a brush range is active, show the full dataset in the focus chart so
+// dragging left past the period boundary reveals real data instead of blank space.
+const focusParsed  = computed(() => brushRange.value ? fullParsed.value  : parsed.value)
+const focusParsed2 = computed(() => brushRange.value ? fullParsed2.value : parsed2.value)
+
 // ── Brush state ──────────────────────────────────────────────────────────────
 
 const brushRange = ref<[Date, Date] | null>(null)
+// Non-reactive mirror updated every drag tick; brushRange is only set on 'end'.
+let liveRange: [Date, Date] | null = null
 
 function clearBrush() {
+  liveRange = null
   brushRange.value = null
   emit('update:brushRange', null)
-  if (brushGroupRef.value) {
-    d3.select(brushGroupRef.value).call(
-      d3.brushX().extent([[0, 0], [innerWidth.value, CTX_H]]).move,
-      null,
-    )
+  if (brushGroupRef.value && brushInstance) {
+    d3.select(brushGroupRef.value).call(brushInstance.move, [periodX1.value, periodX2.value] as [number, number])
   }
 }
 
@@ -111,8 +122,8 @@ const focusXScale = computed(() => {
 
 const focusYScale = computed(() => {
   const allValues = [
-    ...parsed.value.map(d => d.value),
-    ...parsed2.value.map(d => d.value),
+    ...focusParsed.value.map(d => d.value),
+    ...focusParsed2.value.map(d => d.value),
   ]
   return d3.scaleLinear()
     .domain([0, (d3.max(allValues) ?? 100) * 1.08])
@@ -151,10 +162,10 @@ function buildArea(series: Pt[], xs: d3.ScaleTime<number, number>, ys: d3.ScaleL
   return d3.area<Pt>().x(d => xs(d.date)).y0(h).y1(d => ys(d.value)).curve(d3.curveMonotoneX)(series) ?? ''
 }
 
-const linePath  = computed(() => buildLine(parsed.value,  focusXScale.value, focusYScale.value, focusHeight.value))
-const areaPath  = computed(() => buildArea(parsed.value,  focusXScale.value, focusYScale.value, focusHeight.value))
-const line2Path = computed(() => parsed2.value.length ? buildLine(parsed2.value, focusXScale.value, focusYScale.value, focusHeight.value) : '')
-const area2Path = computed(() => parsed2.value.length ? buildArea(parsed2.value, focusXScale.value, focusYScale.value, focusHeight.value) : '')
+const linePath  = computed(() => buildLine(focusParsed.value,  focusXScale.value, focusYScale.value, focusHeight.value))
+const areaPath  = computed(() => buildArea(focusParsed.value,  focusXScale.value, focusYScale.value, focusHeight.value))
+const line2Path = computed(() => focusParsed2.value.length ? buildLine(focusParsed2.value, focusXScale.value, focusYScale.value, focusHeight.value) : '')
+const area2Path = computed(() => focusParsed2.value.length ? buildArea(focusParsed2.value, focusXScale.value, focusYScale.value, focusHeight.value) : '')
 
 const ctxLinePath  = computed(() => buildLine(fullParsed.value,  ctxXScale.value, ctxYScale.value, CTX_H))
 const ctxLine2Path = computed(() => fullParsed2.value.length ? buildLine(fullParsed2.value, ctxXScale.value, ctxYScale.value, CTX_H) : '')
@@ -179,8 +190,8 @@ function maxValueInSeries(pts: Pt[]): number {
 }
 
 const focusAxisFingerprint = computed(() => {
-  const p = parsed.value
-  const p2 = parsed2.value
+  const p = focusParsed.value
+  const p2 = focusParsed2.value
   const br = brushRange.value
   return [
     innerWidth.value,
@@ -201,11 +212,16 @@ const ctxBrushFingerprint = computed(() => {
     fp[0]?.date ?? '',
     fp[fp.length - 1]?.date ?? '',
     Math.max(maxValueInSeries(fp), maxValueInSeries(fp2)),
+    // Include period extent so initBrush re-runs when period changes
+    periodX1.value.toFixed(1),
+    periodX2.value.toFixed(1),
   ].join('|')
 })
 
 let chartRaf = 0
 let chartNeedsBrush = false
+let brushRaf = 0
+let brushInstance: d3.BrushBehavior<unknown> | null = null
 function scheduleChartUpdate(needsBrush: boolean) {
   if (needsBrush) chartNeedsBrush = true
   if (chartRaf) return
@@ -222,25 +238,41 @@ function scheduleChartUpdate(needsBrush: boolean) {
 function initBrush() {
   if (!brushGroupRef.value || !hasContext.value || innerWidth.value <= 0) return
 
-  const brush = d3.brushX<unknown>()
+  brushInstance = d3.brushX<unknown>()
     .extent([[0, 0], [innerWidth.value, CTX_H]])
+    .on('brush', (event: d3.D3BrushEvent<unknown>) => {
+      // Ignore programmatic moves (sourceEvent is null)
+      if (!event.sourceEvent || !event.selection) return
+      if (brushRaf) return
+      // Capture selection coords at event time (they change on the next move)
+      const sel = event.selection as [number, number]
+      brushRaf = requestAnimationFrame(() => {
+        brushRaf = 0
+        liveRange = [ctxXScale.value.invert(sel[0]), ctxXScale.value.invert(sel[1])]
+        // Imperative D3 update — no reactive state touched, no Vue re-render.
+        applyPaths(liveRange)
+      })
+    })
     .on('end', (event: d3.D3BrushEvent<unknown>) => {
+      // Ignore programmatic moves
+      if (!event.sourceEvent) return
       if (!event.selection) {
+        if (brushRaf) { cancelAnimationFrame(brushRaf); brushRaf = 0 }
+        liveRange = null
         brushRange.value = null
         emit('update:brushRange', null)
         return
       }
       const [x0, x1] = event.selection as [number, number]
-      const newRange: [Date, Date] = [
-        ctxXScale.value.invert(x0),
-        ctxXScale.value.invert(x1),
-      ]
-      brushRange.value = newRange
-      emit('update:brushRange', newRange)
+      const range: [Date, Date] = [ctxXScale.value.invert(x0), ctxXScale.value.invert(x1)]
+      liveRange = range
+      // One reactive update on release — Vue re-renders once to sync committed state.
+      brushRange.value = range
+      emit('update:brushRange', range)
     })
 
   const g = d3.select(brushGroupRef.value)
-  g.call(brush)
+  g.call(brushInstance)
 
   // Style the brush
   g.select<SVGRectElement>('.selection')
@@ -253,6 +285,39 @@ function initBrush() {
   g.selectAll<SVGRectElement, unknown>('.handle')
     .attr('fill', 'var(--color-accent)')
     .attr('rx', 2)
+
+  // Set initial position (programmatic — won't trigger brushRange update)
+  // Restore existing selection if any, otherwise default to the current period extent
+  const defaultSel: [number, number] = brushRange.value
+    ? [ctxXScale.value(brushRange.value[0]), ctxXScale.value(brushRange.value[1])]
+    : [periodX1.value, periodX2.value]
+  g.call(brushInstance.move, defaultSel)
+}
+
+// ── Imperative path update (used during live brush drag) ──────────────────────
+
+function applyPaths(range: [Date, Date] | null) {
+  if (!linePathEl.value || !areaPathEl.value || innerWidth.value <= 0) return
+
+  const fp  = range ? fullParsed.value  : parsed.value
+  const fp2 = range ? fullParsed2.value : parsed2.value
+  const domain = range ?? (d3.extent(fp, d => d.date) as [Date, Date])
+  const xs = d3.scaleTime().domain(domain).range([0, innerWidth.value])
+  const allVals = [...fp.map(d => d.value), ...fp2.map(d => d.value)]
+  const ys = d3.scaleLinear()
+    .domain([0, (d3.max(allVals) ?? 100) * 1.08])
+    .range([focusHeight.value, 0])
+    .nice()
+
+  linePathEl.value.setAttribute('d', buildLine(fp, xs, ys, focusHeight.value))
+  areaPathEl.value.setAttribute('d', buildArea(fp, xs, ys, focusHeight.value))
+  if (fp2.length && line2PathEl.value && area2PathEl.value) {
+    line2PathEl.value.setAttribute('d', buildLine(fp2, xs, ys, focusHeight.value))
+    area2PathEl.value.setAttribute('d', buildArea(fp2, xs, ys, focusHeight.value))
+  }
+  // Axes are intentionally NOT updated during drag — renderAxes() triggers
+  // cloneNode + style recalculation which is the dominant perf cost (see profile).
+  // The watcher calls renderAxes() once on 'end' when brushRange.value is committed.
 }
 
 // ── Axes ──────────────────────────────────────────────────────────────────────
@@ -281,13 +346,17 @@ function renderAxes() {
         .tickPadding(8),
     )
     .call(g => g.select('.domain').remove())
-    .call(g =>
+    .call((g) => {
+      // Remove previously cloned grid lines before re-cloning to prevent
+      // accumulation across calls (D3's data join doesn't track these orphans).
+      g.selectAll('.grid-line').remove()
       g.selectAll('.tick line')
         .clone()
+        .classed('grid-line', true)
         .attr('x2', innerWidth.value)
         .attr('stroke', 'var(--color-border-subtle)')
-        .attr('stroke-opacity', 0.6),
-    )
+        .attr('stroke-opacity', 0.6)
+    })
 
   if (ctxXAxisRef.value && hasContext.value) {
     d3.select(ctxXAxisRef.value)
@@ -311,10 +380,8 @@ watch(focusAxisFingerprint, () => scheduleChartUpdate(false))
 watch(ctxBrushFingerprint, () => scheduleChartUpdate(true))
 
 onUnmounted(() => {
-  if (chartRaf) {
-    cancelAnimationFrame(chartRaf)
-    chartRaf = 0
-  }
+  if (chartRaf) { cancelAnimationFrame(chartRaf); chartRaf = 0 }
+  if (brushRaf) { cancelAnimationFrame(brushRaf); brushRaf = 0 }
 })
 
 // ── Tooltip ───────────────────────────────────────────────────────────────────
@@ -326,8 +393,10 @@ function onMouseMove(e: MouseEvent) {
   const rect = (e.currentTarget as SVGRectElement).getBoundingClientRect()
   const mx   = e.clientX - rect.left
   const date = focusXScale.value.invert(mx)
-  const idx  = Math.min(bisectDate(parsed.value, date), parsed.value.length - 1)
-  const d    = parsed.value[idx]
+  const fp   = focusParsed.value
+  const fp2  = focusParsed2.value
+  const idx  = Math.min(bisectDate(fp, date), fp.length - 1)
+  const d    = fp[idx]
   if (!d) return
 
   tooltip.show   = true
@@ -335,7 +404,7 @@ function onMouseMove(e: MouseEvent) {
   tooltip.y      = focusYScale.value(d.value) + margin.top
   tooltip.date   = d3.timeFormat('%b %d, %Y')(d.date)
   tooltip.value  = props.formatValue(d.value)
-  tooltip.value2 = parsed2.value[idx] ? props.formatValue(parsed2.value[idx].value) : ''
+  tooltip.value2 = fp2[idx] ? props.formatValue(fp2[idx].value) : ''
 }
 
 function onMouseLeave() { tooltip.show = false }
@@ -391,12 +460,12 @@ const brushLabel = computed(() => {
         <g ref="xAxisRef" class="axis" :transform="`translate(0,${focusHeight})`" />
 
         <g :clip-path="`url(#${clipId})`">
-          <path :d="areaPath" :fill="`url(#${gradientId})`" />
-          <path :d="linePath" fill="none" :stroke="color" stroke-width="1.5" class="line-path" />
+          <path ref="areaPathEl" :d="areaPath" :fill="`url(#${gradientId})`" />
+          <path ref="linePathEl" :d="linePath" fill="none" :stroke="color" stroke-width="1.5" class="line-path" />
 
           <template v-if="data2 && data2.length">
-            <path :d="area2Path" :fill="`url(#${gradient2Id})`" />
-            <path :d="line2Path" fill="none" :stroke="color2" stroke-width="1.5" stroke-dasharray="4 3" class="line-path" />
+            <path ref="area2PathEl" :d="area2Path" :fill="`url(#${gradient2Id})`" />
+            <path ref="line2PathEl" :d="line2Path" fill="none" :stroke="color2" stroke-width="1.5" stroke-dasharray="4 3" class="line-path" />
           </template>
         </g>
 
@@ -453,7 +522,7 @@ const brushLabel = computed(() => {
     <div
       v-if="tooltip.show"
       class="tooltip"
-      :style="{ left: `${tooltip.x}px`, top: `${tooltip.y - 12}px` }"
+      :style="{ left: `clamp(72px, ${tooltip.x}px, calc(100% - 72px))`, top: `${tooltip.y - 12}px` }"
     >
       <span class="tooltip-date">{{ tooltip.date }}</span>
       <span class="tooltip-row">
