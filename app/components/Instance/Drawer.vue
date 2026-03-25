@@ -10,6 +10,9 @@ const emit = defineEmits<{
   close: []
 }>()
 
+/** Keep in sync with `assets/styles/_tokens.css` (`--duration-base`). Used so leave transitions finish before unmount. */
+const drawerTransitionMs = 180
+
 const { addToast } = useToast()
 
 // Close on Escape
@@ -115,7 +118,7 @@ const memSparkline = computed(() =>
 
 <template>
   <Teleport to="body">
-    <Transition name="drawer">
+    <Transition name="drawer" :duration="drawerTransitionMs">
       <div v-if="instance" class="drawer-wrap">
         <!-- Scrim -->
         <div class="drawer-scrim" aria-hidden="true" @click="emit('close')" />
