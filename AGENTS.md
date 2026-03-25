@@ -3,9 +3,7 @@
 > Update this file in the same commit as the code change it describes.
 
 ## Intent
-An Oxide-inspired cloud infrastructure console — the second showcase project for the portfolio at `../my-portfolio`. Built to demonstrate UX thinking for technical users and systems-level design, specifically targeting Oxide Computer's design and engineering standards.
-
-Built as a standalone Nuxt 4 app. The design system is intentionally distinct from the portfolio's; don't borrow styles or tokens from `../my-portfolio`.
+An Oxide-inspired cloud infrastructure console built to demonstrate UX thinking for technical users and systems-level design. Built as a standalone Nuxt 4 app with a purpose-built design system — dark teal-black aesthetic, dense and keyboard-first.
 
 Dev server defaults to port 3002 (`devServer.port` in `nuxt.config.ts`; `npm run dev`).
 
@@ -110,6 +108,6 @@ Subdirectory names are prepended to the component name: `Chart/Bar.vue` → `<Ch
 Use `<StatusBadge :status="inst.state" />` anywhere you need to display instance health. States: `running` (pulsing green dot), `starting` (pulsing amber dot), `stopped` (static gray dot), `faulted` (static red dot).
 
 ## Boundaries
-- This app is standalone — don't reach into `../my-portfolio` or `../showcase-01` for anything
+- This app is standalone — no shared code or styles from other repos
 - No Tailwind
 - Prefer `var(--font-mono)` for any number or technical string shown to users
