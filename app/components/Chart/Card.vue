@@ -27,6 +27,7 @@ defineProps<{
   flex-direction: column;
   gap: var(--space-4);
   transition: border-color var(--duration-base);
+  min-width: 0;
 }
 
 .chart-card:hover {

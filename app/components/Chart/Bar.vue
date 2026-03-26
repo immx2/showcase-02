@@ -222,6 +222,11 @@ function onBarLeave() {
   width: 100%;
 }
 
+.bar-chart-wrap svg {
+  max-width: 100%;
+  display: block;
+}
+
 .bar-chart-wrap :deep(.axis text) {
   fill: var(--color-text-muted);
   font-size: var(--text-xs);

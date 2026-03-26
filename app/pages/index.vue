@@ -414,8 +414,13 @@ const storageTotal = computed(() => {
     padding: var(--space-4);
   }
 
-  .kpi-grid,
   .chart-row {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 420px) {
+  .kpi-grid {
     grid-template-columns: 1fr;
   }
 }

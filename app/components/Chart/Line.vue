@@ -434,7 +434,7 @@ const brushLabel = computed(() => {
           <svg width="10" height="10" viewBox="0 0 10 10" fill="none" aria-hidden="true">
             <path d="M1 1l8 8M9 1L1 9" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
           </svg>
-          {{ brushLabel }} — Reset zoom
+          Reset zoom
         </button>
       </Transition>
     </div>
@@ -608,6 +608,7 @@ const brushLabel = computed(() => {
   color: var(--color-accent);
   font-family: var(--font-mono);
   font-size: 11px;
+  white-space: nowrap;
   cursor: pointer;
   transition: background var(--duration-fast);
 }

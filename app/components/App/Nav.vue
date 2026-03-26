@@ -151,4 +151,10 @@ function setMode(pref: 'system' | 'light' | 'dark') {
   color: var(--color-text-muted);
   line-height: 1.4;
 }
+
+@media (max-width: 768px) {
+  .nav {
+    padding: 0 var(--space-4);
+  }
+}
 </style>
