@@ -24,6 +24,8 @@ const props = withDefaults(defineProps<{
   formatValue?: (v: number) => string
   height?: number
 }>(), {
+  data: undefined,
+  groups: undefined,
   height: 260,
   formatValue: (v: number) => `${v}%`,
 })

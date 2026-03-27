@@ -22,6 +22,10 @@ const props = withDefaults(defineProps<{
   formatValue?: (v: number) => string
   height?: number
 }>(), {
+  data2: undefined,
+  fullData: undefined,
+  fullData2: undefined,
+  seriesMeta: undefined,
   color: 'var(--chart-1)',
   color2: 'var(--chart-2)',
   height: 260,
@@ -54,7 +58,6 @@ const clipId      = computed(() => `line-clip-${uid}`)
 const CTX_H   = 28 // context inner height
 const CTX_GAP = 10 // gap between focus x-axis and context chart
 const CTX_BOT = 20 // space for context x-axis
-const CTX_TOTAL = CTX_H + CTX_GAP + CTX_BOT
 
 const hasContext = computed(() => !!props.fullData?.length)
 
@@ -154,7 +157,7 @@ const ctxYScale = computed(() => {
 
 type Pt = { date: Date; value: number }
 
-function buildLine(series: Pt[], xs: d3.ScaleTime<number, number>, ys: d3.ScaleLinear<number, number>, h: number) {
+function buildLine(series: Pt[], xs: d3.ScaleTime<number, number>, ys: d3.ScaleLinear<number, number>, _h: number) {
   return d3.line<Pt>().x(d => xs(d.date)).y(d => ys(d.value)).curve(d3.curveMonotoneX)(series) ?? ''
 }
 
@@ -408,13 +411,6 @@ function onMouseMove(e: MouseEvent) {
 }
 
 function onMouseLeave() { tooltip.show = false }
-
-// Brush date label
-const brushLabel = computed(() => {
-  if (!brushRange.value) return ''
-  const fmt = d3.timeFormat('%b %d')
-  return `${fmt(brushRange.value[0])} – ${fmt(brushRange.value[1])}`
-})
 </script>
 
 <template>

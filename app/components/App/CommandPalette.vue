@@ -242,7 +242,7 @@ const stateColors: Record<string, string> = {
                 <div v-if="actions.length" class="palette-section">
                   <div class="section-label">{{ category }}</div>
                   <button
-                    v-for="(action, i) in actions"
+                    v-for="action in actions"
                     :key="action.id"
                     :class="['result-row', { active: activeIndex === actionFlatIdx(filteredActions.indexOf(action)) }]"
                     @mouseenter="activeIndex = actionFlatIdx(filteredActions.indexOf(action))"

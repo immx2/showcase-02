@@ -205,7 +205,7 @@ export function useDashboard() {
 
   // Instance table: filter then sort
   const filteredInstances = computed(() => {
-    let rows = selectedProject.value === 'all'
+    const rows = selectedProject.value === 'all'
       ? instances
       : instances.filter(i => i.project === selectedProject.value)
 

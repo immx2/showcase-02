@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { Period } from '~/composables/useDashboard'
 
-const props = defineProps<{
+defineProps<{
   period: Period
   isLive: boolean
 }>()

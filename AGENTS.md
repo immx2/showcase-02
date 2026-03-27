@@ -7,6 +7,9 @@ An Oxide-inspired cloud infrastructure console built to demonstrate UX thinking 
 
 Dev server defaults to port 3002 (`devServer.port` in `nuxt.config.ts`; `npm run dev`).
 
+## Linting & Typecheck
+Run `npm run lint && npm run typecheck` after editing any `.ts` files or `<script>` blocks in `.vue` files, and always before committing. Fix all errors before committing.
+
 ## Conventions
 
 ### State
