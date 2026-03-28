@@ -11,6 +11,7 @@ export default defineNuxtConfig({
   },
   app: {
     head: {
+      meta: [{ name: 'darkreader-lock', content: 'true' }],
       script: [{
         key: 'color-pref-init',
         innerHTML: `(function(){try{var p=localStorage.getItem('showcase-color-mode')||'system';document.documentElement.setAttribute('data-color-pref',p)}catch(e){}})()`,
