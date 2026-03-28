@@ -27,12 +27,19 @@
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
 
   /* ── Type scale ───────────────────────────────────────────── */
+
   /*    xs   → tiny metadata: IDs, secondary annotations        */
+
   /*    sm   → descriptions, axis ticks, table metadata         */
+
   /*    base → body text, table rows, general UI                */
+
   /*    md   → slightly prominent labels                        */
+
   /*    lg   → section headings                                 */
+
   /*    xl   → KPI values, display numbers                      */
+
   /*    2xl  → large display                                    */
   --text-xs:   11px;
   --text-sm:   12px;
@@ -45,26 +52,29 @@
   /* ── Font stacks ──────────────────────────────────────────── */
   --font-sans:    'Inter', system-ui, -apple-system, sans-serif;
   --font-display: 'Montserrat', system-ui, -apple-system, sans-serif;
-  --font-mono:    'JetBrains Mono', ui-monospace, 'Cascadia Code', Menlo, Consolas, monospace;
+  --font-mono:    'JetBrains Mono', ui-monospace, 'Cascadia Code', menlo, consolas, monospace;
 
   /* ── Chart colors — infrastructure-semantic ──────────────── */
-  /*    chart-1 = CPU      (green hue 163.7 — Oxide green match) */
-  /*    chart-2 = memory   (sky)                                  */
-  /*    chart-3 = disk     (amber)                                */
-  /*    chart-4 = network  (violet)                               */
-  --chart-1: oklch(0.812 0.155 163.7);
-  --chart-2: oklch(0.752 0.130 221);
-  --chart-3: oklch(0.778 0.152 55);
-  --chart-4: oklch(0.723 0.155 288);
-  --chart-5: oklch(0.726 0.156 345);
-  --chart-6: oklch(0.858 0.172 92);
 
-  --chart-1-muted: oklch(0.812 0.155 163.7 / 0.19);
-  --chart-2-muted: oklch(0.752 0.130 221   / 0.19);
-  --chart-3-muted: oklch(0.778 0.152 55    / 0.19);
-  --chart-4-muted: oklch(0.723 0.155 288   / 0.19);
-  --chart-5-muted: oklch(0.726 0.156 345   / 0.19);
-  --chart-6-muted: oklch(0.858 0.172 92    / 0.19);
+  /*    chart-1 = CPU      (green hue 163.7 — Oxide green match) */
+
+  /*    chart-2 = memory   (sky)                                  */
+
+  /*    chart-3 = disk     (amber)                                */
+
+  /*    chart-4 = network  (violet)                               */
+  --chart-1: oklch(81.2% 0.155 163.7deg);
+  --chart-2: oklch(75.2% 0.130 221deg);
+  --chart-3: oklch(77.8% 0.152 55deg);
+  --chart-4: oklch(72.3% 0.155 288deg);
+  --chart-5: oklch(72.6% 0.156 345deg);
+  --chart-6: oklch(85.8% 0.172 92deg);
+  --chart-1-muted: oklch(81.2% 0.155 163.7deg / 19%);
+  --chart-2-muted: oklch(75.2% 0.130 221deg   / 19%);
+  --chart-3-muted: oklch(77.8% 0.152 55deg    / 19%);
+  --chart-4-muted: oklch(72.3% 0.155 288deg   / 19%);
+  --chart-5-muted: oklch(72.6% 0.156 345deg   / 19%);
+  --chart-6-muted: oklch(85.8% 0.172 92deg    / 19%);
 }
 
 /* ── Mono label utilities — Oxide-aligned ─────────────────────

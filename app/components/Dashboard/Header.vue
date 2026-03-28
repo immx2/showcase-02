@@ -145,7 +145,7 @@ const periods: { value: Period; label: string }[] = [
   width: 6px;
   height: 6px;
   border-radius: 50%;
-  background: currentColor;
+  background: currentcolor;
   flex-shrink: 0;
   transition: background var(--duration-fast);
 }
@@ -158,7 +158,7 @@ const periods: { value: Period; label: string }[] = [
   font-family: var(--font-mono);
   font-size: 10px;
   padding: 1px 4px;
-  border: 1px solid currentColor;
+  border: 1px solid currentcolor;
   border-radius: 3px;
   opacity: 0.6;
   line-height: 1.4;

@@ -499,7 +499,7 @@ function utilizationClass(pct: number): string {
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
   padding: var(--space-3);
-  box-shadow: 0 8px 24px rgb(0 0 0 / 0.18);
+  box-shadow: 0 8px 24px rgb(0 0 0 / 18%);
   min-width: 180px;
   pointer-events: none;
 }

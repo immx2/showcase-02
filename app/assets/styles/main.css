@@ -1,2 +1,2 @@
-@import './_tokens.css';
-@import './_global.css';
+@import url('./_tokens.css');
+@import url('./_global.css');

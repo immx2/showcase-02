@@ -279,7 +279,7 @@ const memSparkline = computed(() =>
 .drawer-scrim {
   position: absolute;
   inset: 0;
-  background: rgb(0 0 0 / 0.35);
+  background: rgb(0 0 0 / 35%);
   pointer-events: auto;
 }
 
@@ -478,13 +478,13 @@ const memSparkline = computed(() =>
   transition: background var(--duration-fast), color var(--duration-fast);
 }
 
-.action-btn:hover:not(:disabled) {
-  background: var(--color-surface-2);
-}
-
 .action-btn:disabled {
   opacity: 0.4;
   cursor: not-allowed;
+}
+
+.action-btn:hover:not(:disabled) {
+  background: var(--color-surface-2);
 }
 
 .action-btn.primary {

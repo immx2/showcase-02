@@ -305,7 +305,8 @@ const storageTotal = computed(() => {
   flex-wrap: wrap;
 }
 
-/* View toggle (Table / Rack) */
+/* Project filter pill / View toggle — shared button styles */
+.project-filter,
 .view-toggle {
   display: flex;
   align-items: center;
@@ -315,10 +316,8 @@ const storageTotal = computed(() => {
   overflow: hidden;
 }
 
+.project-filter button,
 .view-toggle button {
-  display: flex;
-  align-items: center;
-  gap: var(--space-2);
   height: 100%;
   padding: 0 var(--space-3);
   border: none;
@@ -332,15 +331,24 @@ const storageTotal = computed(() => {
   white-space: nowrap;
 }
 
+.view-toggle button {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.project-filter button + button,
 .view-toggle button + button {
   border-left: 1px solid var(--color-border);
 }
 
+.project-filter button.active,
 .view-toggle button.active {
   background: var(--color-active-bg);
   color: var(--color-active-text);
 }
 
+.project-filter button:not(.active):hover,
 .view-toggle button:not(.active):hover {
   background: var(--color-surface-2);
   color: var(--color-text);
@@ -351,44 +359,6 @@ const storageTotal = computed(() => {
   font-size: var(--text-base);
   font-weight: 600;
   letter-spacing: -0.01em;
-}
-
-/* Project filter pill */
-.project-filter {
-  display: flex;
-  align-items: center;
-  height: 28px;
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
-  overflow: hidden;
-}
-
-.project-filter button {
-  height: 100%;
-  padding: 0 var(--space-3);
-  border: none;
-  background: transparent;
-  color: var(--color-text-muted);
-  font-size: var(--text-xs);
-  font-weight: 500;
-  font-family: var(--font-mono);
-  cursor: pointer;
-  transition: background var(--duration-fast), color var(--duration-fast);
-  white-space: nowrap;
-}
-
-.project-filter button + button {
-  border-left: 1px solid var(--color-border);
-}
-
-.project-filter button.active {
-  background: var(--color-active-bg);
-  color: var(--color-active-text);
-}
-
-.project-filter button:not(.active):hover {
-  background: var(--color-surface-2);
-  color: var(--color-text);
 }
 
 /* View transition */
@@ -403,13 +373,13 @@ const storageTotal = computed(() => {
 }
 
 /* Responsive */
-@media (max-width: 1100px) {
+@media (width <= 1100px) {
   .kpi-grid {
     grid-template-columns: repeat(2, 1fr);
   }
 }
 
-@media (max-width: 768px) {
+@media (width <= 768px) {
   .dashboard-content {
     padding: var(--space-4);
   }
@@ -419,7 +389,7 @@ const storageTotal = computed(() => {
   }
 }
 
-@media (max-width: 420px) {
+@media (width <= 420px) {
   .kpi-grid {
     grid-template-columns: 1fr;
   }

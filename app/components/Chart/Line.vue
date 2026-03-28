@@ -617,7 +617,7 @@ function onMouseLeave() { tooltip.show = false }
 .line-chart-wrap :deep(.brush-group .overlay) {
   fill: var(--color-border-subtle);
   fill-opacity: 0.3;
-  rx: 2;
+  rx: 2px;
   cursor: crosshair;
 }
 
@@ -644,7 +644,7 @@ function onMouseLeave() { tooltip.show = false }
   display: flex;
   flex-direction: column;
   gap: 3px;
-  box-shadow: 0 4px 12px rgb(0 0 0 / 0.15);
+  box-shadow: 0 4px 12px rgb(0 0 0 / 15%);
   z-index: 10;
 }
 

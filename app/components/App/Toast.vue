@@ -47,7 +47,7 @@ const { toasts } = useToast()
   font-size: var(--text-sm);
   font-family: var(--font-mono);
   color: var(--color-text);
-  box-shadow: 0 8px 24px rgb(0 0 0 / 0.18);
+  box-shadow: 0 8px 24px rgb(0 0 0 / 18%);
   white-space: nowrap;
   pointer-events: auto;
 }

@@ -176,7 +176,7 @@ onMounted(() => {
   font-family: var(--font-mono);
   font-size: var(--text-sm);
   white-space: nowrap;
-  box-shadow: 0 4px 12px rgb(0 0 0 / 0.12);
+  box-shadow: 0 4px 12px rgb(0 0 0 / 12%);
   z-index: 10;
 }
 </style>

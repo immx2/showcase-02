@@ -152,7 +152,7 @@ function setMode(pref: 'system' | 'light' | 'dark') {
   line-height: 1.4;
 }
 
-@media (max-width: 768px) {
+@media (width <= 768px) {
   .nav {
     padding: 0 var(--space-4);
   }

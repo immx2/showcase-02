@@ -8,38 +8,38 @@
    ───────────────────────────────────────────────────────────────────────── */
 :root {
   /* Neutrals — light (hue 260) */
-  --palette-neutral-50:  oklch(0.985 0.000 260);
-  --palette-neutral-100: oklch(0.969 0.001 260);
-  --palette-neutral-200: oklch(0.924 0.003 260);
-  --palette-neutral-300: oklch(0.853 0.004 260);
-  --palette-neutral-500: oklch(0.694 0.007 260);
-  --palette-neutral-600: oklch(0.551 0.011 260);
-  --palette-neutral-700: oklch(0.421 0.011 260);
-  --palette-neutral-900: oklch(0.099 0.003 260);
-  --palette-white:       oklch(1.000 0.000   0);
+  --palette-neutral-50:  oklch(98.5% 0.000 260deg);
+  --palette-neutral-100: oklch(96.9% 0.001 260deg);
+  --palette-neutral-200: oklch(92.4% 0.003 260deg);
+  --palette-neutral-300: oklch(85.3% 0.004 260deg);
+  --palette-neutral-500: oklch(69.4% 0.007 260deg);
+  --palette-neutral-600: oklch(55.1% 0.011 260deg);
+  --palette-neutral-700: oklch(42.1% 0.011 260deg);
+  --palette-neutral-900: oklch(9.9% 0.003 260deg);
+  --palette-white:       oklch(100% 0.000   0deg);
 
   /* Teal — dark (hue 205, Oxide console dark aesthetic) */
-  --palette-teal-0:   oklch(0.090 0.018 205);
-  --palette-teal-50:  oklch(0.145 0.025 205);
-  --palette-teal-100: oklch(0.185 0.025 205);
-  --palette-teal-150: oklch(0.175 0.022 208);
-  --palette-teal-200: oklch(0.220 0.030 205);
-  --palette-teal-500: oklch(0.488 0.048 205);
-  --palette-teal-600: oklch(0.668 0.045 200);
-  --palette-teal-900: oklch(0.954 0.012 195);
+  --palette-teal-0:   oklch(9% 0.018 205deg);
+  --palette-teal-50:  oklch(14.5% 0.025 205deg);
+  --palette-teal-100: oklch(18.5% 0.025 205deg);
+  --palette-teal-150: oklch(17.5% 0.022 208deg);
+  --palette-teal-200: oklch(22% 0.030 205deg);
+  --palette-teal-500: oklch(48.8% 0.048 205deg);
+  --palette-teal-600: oklch(66.8% 0.045 200deg);
+  --palette-teal-900: oklch(95.4% 0.012 195deg);
 
   /* Green (hue 163.7 — exact Oxide --color-green-* hue) */
-  --palette-green-600: oklch(0.627 0.171 163.7);
-  --palette-green-700: oklch(0.736 0.179 163.7);
-  --palette-green-800: oklch(0.812 0.155 163.7);
+  --palette-green-600: oklch(62.7% 0.171 163.7deg);
+  --palette-green-700: oklch(73.6% 0.179 163.7deg);
+  --palette-green-800: oklch(81.2% 0.155 163.7deg);
 
   /* Red (hue 22 — Oxide --color-red-* aligned) */
-  --palette-red-600: oklch(0.647 0.212 22);
-  --palette-red-700: oklch(0.704 0.175 22);
+  --palette-red-600: oklch(64.7% 0.212 22deg);
+  --palette-red-700: oklch(70.4% 0.175 22deg);
 
   /* Amber (hue 62–75 — Oxide --color-yellow-* aligned) */
-  --palette-amber-600: oklch(0.672 0.162 62);
-  --palette-amber-700: oklch(0.809 0.170 75);
+  --palette-amber-600: oklch(67.2% 0.162 62deg);
+  --palette-amber-700: oklch(80.9% 0.170 75deg);
 }
 
 /* ─────────────────────────────────────────────────────────────────────────
@@ -52,14 +52,11 @@
   --surface-raise:     var(--palette-white);
   --surface-secondary: var(--palette-neutral-200);
   --surface-selected:  var(--palette-neutral-700);
-
   --content-default:   var(--palette-neutral-900);
   --content-secondary: var(--palette-neutral-600);
   --content-selected:  var(--palette-neutral-50);
-
   --stroke-default:    var(--palette-neutral-300);
   --stroke-subtle:     var(--palette-neutral-200);
-
   --content-accent:    var(--palette-green-600);
   --content-success:   var(--palette-green-700);
   --content-notice:    var(--palette-amber-600);
@@ -76,14 +73,11 @@
   --surface-raise:     var(--palette-teal-50);
   --surface-secondary: var(--palette-teal-100);
   --surface-selected:  var(--palette-teal-200);
-
   --content-default:   var(--palette-teal-900);
   --content-secondary: var(--palette-teal-600);
   --content-selected:  var(--palette-teal-900);
-
   --stroke-default:    var(--palette-teal-200);
   --stroke-subtle:     var(--palette-teal-150);
-
   --content-accent:    var(--palette-green-800);
   --content-success:   var(--palette-green-800);
   --content-notice:    var(--palette-amber-700);
@@ -107,15 +101,12 @@
   --color-border-subtle:   var(--stroke-subtle);
   --color-active-bg:       var(--surface-selected);
   --color-active-text:     var(--content-selected);
-
   --color-status-running:  var(--content-success);
   --color-status-starting: var(--content-notice);
   --color-status-stopped:  var(--content-stopped);
   --color-status-faulted:  var(--content-error);
-
   --color-positive:        var(--content-success);
   --color-negative:        var(--content-error);
-
   --nav-height: 48px;
 }
 

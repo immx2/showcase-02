@@ -281,7 +281,7 @@ const stateColors: Record<string, string> = {
   position: fixed;
   inset: 0;
   z-index: 8000;
-  background: rgb(0 0 0 / 0.55);
+  background: rgb(0 0 0 / 55%);
   backdrop-filter: blur(2px);
   display: flex;
   align-items: flex-start;
@@ -295,7 +295,7 @@ const stateColors: Record<string, string> = {
   background: var(--color-surface);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-xl);
-  box-shadow: 0 24px 64px rgb(0 0 0 / 0.32), 0 0 0 1px var(--color-border-subtle);
+  box-shadow: 0 24px 64px rgb(0 0 0 / 32%), 0 0 0 1px var(--color-border-subtle);
   overflow: hidden;
 }
 

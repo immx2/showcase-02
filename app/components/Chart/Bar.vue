@@ -287,7 +287,7 @@ function onBarLeave() {
   flex-direction: column;
   align-items: center;
   gap: 2px;
-  box-shadow: 0 4px 12px rgb(0 0 0 / 0.08);
+  box-shadow: 0 4px 12px rgb(0 0 0 / 8%);
   z-index: 10;
 }
 
