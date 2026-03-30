@@ -30,7 +30,10 @@ const brushDescription = computed(() => {
   return `Zoomed: ${fmt(brushRange.value[0])} – ${fmt(brushRange.value[1])} · % used`
 })
 
-useHead({ title: 'Rack 01 — Oxide Infrastructure Console' })
+useHead({ title: 'SaaS Cloud Console' })
+
+const isMounted = ref(false)
+onMounted(() => { isMounted.value = true })
 
 const selectedInstance = ref<Instance | null>(null)
 const instancesView = ref<'table' | 'rack'>('table')
@@ -83,11 +86,12 @@ const storageTotal = computed(() => {
 
       <!-- KPI row -->
       <section class="kpi-grid" aria-label="Key metrics">
-          <DashboardKpiCard
-          v-for="kpi in kpis"
+        <DashboardKpiCard
+          v-for="(kpi, i) in kpis"
           :key="kpi.label"
           :kpi="kpi"
-          :loading="isLoading"
+          :index="i"
+          :loading="!isMounted || isLoading"
           :live="isLive"
         />
       </section>

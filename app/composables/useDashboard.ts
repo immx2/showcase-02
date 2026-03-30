@@ -89,7 +89,9 @@ export function useDashboard() {
       const newMem  = Math.min(92, Math.max(20,   last.mem     + (rng() - 0.45) * 3))
       const newNet  = Math.min(8,  Math.max(0.2,  last.netGbps + (rng() - 0.5)  * 0.3))
       const newDisk = Math.min(30000, Math.max(2000, last.diskIops + (rng() - 0.5) * 800))
-      const now = new Date()
+      const prevDate = new Date(last.date)
+      prevDate.setDate(prevDate.getDate() + 1)
+      const now = prevDate
       if (buf.length >= 90) buf.shift()
       buf.push({
         date:     now.toISOString().split('T')[0]!,
