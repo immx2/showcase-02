@@ -1,8 +1,9 @@
-const isOpen = ref(false)
-
 export function useSidebar() {
+  const isOpen = useState<boolean>('sidebar.isOpen', () => false)
+
   function open() { isOpen.value = true }
   function close() { isOpen.value = false }
   function toggle() { isOpen.value = !isOpen.value }
-  return { isOpen: readonly(isOpen), open, close, toggle }
+
+  return { isOpen, open, close, toggle }
 }
