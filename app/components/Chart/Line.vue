@@ -540,6 +540,10 @@ function onMouseLeave() { tooltip.show = false }
   width: 100%;
 }
 
+.line-chart-wrap svg {
+  display: block;
+}
+
 .line-chart-wrap :deep(.axis text) {
   fill: var(--color-text-muted);
   font-size: var(--text-xs);
@@ -558,7 +562,7 @@ function onMouseLeave() { tooltip.show = false }
   align-items: center;
   justify-content: space-between;
   margin-bottom: var(--space-3);
-  min-height: 20px;
+  min-height: 22px;
 }
 
 /* Legend */

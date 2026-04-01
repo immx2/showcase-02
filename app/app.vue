@@ -19,8 +19,11 @@ watch(
   <div class="app-shell">
     <NuxtRouteAnnouncer />
     <PortfolioNav current="showcase-02" />
-    <div class="page-slot">
-      <NuxtPage />
+    <div class="console-shell">
+      <AppSidebar />
+      <div class="page-slot">
+        <NuxtPage />
+      </div>
     </div>
     <AppToast />
   </div>
@@ -34,8 +37,38 @@ watch(
   overflow: hidden;
 }
 
+.console-shell {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: row;
+}
+
 .page-slot {
   flex: 1;
   min-height: 0;
+  overflow: hidden;
+  position: relative;
+}
+
+.page-slot::before,
+.page-slot::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 24px;
+  pointer-events: none;
+  z-index: 10;
+}
+
+.page-slot::after {
+  top: 0;
+  background: linear-gradient(to bottom, var(--color-bg), transparent);
+}
+
+.page-slot::before {
+  bottom: 0;
+  background: linear-gradient(to top, var(--color-bg), transparent);
 }
 </style>

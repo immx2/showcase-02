@@ -56,6 +56,31 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+/* ── Page transitions ────────────────────────────────────────────────────── */
+
+.page-enter-active,
+.page-leave-active {
+  transition: opacity 180ms var(--ease-out), transform 180ms var(--ease-out);
+}
+
+.page-enter-from {
+  opacity: 0;
+  transform: translateY(6px);
+}
+
+.page-leave-to {
+  opacity: 0;
+  transform: translateY(-4px);
+}
+
+/* ── Third-party component overrides ──────────────────────────────────────── */
+
+/* PortfolioNav reads --color-bg for its backdrop; remap it to the card surface
+   so the bar blends with the console toolbar / sidebar background. */
+.pf-nav {
+  --color-bg: var(--surface-raise);
+}
+
 a {
   color: inherit;
   text-decoration: none;

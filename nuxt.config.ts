@@ -10,6 +10,7 @@ export default defineNuxtConfig({
     classSuffix: '',
   },
   app: {
+    pageTransition: { name: 'page', mode: 'out-in' },
     head: {
       meta: [{ name: 'darkreader-lock', content: 'true' }],
       script: [{
