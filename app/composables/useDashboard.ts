@@ -69,9 +69,11 @@ export function useDashboard() {
   const sortKey = ref<SortKey>('cpuPct')
   const sortDir = ref<SortDir>('desc')
   const isLoading = ref(false)
+  const hasLoaded = ref(false)
 
   let loadTimer: ReturnType<typeof setTimeout> | undefined
   watch(period, () => {
+    if (!hasLoaded.value) return
     isLoading.value = true
     clearTimeout(loadTimer)
     loadTimer = setTimeout(() => { isLoading.value = false }, 350)
@@ -277,6 +279,7 @@ export function useDashboard() {
     sortKey,
     sortDir,
     isLoading,
+    hasLoaded,
     isLive: readonly(isLive),
     kpis,
     filteredInstances,

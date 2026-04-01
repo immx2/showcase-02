@@ -38,7 +38,7 @@ const formattedValue = computed(() => {
 
 const trendFormatted = computed(() => {
   const t = props.kpi!.trend
-  return `${t >= 0 ? '+' : ''}${t.toFixed(1)}%`
+  return `${Math.abs(t).toFixed(1)}%`
 })
 
 const isPositive = computed(() =>

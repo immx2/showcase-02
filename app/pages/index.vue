@@ -7,7 +7,7 @@ const {
   selectedProject,
   sortKey,
   sortDir,
-  isLoading,
+  hasLoaded,
   isLive,
   kpis,
   filteredInstances,
@@ -33,7 +33,10 @@ const brushDescription = computed(() => {
 useHead({ title: 'SaaS Cloud Console' })
 
 const isMounted = ref(false)
-onMounted(() => { isMounted.value = true })
+onMounted(() => {
+  isMounted.value = true
+  hasLoaded.value = true
+})
 
 const selectedInstance = ref<Instance | null>(null)
 const instancesView = ref<'table' | 'rack'>('table')
@@ -91,7 +94,7 @@ const storageTotal = computed(() => {
           :key="kpi.label"
           :kpi="kpi"
           :index="i"
-          :loading="!isMounted || isLoading"
+          :loading="!isMounted"
           :live="isLive"
         />
       </section>
@@ -103,7 +106,7 @@ const storageTotal = computed(() => {
       >
         <ClientOnly>
           <ChartLine
-            v-if="!isLoading"
+            v-if="isMounted"
             :data="cpuSeries"
             :data2="memSeries"
             :full-data="allCpuSeries"
@@ -124,7 +127,7 @@ const storageTotal = computed(() => {
         <ChartCard title="Resource Utilization by Sled" description="Current period average · CPU / Mem / Disk">
           <ClientOnly>
             <ChartBar
-              v-if="!isLoading"
+              v-if="isMounted"
               :groups="sledMultiBarData"
               :format-value="(v: number) => `${v}%`"
               :height="240"
@@ -136,7 +139,7 @@ const storageTotal = computed(() => {
         <ChartCard title="Storage Breakdown" :description="`${storageTotal} total allocated`">
           <ClientOnly>
             <ChartDonut
-              v-if="!isLoading"
+              v-if="isMounted"
               :data="storageDonutData"
               :size="200"
               :format-center="(t: number) => t >= 1024 ? `${(t / 1024).toFixed(0)} TiB` : `${t} GiB`"
@@ -234,7 +237,7 @@ const storageTotal = computed(() => {
       >
         <ClientOnly>
           <ChartHeatmap
-            v-if="!isLoading"
+            v-if="isMounted"
             :data="heatmapData"
             :height="190"
           />
@@ -297,7 +300,6 @@ const storageTotal = computed(() => {
 .instances-header {
   display: flex;
   align-items: center;
-  justify-content: space-between;
   gap: var(--space-4);
   flex-wrap: wrap;
 }
@@ -307,6 +309,16 @@ const storageTotal = computed(() => {
   align-items: center;
   gap: var(--space-3);
   flex-wrap: wrap;
+  justify-content: flex-end;
+  margin-left: auto;
+}
+
+@media (width <= 480px) {
+  .instances-controls {
+    flex-direction: column-reverse;
+    align-items: flex-end;
+    gap: var(--space-2);
+  }
 }
 
 /* Project filter pill / View toggle — shared button styles */
