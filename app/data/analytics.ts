@@ -166,6 +166,37 @@ export const sledUsage: SledUsage[] = [
   { sled: 'sled-06', cpuPct: 56, memPct: 63, diskPct: 54, color: 'var(--chart-6)' },
 ]
 
+// ─── Per-sled metric time-series (90 days, aligned with metricSamples) ───────
+
+export interface SledMetricSample {
+  cpuPct: number
+  memPct: number
+  diskPct: number
+}
+
+function generateSledSeries(sled: SledUsage): SledMetricSample[] {
+  const rng = mulberry32(hashStr(sled.sled))
+  const samples: SledMetricSample[] = []
+  let cpu  = sled.cpuPct  * (0.78 + rng() * 0.18)
+  let mem  = sled.memPct  * (0.80 + rng() * 0.15)
+  let disk = sled.diskPct * (0.85 + rng() * 0.10)
+  for (let i = 0; i < 90; i++) {
+    cpu  = Math.min(99, Math.max(1, cpu  + (rng() - 0.48) * 5))
+    mem  = Math.min(99, Math.max(1, mem  + (rng() - 0.45) * 3))
+    disk = Math.min(99, Math.max(1, disk + (rng() - 0.49) * 1.5))
+    samples.push({
+      cpuPct:  Math.round(cpu  * 10) / 10,
+      memPct:  Math.round(mem  * 10) / 10,
+      diskPct: Math.round(disk * 10) / 10,
+    })
+  }
+  return samples
+}
+
+export const sledMetricSeries: Record<string, SledMetricSample[]> = Object.fromEntries(
+  sledUsage.map(s => [s.sled, generateSledSeries(s)]),
+)
+
 // ─── Storage breakdown ────────────────────────────────────────────────────
 
 export interface StorageBreakdown {
@@ -180,6 +211,28 @@ export const storageBreakdown: StorageBreakdown[] = [
   { label: 'OS images',   gib: 3072,  color: 'var(--chart-3)' },
   { label: 'Reserved',    gib: 2048,  color: 'var(--chart-4)' },
 ]
+
+// ─── Storage history (90 days, ends at current storageBreakdown total) ────────
+
+export interface StorageSample {
+  totalGib: number
+}
+
+function generateStorageHistory(): StorageSample[] {
+  const total = storageBreakdown.reduce((s, d) => s + d.gib, 0)
+  const rng = mulberry32(23)
+  const samples: StorageSample[] = []
+  let current = total * 0.80
+  const dailyTarget = (total - current) / 90
+  for (let i = 0; i < 89; i++) {
+    current = Math.min(total, current + dailyTarget * (0.3 + rng() * 1.4))
+    samples.push({ totalGib: Math.round(current) })
+  }
+  samples.push({ totalGib: total })
+  return samples
+}
+
+export const storageHistory: StorageSample[] = generateStorageHistory()
 
 // ─── Heatmap (API request rate) ───────────────────────────────────────────
 

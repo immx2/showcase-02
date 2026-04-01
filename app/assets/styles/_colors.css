@@ -16,12 +16,14 @@
    --color-text-more-muted:oklch(68% 0.020 var(--hue));
 
    /* from oxide console */
+   --color-bg-dark-blue:   oklch(16.24% 0.0098 255.66deg);
    --color-text-bright:    oklch(90% 0.0001 260deg);
    --color-text:           oklch(79% 0.0011 260deg);
    --color-text-muted:     oklch(60.6% 0.0031 260deg);
-   --color-bg-green: oklch(24% 0.0722 183.7deg);
    --color-green: oklch(77% .1919 163.7deg);
-   --color-bg-dark-blue:   oklch(16.24% 0.0098 255.66deg); /* oxide console */
+
+   /* from oxide.computer */
+   --color-bg-green: oklch(24% 0.0722 183.7deg);
 
     /* Neutrals — light (hue 260) */
     --palette-neutral-50:  oklch(98.5% 0.000 260deg);
@@ -111,7 +113,7 @@
     --surface-default:   var(--color-bg-dark-green);
     --surface-raise:     var(--color-bg-card);
     --surface-secondary: var(--color-bg-card-2); /* behind search K, bg pills in table/rack, hover bg, skele shimmer */
-    --surface-selected:  var(--palette-teal-200); /* all selected things bg */
+    --surface-selected:  var(--palette-teal-200); /* all selected pills bg */
     --content-default:   var(--color-text-bright);
     --content-secondary: var(--color-text-more-muted);
     --content-selected:  var(--palette-teal-900);

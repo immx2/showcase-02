@@ -2,7 +2,9 @@ import {
   metricSamples,
   instances,
   sledUsage,
+  sledMetricSeries,
   storageBreakdown,
+  storageHistory,
   heatmapData,
   type MetricSample,
   type InstanceState,
@@ -161,14 +163,11 @@ export function useDashboard() {
     const prevCpu = pn ? prevSumCpu / pn : 0
     const prevNet = pn ? prevSumNet / pn : 0
 
-    const totalGib = storageBreakdown.reduce((s, d) => s + d.gib, 0)
-    const prevTotalGib = totalGib * 0.91
-    const sparkStorage: number[] = n ? new Array(n) : []
-    if (n) {
-      for (let i = 0; i < n; i++) {
-        sparkStorage[i] = prevTotalGib + ((totalGib - prevTotalGib) * i / n)
-      }
-    }
+    const days = PERIOD_DAYS[period.value]
+    const storageWindow = storageHistory.slice(Math.max(0, storageHistory.length - days))
+    const totalGib = storageHistory[storageHistory.length - 1]!.totalGib
+    const prevTotalGib = storageHistory[Math.max(0, storageHistory.length - 1 - days)]!.totalGib
+    const sparkStorage = storageWindow.map(s => s.totalGib)
 
     return [
       {
@@ -254,20 +253,24 @@ export function useDashboard() {
     liveSamples.value.map(d => ({ date: d.date, value: d.mem })),
   )
 
-  const sledBarData = computed(() =>
-    sledUsage.map(s => ({ label: s.sled, value: s.cpuPct, color: s.color })),
-  )
-
-  const sledMultiBarData = computed<BarGroup[]>(() =>
-    sledUsage.map(s => ({
-      label: s.sled,
-      values: [
-        { key: 'CPU',  value: s.cpuPct,  color: 'var(--chart-1)' },
-        { key: 'Mem',  value: s.memPct,  color: 'var(--chart-2)' },
-        { key: 'Disk', value: s.diskPct, color: 'var(--chart-3)' },
-      ],
-    })),
-  )
+  const sledMultiBarData = computed<BarGroup[]>(() => {
+    const days = PERIOD_DAYS[period.value]
+    return sledUsage.map(s => {
+      const series = sledMetricSeries[s.sled] ?? []
+      const window = series.slice(Math.max(0, series.length - days))
+      const n = window.length || 1
+      let sumCpu = 0, sumMem = 0, sumDisk = 0
+      for (const d of window) { sumCpu += d.cpuPct; sumMem += d.memPct; sumDisk += d.diskPct }
+      return {
+        label: s.sled,
+        values: [
+          { key: 'CPU',  value: Math.round(sumCpu  / n * 10) / 10, color: 'var(--chart-1)' },
+          { key: 'Mem',  value: Math.round(sumMem  / n * 10) / 10, color: 'var(--chart-2)' },
+          { key: 'Disk', value: Math.round(sumDisk / n * 10) / 10, color: 'var(--chart-3)' },
+        ],
+      }
+    })
+  })
 
   const storageDonutData = computed(() =>
     storageBreakdown.map(s => ({ label: s.label, value: s.gib, color: s.color })),
@@ -289,7 +292,6 @@ export function useDashboard() {
     memSeries,
     allCpuSeries,
     allMemSeries,
-    sledBarData,
     sledMultiBarData,
     storageDonutData,
     heatmapData,
