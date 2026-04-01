@@ -13,6 +13,16 @@ watch(
   },
   { immediate: true },
 )
+
+const route = useRoute()
+const { isOpen: sidebarOpen, toggle: toggleSidebar, close: closeSidebar } = useSidebar()
+const { open: openPalette } = useCommandPalette()
+
+watch(() => route.path, () => closeSidebar())
+
+watch(sidebarOpen, (open) => {
+  if (import.meta.client) document.body.style.overflow = open ? 'hidden' : ''
+})
 </script>
 
 <template>
@@ -20,9 +30,30 @@ watch(
     <NuxtRouteAnnouncer />
     <PortfolioNav current="showcase-02" />
     <div class="console-shell">
-      <AppSidebar />
-      <div class="page-slot">
-        <NuxtPage />
+      <header class="mobile-header" aria-label="Mobile navigation">
+        <button class="hamburger" :aria-expanded="sidebarOpen" aria-label="Open navigation" @click="toggleSidebar">
+          <svg width="16" height="12" viewBox="0 0 16 12" fill="none" aria-hidden="true">
+            <line x1="0" y1="1"  x2="16" y2="1"  stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            <line x1="0" y1="6"  x2="16" y2="6"  stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            <line x1="0" y1="11" x2="16" y2="11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+        </button>
+        <span class="mobile-brand">
+          oxide-inspired<span class="mobile-brand-slash" aria-hidden="true">/</span>console
+        </span>
+        <button class="mobile-cmd-btn" aria-label="Open command palette" @click="openPalette">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+            <circle cx="6" cy="6" r="4.5" stroke="currentColor" stroke-width="1.4"/>
+            <line x1="9.5" y1="9.5" x2="13" y2="13" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+          </svg>
+        </button>
+      </header>
+      <div class="sidebar-overlay" :class="{ 'is-visible': sidebarOpen }" aria-hidden="true" @click="closeSidebar" />
+      <div class="console-row">
+        <AppSidebar />
+        <div class="page-slot">
+          <NuxtPage />
+        </div>
       </div>
     </div>
     <AppToast />
@@ -42,6 +73,86 @@ watch(
   min-height: 0;
   display: flex;
   flex-direction: row;
+}
+
+.console-row {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: row;
+}
+
+.mobile-header { display: none; }
+
+.sidebar-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: oklch(0% 0 0deg / 60%);
+  z-index: 39;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--duration-base) var(--ease-out);
+}
+
+@media (width <= 768px) {
+  .console-shell { flex-direction: column; }
+
+  .mobile-header {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    height: var(--mobile-header-height);
+    padding: 0 var(--space-4);
+    flex-shrink: 0;
+    background: var(--color-surface);
+    border-bottom: 1px solid var(--color-border);
+    position: relative;
+    z-index: 30;
+  }
+
+  .mobile-brand {
+    flex: 1;
+    font-size: var(--text-sm);
+    font-weight: 500;
+    font-family: var(--font-mono);
+    letter-spacing: 0.01em;
+    color: var(--color-text);
+  }
+
+  .mobile-brand-slash { color: var(--color-accent); padding: 0 2px; }
+
+  .hamburger,
+  .mobile-cmd-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border: none;
+    border-radius: var(--radius-md);
+    background: transparent;
+    color: var(--color-text-muted);
+    flex-shrink: 0;
+    cursor: pointer;
+    transition: background var(--duration-fast), color var(--duration-fast);
+  }
+
+  .hamburger:hover,
+  .mobile-cmd-btn:hover {
+    background: var(--color-surface-2);
+    color: var(--color-text);
+  }
+
+  .sidebar-overlay {
+    display: block;
+    top: var(--portfolio-nav-height, 32px);
+  }
+
+  .sidebar-overlay.is-visible {
+    opacity: 1;
+    pointer-events: auto;
+  }
 }
 
 .page-slot {

@@ -140,6 +140,7 @@ const projects: { value: Project; label: string }[] = [
   display: flex;
   flex-direction: column;
   gap: var(--space-4);
+  container-type: inline-size;
 }
 
 .instances-header {
@@ -231,6 +232,19 @@ const projects: { value: Project; label: string }[] = [
   opacity: 0;
 }
 
+@container (width <= 560px) {
+  .instances-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .instances-controls {
+    width: 100%;
+    justify-content: flex-end;
+  }
+}
+
+/* Padding on the container itself can't use @container — viewport query only */
 @media (width <= 768px) {
   .instances-content {
     padding: var(--space-4);

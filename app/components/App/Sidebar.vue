@@ -1,16 +1,39 @@
 <script setup lang="ts">
 const { open: openPalette } = useCommandPalette()
+const { isOpen, close } = useSidebar()
+
+function onKeydown(e: KeyboardEvent) {
+  if (e.key === 'Escape') close()
+}
+
+watch(isOpen, (open) => {
+  if (!import.meta.client) return
+  if (open) document.addEventListener('keydown', onKeydown)
+  else document.removeEventListener('keydown', onKeydown)
+})
+
+onUnmounted(() => {
+  if (import.meta.client) document.removeEventListener('keydown', onKeydown)
+})
 </script>
 
 <template>
-  <aside class="sidebar">
+  <aside class="sidebar" :class="{ 'is-open': isOpen }">
     <!-- Header: brand + search -->
     <div class="sidebar-header">
-      <span class="brand">
-        oxide-inspired
-        <span class="brand-slash" aria-hidden="true">/</span>
-        console
-      </span>
+      <div class="sidebar-header-top">
+        <span class="brand">
+          oxide-inspired
+          <span class="brand-slash" aria-hidden="true">/</span>
+          console
+        </span>
+        <button class="sidebar-close" aria-label="Close navigation" @click="close">
+          <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">
+            <line x1="1" y1="1" x2="11" y2="11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            <line x1="11" y1="1" x2="1"  y2="11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+        </button>
+      </div>
       <button class="cmd-hint" aria-label="Open command palette" @click="openPalette">
         <svg width="12" height="12" viewBox="0 0 14 14" fill="none" aria-hidden="true">
           <circle cx="6" cy="6" r="4.5" stroke="currentColor" stroke-width="1.4"/>
@@ -67,6 +90,54 @@ const { open: openPalette } = useCommandPalette()
   background: var(--color-surface);
   border-right: 1px solid var(--color-border);
   overflow-y: auto;
+}
+
+/* ── Mobile drawer ───────────────────────────────────────── */
+
+.sidebar-header-top { display: block; }
+.sidebar-close { display: none; }
+
+@media (width <= 768px) {
+  .sidebar {
+    position: fixed;
+    top: var(--portfolio-nav-height, 32px);
+    left: 0;
+    bottom: 0;
+    height: calc(100dvh - var(--portfolio-nav-height, 32px));
+    z-index: 40;
+    border-right: none;
+    box-shadow: 4px 0 32px oklch(0% 0 0deg / 40%);
+    transform: translateX(-100%);
+    transition: transform var(--duration-base) var(--ease-out);
+  }
+
+  .sidebar.is-open { transform: translateX(0); }
+
+  .sidebar-header-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .sidebar-close {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border: none;
+    border-radius: var(--radius-md);
+    background: transparent;
+    color: var(--color-text-muted);
+    flex-shrink: 0;
+    cursor: pointer;
+    transition: background var(--duration-fast), color var(--duration-fast);
+  }
+
+  .sidebar-close:hover {
+    background: var(--color-surface-2);
+    color: var(--color-text);
+  }
 }
 
 /* ── Header ───────────────────────────────────────────────── */

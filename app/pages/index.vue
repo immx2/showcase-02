@@ -172,6 +172,7 @@ const storageTotal = computed(() => {
   display: flex;
   flex-direction: column;
   gap: var(--space-4);
+  container-type: inline-size;
 }
 
 /* KPI row */
@@ -188,26 +189,29 @@ const storageTotal = computed(() => {
   gap: var(--space-4);
 }
 
-/* Responsive */
-@media (width <= 1100px) {
+/* Responsive — container queries respond to actual content width, not viewport */
+@container (width <= 880px) {
   .kpi-grid {
     grid-template-columns: repeat(2, 1fr);
   }
 }
 
-@media (width <= 768px) {
-  .dashboard-content {
-    padding: var(--space-4);
-  }
-
+@container (width <= 560px) {
   .chart-row {
     grid-template-columns: 1fr;
   }
 }
 
-@media (width <= 420px) {
+@container (width <= 420px) {
   .kpi-grid {
     grid-template-columns: 1fr;
+  }
+}
+
+/* Padding on the container itself can't use @container — viewport query only */
+@media (width <= 768px) {
+  .dashboard-content {
+    padding: var(--space-4);
   }
 }
 </style>
