@@ -1,29 +1,23 @@
 /* ─────────────────────────────────────────────────────────────────────────
    1. Primitive palette
       Raw OKLCH steps — mode-agnostic named values.
-      Neutral hue 260 = Oxide --color-neutral-* alignment (light mode).
-      Teal hue ~205   = Oxide console dark aesthetic (dark mode).
-      Green hue 163.7 = exact Oxide --color-green-* hue match.
-      Red hue 22, amber hue 62–75 = Oxide --color-red/yellow-* alignment.
+      Neutral hue 260 = --color-neutral-* alignment (light mode).
+      Teal hue ~205   = console dark aesthetic (dark mode).
+      Green hue 163.7 = exact --color-green-* hue match.
+      Red hue 22, amber hue 62–75 = --color-red/yellow-* alignment.
    ───────────────────────────────────────────────────────────────────────── */
    :root {
    /* UNDER CONSTRUCTION -- tweaking colors now -- inspired by Oxide console */
 
-   --hue: 220;
-   --color-bg-dark-green:  oklch(16% 0.013 var(--hue));
-   --color-bg-card:        oklch(22% 0.015 var(--hue));
-   --color-bg-card-2:      oklch(28% 0.016 var(--hue));
-   --color-bg-card-3:      oklch(33% 0.020 var(--hue));
-   --color-text-more-muted:oklch(68% 0.020 var(--hue));
-   --color-border-1:       oklch(30% 0.010 var(--hue));
-   --color-border-2:       oklch(from var(--color-border-1) l c h / 33%);
-
+   --hue-blue: 220;
+   --hue-amber: 95;
+   
    /* from oxide console */
    --color-bg-dark-blue:   oklch(16.24% 0.0098 255.66deg);
    --color-text-bright:    oklch(90% 0.0001 260deg);
    --color-text:           oklch(79% 0.0011 260deg);
    --color-text-muted:     oklch(60.6% 0.0031 260deg);
-   --color-green: oklch(77% .1919 163.7deg);
+   --color-green:          oklch(77% .1919 163.7deg);
 
    /* from oxide.computer */
    --color-bg-green: oklch(24% 0.0722 183.7deg);
@@ -39,7 +33,7 @@
     --palette-neutral-900: oklch(9.9% 0.003 260deg);
     --palette-white:       oklch(100% 0.000   0deg);
   
-    /* Teal — dark (hue 205, Oxide console dark aesthetic) */
+    /* Teal — dark (hue 205, dark aesthetic) */
     --palette-teal-0:   oklch(9% 0.018 205deg);
     --palette-teal-50:  oklch(14.5% 0.025 205deg);
     --palette-teal-100: oklch(18.5% 0.025 205deg);
@@ -49,54 +43,57 @@
     --palette-teal-600: oklch(66.8% 0.045 200deg);
     --palette-teal-900: oklch(95.4% 0.012 195deg);
   
-    /* Green (hue 163.7 — exact Oxide --color-green-* hue) */
+    /* Green (hue 163.7 — --color-green-* hue) */
     --palette-green-600: oklch(62.7% 0.171 163.7deg);
     --palette-green-700: oklch(73.6% 0.179 163.7deg);
     --palette-green-800: oklch(81.2% 0.155 163.7deg);
   
-    /* Red (hue 22 — Oxide --color-red-* aligned) */
+    /* Red (hue 22 — --color-red-* aligned) */
     --palette-red-600: oklch(64.7% 0.212 22deg);
     --palette-red-700: oklch(70.4% 0.175 22deg);
   
-    /* Amber (hue 62–75 — Oxide --color-yellow-* aligned) */
+    /* Amber (hue 62–75 — --color-yellow-* aligned) */
     --palette-amber-600: oklch(67.2% 0.162 62deg);
     --palette-amber-700: oklch(80.9% 0.170 75deg);
 
-    
    /* ── Chart colors — infrastructure-semantic ──────────────── 
-       chart-1 = CPU      (green hue 163.7 — Oxide green match)
+       chart-1 = CPU      (green hue 163.7)
        chart-2 = memory   (sky)
        chart-3 = disk     (amber)
        chart-4 = network  (violet) */
-   --chart-1: oklch(81.2% 0.155 163.7deg);
-   --chart-2: oklch(75.2% 0.130 221deg);
-   --chart-3: oklch(77.8% 0.152 55deg);
-   --chart-4: oklch(72.3% 0.155 288deg);
-   --chart-5: oklch(72.6% 0.156 345deg);
-   --chart-6: oklch(85.8% 0.172 92deg);
-   --chart-1-muted: oklch(81.2% 0.155 163.7deg / 19%);
-   --chart-2-muted: oklch(75.2% 0.130 221deg   / 19%);
-   --chart-3-muted: oklch(77.8% 0.152 55deg    / 19%);
-   --chart-4-muted: oklch(72.3% 0.155 288deg   / 19%);
-   --chart-5-muted: oklch(72.6% 0.156 345deg   / 19%);
-   --chart-6-muted: oklch(85.8% 0.172 92deg    / 19%);
+
+   --chart-br: 70%;
+   --chart-ch: 0.15;
+   --chart-1: oklch(var(--chart-br) var(--chart-ch) 163.7deg);
+   --chart-2: oklch(var(--chart-br) var(--chart-ch) 221deg);
+   --chart-3: oklch(var(--chart-br) var(--chart-ch) 55deg);
+   --chart-4: oklch(var(--chart-br) var(--chart-ch) 288deg);
+   --chart-5: oklch(var(--chart-br) var(--chart-ch) 345deg);
+   --chart-6: oklch(var(--chart-br) var(--chart-ch) 92deg);
+
+   /* not used currently -- donut chart uses filter: brightness(1.15) */
+   --chart-muted-br: 10%;
+   --chart-1-muted: oklch(from var(--chart-1) l c h / var(--chart-muted-br));
+   --chart-2-muted: oklch(from var(--chart-2) l c h / var(--chart-muted-br));
+   --chart-3-muted: oklch(from var(--chart-3) l c h / var(--chart-muted-br));
+   --chart-4-muted: oklch(from var(--chart-4) l c h / var(--chart-muted-br));
+   --chart-5-muted: oklch(from var(--chart-5) l c h / var(--chart-muted-br));
+   --chart-6-muted: oklch(from var(--chart-6) l c h / var(--chart-muted-br));
   }
   
   /* ─────────────────────────────────────────────────────────────────────────
      2. Semantic tokens — light mode
-        surface / content / stroke / status
-        Mirrors Oxide's three-layer token architecture.
      ───────────────────────────────────────────────────────────────────────── */
   :root {
-    --surface-default:   var(--palette-neutral-100);
-    --surface-raise:     var(--palette-white);
-    --surface-secondary: var(--palette-neutral-200);
+    --color-bg:          oklch(96% 0.000 var(--hue-amber));
+    --color-surface:     oklch(100% 0.000 var(--hue-amber));
+    --color-surface-2:   var(--palette-neutral-200);
     --surface-selected:  var(--palette-neutral-600);
     --content-default:   var(--palette-neutral-900);
     --content-secondary: var(--palette-neutral-600);
     --content-selected:  var(--palette-neutral-50);
     --stroke-default:    var(--palette-neutral-300);
-    --stroke-subtle:     var(--palette-neutral-200);
+    --color-border-subtle:     var(--palette-neutral-200);
     --content-accent:    var(--palette-green-600);
     --content-success:   var(--palette-green-700);
     --content-notice:    var(--palette-amber-600);
@@ -105,19 +102,18 @@
   }
   
   /* ─────────────────────────────────────────────────────────────────────────
-     3. Semantic tokens — dark mode overrides
-        Only semantic tokens change; component tokens resolve automatically.
+     3. Semantic tokens — dark mode
      ───────────────────────────────────────────────────────────────────────── */
   [data-color-mode="dark"] {
-    --surface-default:   var(--color-bg-dark-green);
-    --surface-raise:     var(--color-bg-card);
-    --surface-secondary: var(--color-bg-card-2); /* behind search K, bg pills in table/rack, hover bg, skele shimmer */
-    --surface-selected:  var(--color-bg-card-3); /* all selected pills bg */
-    --content-default:   var(--color-text-bright);
-    --content-secondary: var(--color-text-more-muted);
-    --content-selected:  var(--palette-teal-900);
-    --stroke-default:    var(--color-border-1); /* border we see, scrollbar on rack */
-    --stroke-subtle:     var(--palette-teal-150); /* border on a lot mostly invisible */
+    --color-bg:          oklch(16% 0.013 var(--hue-blue));
+    --color-surface:     oklch(22% 0.015 var(--hue-blue));
+    --color-surface-2:   oklch(28% 0.016 var(--hue-blue)); /* behind search K, bg pills in table/rack, hover bg, skele shimmer */
+    --surface-selected:  oklch(33% 0.020 var(--hue-blue)); /* all selected pills bg */
+    --content-default:   oklch(90% 0.000 var(--hue-blue));
+    --content-secondary: oklch(68% 0.020 var(--hue-blue));
+    --content-selected:  var(--content-default);
+    --stroke-default:    oklch(30% 0.020 var(--hue-blue)); /* border, scrollbars */
+    --color-border-subtle:     oklch(from var(--stroke-default) l c h / 50%); /* border on a lot mostly invisible, chart tick line */
     --content-accent:    var(--palette-green-800); /* slash, date range, grn cpu % in table */
     --content-success:   var(--palette-green-800); /* KPI greens, running in table */
     --content-notice:    var(--palette-amber-700);
@@ -128,17 +124,12 @@
   /* ─────────────────────────────────────────────────────────────────────────
      4. Component tokens
         Stable --color-* API; aliases semantic layer.
-        Color-mode is handled in layer 2/3 — nothing here needs overriding.
      ───────────────────────────────────────────────────────────────────────── */
   :root {
-    --color-bg:              var(--surface-default);
-    --color-surface:         var(--surface-raise);
-    --color-surface-2:       var(--surface-secondary);
     --color-text:            var(--content-default);
     --color-text-muted:      var(--content-secondary);
     --color-accent:          var(--content-accent);
     --color-border:          var(--stroke-default);
-    --color-border-subtle:   var(--stroke-subtle);
     --color-active-bg:       var(--surface-selected);
     --color-active-text:     var(--content-selected);
     --color-status-running:  var(--content-success);

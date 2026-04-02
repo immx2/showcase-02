@@ -37,9 +37,26 @@ const total = computed(() =>
   props.data.reduce((sum, d) => sum + d.value, 0),
 )
 
-const appeared = ref(false)
+const pathRefs = ref<SVGPathElement[]>([])
+
 onMounted(() => {
-  requestAnimationFrame(() => { appeared.value = true })
+  requestAnimationFrame(() => {
+    pathRefs.value.forEach((pathEl, i) => {
+      const arc = arcs.value[i]
+      if (!arc || !pathEl) return
+      const fn = arcGen.value
+      d3.select(pathEl)
+        .transition()
+        .delay(i * 90)
+        .duration(520)
+        .ease(d3.easeQuadOut)
+        .attrTween('d', () => {
+          const interp = d3.interpolate(arc.startAngle, arc.endAngle)
+          return (t: number) => fn({ ...arc, endAngle: interp(t) }) ?? ''
+        })
+        .styleTween('opacity', () => (t: number) => String(d3.interpolate(0, 1)(t)))
+    })
+  })
 })
 </script>
 
@@ -49,11 +66,11 @@ onMounted(() => {
       <g :transform="`translate(${outerRadius},${outerRadius})`">
         <path
           v-for="(arc, i) in arcs"
+          :ref="(el) => { if (el) pathRefs[i] = el as SVGPathElement }"
           :key="i"
-          :d="arcGen(arc) ?? ''"
+          :d="arcGen({ ...arc, endAngle: arc.startAngle }) ?? ''"
           :fill="arc.data.color"
-          :opacity="appeared ? 1 : 0"
-          :style="{ transitionDelay: `${i * 80}ms` }"
+          style="opacity: 0"
           class="arc-path"
         />
         <text text-anchor="middle" dy="-4" class="center-value">
@@ -91,7 +108,6 @@ onMounted(() => {
 }
 
 .arc-path {
-  transition: opacity var(--duration-chart) var(--ease-out);
   cursor: pointer;
 }
 

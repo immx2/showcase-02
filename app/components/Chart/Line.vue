@@ -20,6 +20,7 @@ const props = withDefaults(defineProps<{
   color2?: string
   seriesMeta?: [SeriesMeta, SeriesMeta]
   formatValue?: (v: number) => string
+  formatTooltip?: (v: number) => string
   height?: number
   marginLeft?: number
   /** When true, animate the lines drawing in on first render. */
@@ -34,6 +35,7 @@ const props = withDefaults(defineProps<{
   height: 260,
   marginLeft: 44,
   formatValue: (v: number) => `${v.toFixed(1)}%`,
+  formatTooltip: undefined,
   animate: false,
 })
 
@@ -453,8 +455,9 @@ function onMouseMove(e: MouseEvent) {
   tooltip.x      = focusXScale.value(d.date) + margin.value.left
   tooltip.y      = focusYScale.value(d.value) + margin.value.top
   tooltip.date   = d3.timeFormat('%b %d, %Y')(d.date)
-  tooltip.value  = props.formatValue(d.value)
-  tooltip.value2 = fp2[idx] ? props.formatValue(fp2[idx].value) : ''
+  const fmt = props.formatTooltip ?? props.formatValue
+  tooltip.value  = fmt(d.value)
+  tooltip.value2 = fp2[idx] ? fmt(fp2[idx].value) : ''
 }
 
 function onMouseLeave() { tooltip.show = false }
