@@ -1,0 +1,149 @@
+/* ─────────────────────────────────────────────────────────────────────────
+   Shared data table styles
+   Scope: any .table-wrap element. Used by Instance/Table and Storage/Table.
+   Component-specific overrides (bar colors, row accents, etc.) live in each
+   component's <style scoped>.
+   ───────────────────────────────────────────────────────────────────────── */
+
+.table-wrap {
+  width: 100%;
+  overflow-x: auto;
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-lg);
+}
+
+.table-wrap table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+}
+
+/* ── Head ──────────────────────────────────────────────────────────────── */
+
+.table-wrap thead {
+  border-bottom: 1px solid var(--color-border);
+}
+
+.table-wrap th {
+  padding: var(--space-2) var(--space-4);
+  text-align: left;
+  color: var(--color-text-muted);
+  white-space: nowrap;
+  background: var(--color-surface);
+  user-select: none;
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  line-height: 1rem;
+}
+
+.table-wrap th:first-child {
+  border-radius: var(--radius-lg) 0 0 0;
+  padding-left: var(--space-5);
+}
+
+.table-wrap th:last-child {
+  border-radius: 0 var(--radius-lg) 0 0;
+  padding-right: var(--space-5);
+}
+
+.table-wrap th.sortable {
+  cursor: pointer;
+  transition: color var(--duration-fast);
+}
+
+.table-wrap th.sortable:hover,
+.table-wrap th.active {
+  color: var(--color-text);
+}
+
+.table-wrap .th-inner {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.table-wrap .sort-icon { display: flex; align-items: center; }
+.table-wrap .sort-idle { opacity: 0.35; }
+
+/* ── Body ──────────────────────────────────────────────────────────────── */
+
+.table-wrap tbody tr {
+  border-bottom: 1px solid var(--color-border-subtle);
+  transition: background var(--duration-fast);
+  cursor: pointer;
+  outline: none;
+}
+
+.table-wrap tbody tr:last-child { border-bottom: none; }
+
+.table-wrap tbody tr:hover { background: var(--color-surface-2); }
+
+.table-wrap tbody tr:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: -2px;
+}
+
+.table-wrap td {
+  padding: var(--space-3) var(--space-4);
+  vertical-align: middle;
+}
+
+.table-wrap td:first-child { padding-left: var(--space-5); }
+.table-wrap td:last-child  { padding-right: var(--space-5); }
+
+/* ── Cell utilities ────────────────────────────────────────────────────── */
+
+.table-wrap .td-mono {
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+}
+
+.table-wrap .td-right { text-align: right; }
+.table-wrap .td-muted { color: var(--color-text-muted); }
+
+/* ── Inline bar cells ──────────────────────────────────────────────────── */
+
+.table-wrap .td-bar-cell { min-width: 110px; }
+
+.table-wrap .bar-cell {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  justify-content: flex-end;
+}
+
+.table-wrap .bar-track {
+  width: 52px;
+  height: 4px;
+  background: var(--color-border);
+  border-radius: 2px;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.table-wrap .bar-fill {
+  height: 100%;
+  border-radius: 2px;
+  transition: width var(--duration-slow) var(--ease-out);
+}
+
+/* ── Name / ID cell ────────────────────────────────────────────────────── */
+
+.table-wrap .name-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+/* ── Empty state ───────────────────────────────────────────────────────── */
+
+.table-wrap .empty-state {
+  padding: var(--space-10);
+  text-align: center;
+  color: var(--color-text-muted);
+  font-size: var(--text-base);
+}

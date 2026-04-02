@@ -37,7 +37,7 @@ const projects: { value: Project; label: string }[] = [
   <div class="page">
     <div class="instances-content">
       <div class="instances-header">
-        <h1 class="instances-title">Instances</h1>
+        <h1 class="page-title">Instances</h1>
         <div class="instances-controls">
           <div
             v-show="instancesView === 'table'"
@@ -150,12 +150,6 @@ const projects: { value: Project; label: string }[] = [
   flex-wrap: wrap;
 }
 
-.instances-title {
-  font-family: var(--font-display);
-  font-size: var(--text-lg);
-  font-weight: 600;
-  letter-spacing: -0.01em;
-}
 
 .instances-controls {
   display: flex;

@@ -63,15 +63,11 @@
     --palette-amber-700: oklch(80.9% 0.170 75deg);
 
     
-   /* ── Chart colors — infrastructure-semantic ──────────────── */
-
-   /*    chart-1 = CPU      (green hue 163.7 — Oxide green match) */
-
-   /*    chart-2 = memory   (sky)                                  */
-
-   /*    chart-3 = disk     (amber)                                */
-
-   /*    chart-4 = network  (violet)                               */
+   /* ── Chart colors — infrastructure-semantic ──────────────── 
+       chart-1 = CPU      (green hue 163.7 — Oxide green match)
+       chart-2 = memory   (sky)
+       chart-3 = disk     (amber)
+       chart-4 = network  (violet) */
    --chart-1: oklch(81.2% 0.155 163.7deg);
    --chart-2: oklch(75.2% 0.130 221deg);
    --chart-3: oklch(77.8% 0.152 55deg);

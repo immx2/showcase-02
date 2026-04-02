@@ -38,14 +38,14 @@ const yScale = computed(() =>
 const maxCount = computed(() => d3.max(props.data, d => d.count) ?? 1)
 
 // Dark mode: low values fade into the surface background, highs glow in Oxide green.
-// Light mode: standard D3 blues scale.
+// Light mode: light to chart-1 green gradient.
 const colorScale = computed(() =>
   d3.scaleSequential()
     .domain([0, maxCount.value])
     .interpolator(
       isDark.value
         ? d3.interpolateRgbBasis(['#0e1c1f', '#144030', '#48d597'])
-        : d3.interpolateBlues,
+        : d3.interpolateRgbBasis(['#f0fdf9', '#50d4a3']),
     ),
 )
 

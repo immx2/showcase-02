@@ -215,6 +215,7 @@ export const storageBreakdown: StorageBreakdown[] = [
 // ─── Storage history (90 days, ends at current storageBreakdown total) ────────
 
 export interface StorageSample {
+  date: string
   totalGib: number
 }
 
@@ -224,15 +225,78 @@ function generateStorageHistory(): StorageSample[] {
   const samples: StorageSample[] = []
   let current = total * 0.80
   const dailyTarget = (total - current) / 90
+  const start = new Date(2025, 5, 7) // June 7 2025 — aligned with metricSamples
   for (let i = 0; i < 89; i++) {
     current = Math.min(total, current + dailyTarget * (0.3 + rng() * 1.4))
-    samples.push({ totalGib: Math.round(current) })
+    const d = new Date(start)
+    d.setDate(d.getDate() + i)
+    samples.push({ date: d.toISOString().split('T')[0]!, totalGib: Math.round(current) })
   }
-  samples.push({ totalGib: total })
+  const last = new Date(start)
+  last.setDate(last.getDate() + 89)
+  samples.push({ date: last.toISOString().split('T')[0]!, totalGib: total })
   return samples
 }
 
 export const storageHistory: StorageSample[] = generateStorageHistory()
+
+// ─── Volumes ──────────────────────────────────────────────────────────────
+
+export type VolumeState = 'attached' | 'available' | 'detached' | 'creating' | 'faulted'
+export type VolumeType = 'NVMe SSD' | 'SSD' | 'HDD'
+
+export interface Volume {
+  id: string
+  name: string
+  state: VolumeState
+  type: VolumeType
+  sizeGib: number
+  usedGib: number
+  attachedInstance: string | null
+  project: 'infra' | 'web' | 'data'
+  created: string
+  iopsRead: number
+  iopsWrite: number
+}
+
+export const volumes: Volume[] = [
+  { id: 'vol-a1b2c3d4', name: 'vol-db-primary-data',   state: 'attached',  type: 'NVMe SSD', sizeGib: 2048, usedGib: 1536, attachedInstance: 'postgres-primary',   project: 'data',  created: '2025-03-05', iopsRead: 11200, iopsWrite: 7400 },
+  { id: 'vol-e5f6a7b8', name: 'vol-db-replica-a',      state: 'attached',  type: 'NVMe SSD', sizeGib: 2048, usedGib: 1524, attachedInstance: 'postgres-replica-a', project: 'data',  created: '2025-03-05', iopsRead: 8900,  iopsWrite: 2100 },
+  { id: 'vol-c9d0e1f2', name: 'vol-db-replica-b',      state: 'attached',  type: 'NVMe SSD', sizeGib: 2048, usedGib: 1518, attachedInstance: 'postgres-replica-b', project: 'data',  created: '2025-03-21', iopsRead: 8600,  iopsWrite: 1900 },
+  { id: 'vol-g3h4i5j6', name: 'vol-worker-scratch-01', state: 'attached',  type: 'NVMe SSD', sizeGib: 1024, usedGib: 812,  attachedInstance: 'worker-batch-01',    project: 'data',  created: '2025-05-26', iopsRead: 9800,  iopsWrite: 6200 },
+  { id: 'vol-k7l8m9n0', name: 'vol-worker-scratch-02', state: 'attached',  type: 'NVMe SSD', sizeGib: 1024, usedGib: 791,  attachedInstance: 'worker-batch-02',    project: 'data',  created: '2025-05-26', iopsRead: 9600,  iopsWrite: 6100 },
+  { id: 'vol-o1p2q3r4', name: 'vol-worker-scratch-03', state: 'attached',  type: 'NVMe SSD', sizeGib: 1024, usedGib: 834,  attachedInstance: 'worker-batch-03',    project: 'data',  created: '2025-05-26', iopsRead: 9400,  iopsWrite: 5900 },
+  { id: 'vol-s5t6u7v8', name: 'vol-search-index-01',   state: 'attached',  type: 'NVMe SSD', sizeGib: 512,  usedGib: 387,  attachedInstance: 'search-index-01',    project: 'web',   created: '2025-06-06', iopsRead: 7200,  iopsWrite: 3400 },
+  { id: 'vol-w9x0y1z2', name: 'vol-search-index-02',   state: 'attached',  type: 'NVMe SSD', sizeGib: 512,  usedGib: 391,  attachedInstance: 'search-index-02',    project: 'web',   created: '2025-06-06', iopsRead: 7100,  iopsWrite: 3300 },
+  { id: 'vol-a3b4c5d6', name: 'vol-log-archive',       state: 'attached',  type: 'HDD',      sizeGib: 4096, usedGib: 2891, attachedInstance: 'log-aggregator',     project: 'infra', created: '2025-03-21', iopsRead: 210,   iopsWrite: 140  },
+  { id: 'vol-e7f8g9h0', name: 'vol-etl-staging',       state: 'attached',  type: 'SSD',      sizeGib: 512,  usedGib: 104,  attachedInstance: 'etl-pipeline-01',    project: 'data',  created: '2025-09-01', iopsRead: 3800,  iopsWrite: 1900 },
+  { id: 'vol-i1j2k3l4', name: 'vol-backup-pool-01',    state: 'available', type: 'SSD',      sizeGib: 2048, usedGib: 0,    attachedInstance: null,                 project: 'infra', created: '2025-04-15', iopsRead: 4200,  iopsWrite: 2100 },
+  { id: 'vol-m5n6o7p8', name: 'vol-backup-pool-02',    state: 'available', type: 'SSD',      sizeGib: 2048, usedGib: 0,    attachedInstance: null,                 project: 'infra', created: '2025-04-15', iopsRead: 4100,  iopsWrite: 2000 },
+  { id: 'vol-q9r0s1t2', name: 'vol-snapshot-archive',  state: 'available', type: 'HDD',      sizeGib: 4096, usedGib: 0,    attachedInstance: null,                 project: 'infra', created: '2025-05-01', iopsRead: 180,   iopsWrite: 90   },
+  { id: 'vol-u3v4w5x6', name: 'vol-staging-db-old',    state: 'detached',  type: 'SSD',      sizeGib: 256,  usedGib: 198,  attachedInstance: null,                 project: 'data',  created: '2025-02-14', iopsRead: 0,     iopsWrite: 0    },
+  { id: 'vol-y7z8a9b0', name: 'vol-qa-data',           state: 'detached',  type: 'NVMe SSD', sizeGib: 128,  usedGib: 67,   attachedInstance: null,                 project: 'infra', created: '2025-06-14', iopsRead: 0,     iopsWrite: 0    },
+  { id: 'vol-c1d2e3f4', name: 'vol-ml-training-set',   state: 'faulted',   type: 'NVMe SSD', sizeGib: 4096, usedGib: 0,    attachedInstance: null,                 project: 'data',  created: '2025-08-20', iopsRead: 0,     iopsWrite: 0    },
+]
+
+// KPI sparklines for the Storage page (20-point trends, seeded)
+function generateStorageKpiSparklines() {
+  const capacitySparkline = storageHistory.slice(-20).map(s => s.totalGib)
+
+  const rng = mulberry32(41)
+  const usedPctSparkline: number[] = []
+  let usedPct = 58
+  for (let i = 0; i < 20; i++) {
+    usedPct = Math.min(85, Math.max(40, usedPct + (rng() - 0.45) * 3))
+    usedPctSparkline.push(Math.round(usedPct * 10) / 10)
+  }
+
+  const volumeCountSparkline = [11, 11, 12, 12, 12, 13, 13, 13, 14, 14, 14, 14, 15, 15, 15, 15, 16, 16, 16, 16]
+  const snapshotCountSparkline = [14, 15, 15, 16, 16, 17, 17, 18, 18, 19, 19, 20, 20, 21, 21, 22, 22, 22, 23, 23]
+
+  return { capacitySparkline, usedPctSparkline, volumeCountSparkline, snapshotCountSparkline }
+}
+
+export const storageKpiSparklines = generateStorageKpiSparklines()
 
 // ─── Heatmap (API request rate) ───────────────────────────────────────────
 

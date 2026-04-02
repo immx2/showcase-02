@@ -179,7 +179,7 @@ const storageTotal = computed(() => {
 .kpi-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: var(--space-3);
+  gap: var(--space-4);
 }
 
 /* Side-by-side charts */

@@ -53,7 +53,6 @@ function sparklineColor(state: Instance['state']): string {
           <th
             v-for="col in columns"
             :key="col.label"
-            class="text-mono-label"
             :style="{ width: col.width, textAlign: col.align }"
             :aria-sort="col.key ? ariaSortAttr(col.key) : undefined"
             :class="{ sortable: !!col.key, active: col.key && col.key === sortKey }"
@@ -171,81 +170,12 @@ function sparklineColor(state: Instance['state']): string {
 </template>
 
 <style scoped>
-.table-wrap {
-  width: 100%;
-  overflow-x: auto;
-  border: 1px solid var(--color-border-subtle);
-  border-radius: var(--radius-lg);
-}
+/* ── Instance-specific overrides (shared base lives in _tables.css) ─────── */
 
-.instance-table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 12px;
-}
-
-/* Header */
-thead {
-  border-bottom: 1px solid var(--color-border);
-}
-
-th {
-  padding: var(--space-2) var(--space-4);
-  color: var(--color-text-muted);
-  white-space: nowrap;
-  background: var(--color-surface);
-  user-select: none;
-}
-
-th:first-child { border-radius: var(--radius-lg) 0 0 0; padding-left: var(--space-5); }
-th:last-child  { border-radius: 0 var(--radius-lg) 0 0; padding-right: var(--space-5); }
-
-th.sortable {
-  cursor: pointer;
-  transition: color var(--duration-fast);
-}
-
-th.sortable:hover { color: var(--color-text); }
-th.active { color: var(--color-text); }
-
-.th-inner {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-}
-
-.sort-icon { display: flex; align-items: center; }
-.sort-idle { opacity: 0.35; }
-
-/* Rows */
-tbody tr {
-  border-bottom: 1px solid var(--color-border-subtle);
-  transition: background var(--duration-fast);
-  cursor: pointer;
-  outline: none;
-}
-
-tbody tr:last-child { border-bottom: none; }
-
-tbody tr:hover { background: var(--color-surface-2); }
-
-tbody tr:focus-visible {
-  outline: 2px solid var(--color-accent);
-  outline-offset: -2px;
-}
-
-/* Faulted row gets a left-border accent */
+/* Faulted row: left-border accent */
 tbody tr.faulted {
   border-left: 2px solid var(--color-status-faulted);
 }
-
-td {
-  padding: var(--space-3) var(--space-4);
-  vertical-align: middle;
-}
-
-td:first-child { padding-left: var(--space-5); }
-td:last-child  { padding-right: var(--space-5); }
 
 /* Name cell */
 .td-name { min-width: 160px; }
@@ -255,13 +185,6 @@ td:last-child  { padding-right: var(--space-5); }
   align-items: center;
   justify-content: space-between;
   gap: var(--space-3);
-}
-
-.name-meta {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  min-width: 0;
 }
 
 .inst-name {
@@ -295,57 +218,16 @@ td:last-child  { padding-right: var(--space-5); }
 .td-project .project-tag.web   { color: var(--chart-2); }
 .td-project .project-tag.data  { color: var(--chart-3); }
 
-/* Monospace values */
-.td-mono {
-  font-family: var(--font-mono);
-  font-size: var(--text-sm);
-}
-
-.td-right { text-align: right; }
-.td-muted { color: var(--color-text-muted); }
-
-/* IP — slightly muted, clearly machine-readable */
+/* IP */
 .td-ip {
   color: var(--color-text-muted);
   letter-spacing: 0.02em;
 }
 
-/* Shared bar cell (CPU & Mem) */
-.td-bar-cell { min-width: 110px; }
-
-.bar-cell {
-  display: flex;
-  align-items: center;
-  gap: var(--space-3);
-  justify-content: flex-end;
-}
-
-.bar-track {
-  width: 52px;
-  height: 4px;
-  background: var(--color-border);
-  border-radius: 2px;
-  overflow: hidden;
-  flex-shrink: 0;
-}
-
-.bar-fill {
-  height: 100%;
-  border-radius: 2px;
-  transition: width var(--duration-slow) var(--ease-out);
-}
-
-.bar-fill.cpu         { background: var(--color-accent); }
-.bar-fill.cpu.med     { background: var(--color-status-starting); }
-.bar-fill.cpu.high    { background: var(--color-status-faulted); }
-.bar-fill.mem         { background: var(--chart-2); }
-.bar-fill.mem.high    { background: var(--color-status-faulted); }
-
-/* Empty state */
-.empty-state {
-  padding: var(--space-10);
-  text-align: center;
-  color: var(--color-text-muted);
-  font-size: var(--text-base);
-}
+/* Bar fill colors */
+.bar-fill.cpu      { background: var(--color-accent); }
+.bar-fill.cpu.med  { background: var(--color-status-starting); }
+.bar-fill.cpu.high { background: var(--color-status-faulted); }
+.bar-fill.mem      { background: var(--chart-2); }
+.bar-fill.mem.high { background: var(--color-status-faulted); }
 </style>

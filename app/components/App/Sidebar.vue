@@ -64,6 +64,13 @@ onUnmounted(() => {
         </svg>
         Instances
       </NuxtLink>
+      <NuxtLink to="/storage" class="nav-item">
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+          <ellipse cx="7" cy="3.5" rx="5" ry="1.6" stroke="currentColor" stroke-width="1.2"/>
+          <path d="M2 3.5 L2 10 A5 1.6 0 0 0 12 10 L12 3.5" stroke="currentColor" stroke-width="1.2"/>
+        </svg>
+        Storage
+      </NuxtLink>
     </nav>
 
     <div class="sidebar-spacer" aria-hidden="true" />

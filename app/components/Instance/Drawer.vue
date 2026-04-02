@@ -10,15 +10,7 @@ const emit = defineEmits<{
   close: []
 }>()
 
-/** Keep in sync with `assets/styles/_tokens.css` (`--duration-base`). Used so leave transitions finish before unmount. */
-const drawerTransitionMs = 180
-
 const { addToast } = useToast()
-
-// Close on Escape
-useEventListener('keydown', (e: KeyboardEvent) => {
-  if (e.key === 'Escape' && props.instance) emit('close')
-})
 
 // Deterministic event log keyed to instance data
 interface LogEvent {
@@ -117,19 +109,14 @@ const memSparkline = computed(() =>
 </script>
 
 <template>
-  <Teleport to="body">
-    <Transition name="drawer" :duration="drawerTransitionMs">
-      <div v-if="instance" class="drawer-wrap">
-        <!-- Scrim -->
-        <div class="drawer-scrim" aria-hidden="true" @click="emit('close')" />
-
-        <aside
-          class="drawer"
-          role="complementary"
-          :aria-label="`Instance details: ${instance.name}`"
-        >
-          <!-- Header -->
-          <div class="drawer-header">
+  <AppDrawer
+    :open="!!instance"
+    :label="instance ? `Instance details: ${instance.name}` : ''"
+    @close="emit('close')"
+  >
+    <template v-if="instance">
+      <!-- Header -->
+      <div class="drawer-header">
             <div class="drawer-title-row">
               <StatusBadge :status="instance.state" />
               <h2 class="drawer-title">{{ instance.name }}</h2>
@@ -261,43 +248,12 @@ const memSparkline = computed(() =>
                 </div>
               </div>
             </div>
-          </div>
-        </aside>
-      </div>
-    </Transition>
-  </Teleport>
+        </div>
+    </template>
+  </AppDrawer>
 </template>
 
 <style scoped>
-.drawer-wrap {
-  position: fixed;
-  inset: 0;
-  z-index: 7000;
-  pointer-events: none;
-}
-
-.drawer-scrim {
-  position: absolute;
-  inset: 0;
-  background: rgb(0 0 0 / 35%);
-  pointer-events: auto;
-}
-
-.drawer {
-  position: absolute;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  width: 380px;
-  max-width: 100vw;
-  background: var(--color-surface);
-  border-left: 1px solid var(--color-border);
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-  pointer-events: auto;
-}
-
 /* Header */
 .drawer-header {
   flex-shrink: 0;
@@ -567,24 +523,4 @@ const memSparkline = computed(() =>
   flex-shrink: 0;
 }
 
-/* Transition */
-.drawer-enter-active,
-.drawer-leave-active {
-  transition: opacity var(--duration-base) var(--ease-out);
-}
-
-.drawer-enter-active .drawer,
-.drawer-leave-active .drawer {
-  transition: transform var(--duration-base) var(--ease-out);
-}
-
-.drawer-enter-from,
-.drawer-leave-to {
-  opacity: 0;
-}
-
-.drawer-enter-from .drawer,
-.drawer-leave-to .drawer {
-  transform: translateX(100%);
-}
 </style>
