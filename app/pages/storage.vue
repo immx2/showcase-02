@@ -109,14 +109,15 @@ onMounted(() => { isMounted.value = true })
           </ClientOnly>
         </ChartCard>
 
-        <ChartCard title="Capacity Growth" description="Total allocated storage · GiB">
+        <ChartCard title="Capacity Growth" description="Total allocated storage · TiB">
           <ClientOnly>
             <ChartLine
               v-if="isMounted"
               :data="storageLineSeries"
               color="var(--chart-3)"
-              :format-value="(v: number) => v >= 1024 ? `${(v / 1024).toFixed(1)} TiB` : `${v} GiB`"
+              :format-value="(v: number) => `${(v / 1024).toFixed(1)} TiB`"
               :height="240"
+              :margin-left="62"
             />
             <SkeletonLoader v-else height="240px" />
           </ClientOnly>

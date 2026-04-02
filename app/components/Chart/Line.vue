@@ -21,6 +21,7 @@ const props = withDefaults(defineProps<{
   seriesMeta?: [SeriesMeta, SeriesMeta]
   formatValue?: (v: number) => string
   height?: number
+  marginLeft?: number
 }>(), {
   data2: undefined,
   fullData: undefined,
@@ -29,6 +30,7 @@ const props = withDefaults(defineProps<{
   color: 'var(--chart-1)',
   color2: 'var(--chart-2)',
   height: 260,
+  marginLeft: 44,
   formatValue: (v: number) => `${v.toFixed(1)}%`,
 })
 
@@ -61,13 +63,13 @@ const CTX_BOT = 20 // space for context x-axis
 
 const hasContext = computed(() => !!props.fullData?.length)
 
-const margin = { top: 12, right: 16, bottom: 32, left: 44 }
-const innerWidth  = computed(() => Math.max(cw.value - margin.left - margin.right, 0))
-const focusHeight = computed(() => props.height - margin.top - margin.bottom)
+const margin = computed(() => ({ top: 12, right: 16, bottom: 32, left: props.marginLeft }))
+const innerWidth  = computed(() => Math.max(cw.value - margin.value.left - margin.value.right, 0))
+const focusHeight = computed(() => props.height - margin.value.top - margin.value.bottom)
 
 // Context group y-origin (inside same SVG)
 const ctxOriginY = computed(() =>
-  margin.top + focusHeight.value + margin.bottom + CTX_GAP,
+  margin.value.top + focusHeight.value + margin.value.bottom + CTX_GAP,
 )
 
 // Total SVG height
@@ -403,8 +405,8 @@ function onMouseMove(e: MouseEvent) {
   if (!d) return
 
   tooltip.show   = true
-  tooltip.x      = focusXScale.value(d.date) + margin.left
-  tooltip.y      = focusYScale.value(d.value) + margin.top
+  tooltip.x      = focusXScale.value(d.date) + margin.value.left
+  tooltip.y      = focusYScale.value(d.value) + margin.value.top
   tooltip.date   = d3.timeFormat('%b %d, %Y')(d.date)
   tooltip.value  = props.formatValue(d.value)
   tooltip.value2 = fp2[idx] ? props.formatValue(fp2[idx].value) : ''
