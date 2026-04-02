@@ -84,6 +84,7 @@ const storageTotal = computed(() => {
       <ChartCard
         title="CPU &amp; Memory Utilization"
         :description="brushDescription"
+        :index="4"
       >
         <ChartSkeletonLine v-if="!isMounted" :height="240" :show-minimap="true" />
         <ClientOnly v-else>
@@ -97,6 +98,7 @@ const storageTotal = computed(() => {
             :series-meta="[{ label: 'CPU', color: 'var(--chart-1)' }, { label: 'Mem', color: 'var(--chart-2)' }]"
             :format-value="(v: number) => `${v.toFixed(1)}%`"
             :height="240"
+            animate
             @update:brush-range="brushRange = $event"
           />
         </ClientOnly>
@@ -104,7 +106,7 @@ const storageTotal = computed(() => {
 
       <!-- Sled + Storage side by side -->
       <section class="chart-row">
-        <ChartCard title="Resource Utilization by Sled" description="Current period average · CPU / Mem / Disk">
+        <ChartCard title="Resource Utilization by Sled" description="Current period average · CPU / Mem / Disk" :index="5">
           <ClientOnly>
             <ChartBar
               v-if="isMounted"
@@ -116,7 +118,7 @@ const storageTotal = computed(() => {
           </ClientOnly>
         </ChartCard>
 
-        <ChartCard title="Storage Breakdown" :description="`${storageTotal} total allocated`">
+        <ChartCard title="Storage Breakdown" :description="`${storageTotal} total allocated`" :index="5">
           <ClientOnly>
             <ChartDonut
               v-if="isMounted"

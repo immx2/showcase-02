@@ -1,12 +1,17 @@
 <script setup lang="ts">
-defineProps<{
+const props = defineProps<{
   title: string
   description?: string
+  index?: number
 }>()
+
+const style = computed(() =>
+  props.index !== undefined ? { '--stagger-index': props.index } : undefined
+)
 </script>
 
 <template>
-  <div class="chart-card">
+  <div class="chart-card" :style="style">
     <div class="chart-card-header">
       <h3 class="chart-card-title">{{ title }}</h3>
       <span v-if="description" class="chart-card-desc">{{ description }}</span>
@@ -28,6 +33,13 @@ defineProps<{
   gap: var(--space-4);
   transition: border-color var(--duration-base);
   min-width: 0;
+  animation: chart-enter 0.4s var(--ease-out) backwards;
+  animation-delay: calc(var(--stagger-index, 0) * 80ms);
+}
+
+@keyframes chart-enter {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 
 .chart-card:hover {

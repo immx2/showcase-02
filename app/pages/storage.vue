@@ -63,7 +63,7 @@ const storageKpis = computed<Kpi[]>(() => [
 const donutData = storageBreakdown.map(s => ({ label: s.label, value: s.gib, color: s.color }))
 
 const storageTotalLabel = computed(() => {
-  const t = totalCapacityGib
+  const t = storageBreakdown.reduce((s, d) => s + d.gib, 0)
   return t >= 1024 ? `${(t / 1024).toFixed(1)} TiB total allocated` : `${t} GiB total allocated`
 })
 
@@ -97,7 +97,7 @@ onMounted(() => { isMounted.value = true })
 
       <!-- Charts row -->
       <section class="chart-row">
-        <ChartCard title="Storage Breakdown" :description="storageTotalLabel">
+        <ChartCard title="Storage Breakdown" :description="storageTotalLabel" :index="4">
           <ClientOnly>
             <ChartDonut
               v-if="isMounted"
@@ -109,7 +109,7 @@ onMounted(() => { isMounted.value = true })
           </ClientOnly>
         </ChartCard>
 
-        <ChartCard title="Capacity Growth" description="Total allocated storage · TiB">
+        <ChartCard title="Capacity Growth" description="Total allocated storage · TiB" :index="5">
           <ClientOnly>
             <ChartLine
               v-if="isMounted"
@@ -118,6 +118,7 @@ onMounted(() => { isMounted.value = true })
               :format-value="(v: number) => `${(v / 1024).toFixed(1)} TiB`"
               :height="240"
               :margin-left="62"
+              animate
             />
             <SkeletonLoader v-else height="240px" />
           </ClientOnly>

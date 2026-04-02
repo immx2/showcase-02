@@ -22,6 +22,8 @@ const props = withDefaults(defineProps<{
   formatValue?: (v: number) => string
   height?: number
   marginLeft?: number
+  /** When true, animate the lines drawing in on first render. */
+  animate?: boolean
 }>(), {
   data2: undefined,
   fullData: undefined,
@@ -32,6 +34,7 @@ const props = withDefaults(defineProps<{
   height: 260,
   marginLeft: 44,
   formatValue: (v: number) => `${v.toFixed(1)}%`,
+  animate: false,
 })
 
 const emit = defineEmits<{
@@ -45,16 +48,18 @@ const ctxXAxisRef   = ref<SVGGElement>()
 const brushGroupRef = ref<SVGGElement>()
 // Refs to focus-chart path elements so we can update them imperatively during
 // brush drag without going through Vue's reactivity system at all.
-const linePathEl  = ref<SVGPathElement>()
-const areaPathEl  = ref<SVGPathElement>()
-const line2PathEl = ref<SVGPathElement>()
-const area2PathEl = ref<SVGPathElement>()
+const linePathEl      = ref<SVGPathElement>()
+const areaPathEl      = ref<SVGPathElement>()
+const line2PathEl     = ref<SVGPathElement>()
+const area2PathEl     = ref<SVGPathElement>()
+const animClipRectEl  = ref<SVGRectElement>()
 
 const { width: cw } = useElementSize(containerRef)
 const uid         = useId()
 const gradientId  = computed(() => `line-grad-${uid}`)
 const gradient2Id = computed(() => `line-grad2-${uid}`)
 const clipId      = computed(() => `line-clip-${uid}`)
+const animClipId  = computed(() => `line-anim-clip-${uid}`)
 
 // Context chart constants
 const CTX_H   = 28 // context inner height
@@ -385,9 +390,49 @@ watch(focusAxisFingerprint, () => scheduleChartUpdate(false))
 watch(ctxBrushFingerprint, () => scheduleChartUpdate(true))
 
 onUnmounted(() => {
-  if (chartRaf) { cancelAnimationFrame(chartRaf); chartRaf = 0 }
-  if (brushRaf) { cancelAnimationFrame(brushRaf); brushRaf = 0 }
+  if (chartRaf)  { cancelAnimationFrame(chartRaf);  chartRaf  = 0 }
+  if (brushRaf)  { cancelAnimationFrame(brushRaf);  brushRaf  = 0 }
+  if (animRaf)   { cancelAnimationFrame(animRaf);   animRaf   = 0 }
 })
+
+// ── Line draw-in animation ─────────────────────────────────────────────────────
+// Uses an animated SVG clipPath rect (width 0 → innerWidth) rather than
+// strokeDashoffset, so stroke-dasharray on the dashed memory line is untouched.
+// The clip rect starts at width="0" in the template, preventing any flash.
+
+const hasAnimated  = ref(false)
+const areasVisible = ref(false)
+let   animRaf      = 0
+
+watch(innerWidth, (w) => {
+  if (!props.animate || hasAnimated.value || w <= 0) return
+  hasAnimated.value = true
+
+  const duration = 1000
+  const start    = performance.now()
+
+  // Cubic ease-in-out matching cubic-bezier(0.4, 0, 0.2, 1)
+  function ease(t: number) { return t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t }
+
+  function frame(now: number) {
+    const t = Math.min((now - start) / duration, 1)
+    animClipRectEl.value?.setAttribute('width', String(w * ease(t)))
+    if (t < 1) {
+      animRaf = requestAnimationFrame(frame)
+    }
+    else {
+      animRaf = 0
+      // Widen to innerWidth in case it changed during animation
+      animClipRectEl.value?.setAttribute('width', String(innerWidth.value))
+    }
+  }
+
+  nextTick(() => {
+    animRaf = requestAnimationFrame(frame)
+    // Fade in the area fills after the lines are ~halfway drawn
+    setTimeout(() => { areasVisible.value = true }, 500)
+  })
+}, { immediate: true })
 
 // ── Tooltip ───────────────────────────────────────────────────────────────────
 
@@ -442,6 +487,10 @@ function onMouseLeave() { tooltip.show = false }
         <clipPath :id="clipId">
           <rect :width="innerWidth" :height="focusHeight" />
         </clipPath>
+        <clipPath v-if="animate" :id="animClipId">
+          <!-- width starts at 0; animated imperatively by the draw-in RAF loop -->
+          <rect ref="animClipRectEl" width="0" :height="focusHeight" />
+        </clipPath>
         <linearGradient :id="gradientId" x1="0" y1="0" x2="0" y2="1">
           <stop offset="0%" :stop-color="color" stop-opacity="0.18" />
           <stop offset="100%" :stop-color="color" stop-opacity="0.01" />
@@ -458,13 +507,38 @@ function onMouseLeave() { tooltip.show = false }
         <g ref="xAxisRef" class="axis" :transform="`translate(0,${focusHeight})`" />
 
         <g :clip-path="`url(#${clipId})`">
-          <path ref="areaPathEl" :d="areaPath" :fill="`url(#${gradientId})`" />
-          <path ref="linePathEl" :d="linePath" fill="none" :stroke="color" stroke-width="1.5" class="line-path" />
-
+          <!-- Areas fade in separately so their opacity transition is independent -->
+          <path
+            ref="areaPathEl"
+            :d="areaPath"
+            :fill="`url(#${gradientId})`"
+            class="area-path"
+            :style="animate ? { opacity: areasVisible ? undefined : '0' } : undefined"
+          />
           <template v-if="data2 && data2.length">
-            <path ref="area2PathEl" :d="area2Path" :fill="`url(#${gradient2Id})`" />
-            <path ref="line2PathEl" :d="line2Path" fill="none" :stroke="color2" stroke-width="1.5" stroke-dasharray="4 3" class="line-path" />
+            <path
+              ref="area2PathEl"
+              :d="area2Path"
+              :fill="`url(#${gradient2Id})`"
+              class="area-path"
+              :style="animate ? { opacity: areasVisible ? undefined : '0' } : undefined"
+            />
           </template>
+
+          <!-- Lines revealed by the animated clip rect; stroke-dasharray untouched -->
+          <g :clip-path="animate ? `url(#${animClipId})` : undefined">
+            <path ref="linePathEl" :d="linePath" fill="none" :stroke="color" stroke-width="1.5" class="line-path" />
+            <path
+              v-if="data2 && data2.length"
+              ref="line2PathEl"
+              :d="line2Path"
+              fill="none"
+              :stroke="color2"
+              stroke-width="1.5"
+              stroke-dasharray="4 3"
+              class="line-path"
+            />
+          </g>
         </g>
 
         <!-- Crosshair dot -->
@@ -556,7 +630,8 @@ function onMouseLeave() { tooltip.show = false }
   font-size: 10px;
 }
 
-.line-path { vector-effect: non-scaling-stroke; }
+.line-path  { vector-effect: non-scaling-stroke; }
+.area-path  { transition: opacity 0.8s ease; }
 
 /* Top bar: legend + reset button */
 .chart-top-bar {
