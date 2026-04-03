@@ -407,7 +407,11 @@ const areasVisible = ref(false)
 let   animRaf      = 0
 
 watch(innerWidth, (w) => {
-  if (!props.animate || hasAnimated.value || w <= 0) return
+  if (!props.animate || w <= 0) return
+  if (hasAnimated.value) {
+    animClipRectEl.value?.setAttribute('width', String(w))
+    return
+  }
   hasAnimated.value = true
 
   const duration = 1000

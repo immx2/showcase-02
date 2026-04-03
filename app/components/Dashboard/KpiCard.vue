@@ -69,7 +69,6 @@ const isPositive = computed(() =>
         <ChartSparkline
           :data="kpi!.sparkline"
           :color="isPositive ? 'var(--color-positive)' : 'var(--color-negative)'"
-          :width="140"
           :height="28"
           :animate="true"
         />

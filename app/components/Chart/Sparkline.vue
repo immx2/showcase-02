@@ -4,22 +4,30 @@ import * as d3 from 'd3'
 const props = withDefaults(defineProps<{
   data: number[]
   color?: string
+  /** Fixed pixel width. Omit to fill the container (self-sizing). */
   width?: number
   height?: number
   /** When true, animate the line drawing in on mount. */
   animate?: boolean
 }>(), {
   color: 'var(--chart-1)',
-  width: 100,
+  width: 0,
   height: 32,
   animate: false,
 })
 
+const containerRef = ref<HTMLElement>()
+const { width: containerWidth } = useElementSize(containerRef)
+
+// Use the explicit prop when provided; otherwise fill the container.
+const effectiveWidth = computed(() => props.width || containerWidth.value)
+
 const uid = useId()
-const gradientId = computed(() => `spark-grad-${uid}`)
+const gradientId  = computed(() => `spark-grad-${uid}`)
+const animClipId  = computed(() => `spark-anim-clip-${uid}`)
 
 const xScale = computed(() =>
-  d3.scaleLinear().domain([0, props.data.length - 1]).range([0, props.width]),
+  d3.scaleLinear().domain([0, props.data.length - 1]).range([0, effectiveWidth.value]),
 )
 
 const yScale = computed(() => {
@@ -43,82 +51,93 @@ const areaPath = computed(() =>
     .curve(d3.curveMonotoneX)(props.data) ?? '',
 )
 
-const lineEl = useTemplateRef<SVGPathElement>('lineEl')
-const areaEl = useTemplateRef<SVGPathElement>('areaEl')
-// Keeps the SVG hidden (via :style) from SSR through hydration so the
-// server-rendered paths are never visible before the animation begins.
-const ready = ref(false)
+// ── Draw-in animation (clipRect, same pattern as ChartLine) ──────────────────
+// Animates a clip rect from width=0 → effectiveWidth so strokeDasharray is
+// never touched and getTotalLength() timing is not a concern.
 
-onMounted(() => {
-  if (!props.animate) {
-    ready.value = true
+const animClipRectEl = ref<SVGRectElement>()
+const areasVisible   = ref(false)
+const hasAnimated    = ref(false)
+let   animRaf        = 0
+
+function easeInOut(t: number) { return t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t }
+
+watch(effectiveWidth, (w) => {
+  if (!props.animate || w <= 0) return
+
+  if (hasAnimated.value) {
+    animClipRectEl.value?.setAttribute('width', String(w))
     return
   }
+  hasAnimated.value = true
 
-  // Set up the hidden-but-ready animation state while the SVG is still invisible.
-  if (lineEl.value) {
-    const el = lineEl.value
-    const len = el.getTotalLength()
-    el.style.strokeDasharray = `${len}`
-    el.style.strokeDashoffset = `${len}`
-  }
-  if (areaEl.value) {
-    areaEl.value.style.opacity = '0'
-  }
+  const duration = 900
+  const start    = performance.now()
 
-  // Reveal the SVG — elements inside are hidden via dash/opacity inline styles.
-  ready.value = true
-
-  // Force reflow so the browser commits the hidden state before transitioning.
-  lineEl.value?.getBoundingClientRect()
-
-  requestAnimationFrame(() => {
-    if (lineEl.value) {
-      const el = lineEl.value
-      el.style.transition = 'stroke-dashoffset 0.9s cubic-bezier(0.4, 0, 0.2, 1)'
-      el.style.strokeDashoffset = '0'
-      el.addEventListener('transitionend', () => {
-        el.style.transition = ''
-        el.style.strokeDasharray = ''
-        el.style.strokeDashoffset = ''
-      }, { once: true })
+  function frame(now: number) {
+    const t = Math.min((now - start) / duration, 1)
+    animClipRectEl.value?.setAttribute('width', String(w * easeInOut(t)))
+    if (t < 1) {
+      animRaf = requestAnimationFrame(frame)
     }
-    if (areaEl.value) {
-      const el = areaEl.value
-      el.style.transition = 'opacity 0.6s ease 0.5s'
-      el.style.opacity = '1'
+    else {
+      animRaf = 0
+      animClipRectEl.value?.setAttribute('width', String(effectiveWidth.value))
     }
+  }
+
+  nextTick(() => {
+    animRaf = requestAnimationFrame(frame)
+    setTimeout(() => { areasVisible.value = true }, 450)
   })
-})
+}, { immediate: true })
+
+onUnmounted(() => { if (animRaf) cancelAnimationFrame(animRaf) })
 </script>
 
 <template>
-  <svg :width="width" :height="height" class="sparkline" :style="animate && !ready ? { opacity: 0 } : undefined">
-    <defs>
-      <linearGradient :id="gradientId" x1="0" y1="0" x2="0" y2="1">
-        <stop offset="0%" :stop-color="color" stop-opacity="0.25" />
-        <stop offset="100%" :stop-color="color" stop-opacity="0.02" />
-      </linearGradient>
-    </defs>
-    <path
-      ref="areaEl"
-      :d="areaPath"
-      :fill="`url(#${gradientId})`"
-    />
-    <path
-      ref="lineEl"
-      :d="linePath"
-      fill="none"
-      :stroke="color"
-      stroke-width="1.5"
-    />
-  </svg>
+  <div ref="containerRef" class="sparkline-wrap">
+    <svg :width="props.width || '100%'" :height="height" class="sparkline">
+      <defs>
+        <linearGradient :id="gradientId" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" :stop-color="color" stop-opacity="0.25" />
+          <stop offset="100%" :stop-color="color" stop-opacity="0.02" />
+        </linearGradient>
+        <clipPath v-if="animate" :id="animClipId">
+          <!-- width starts at 0; driven by the RAF loop above -->
+          <rect ref="animClipRectEl" width="0" :height="height" />
+        </clipPath>
+      </defs>
+
+      <path
+        :d="areaPath"
+        :fill="`url(#${gradientId})`"
+        class="area-path"
+        :style="animate ? { opacity: areasVisible ? undefined : '0' } : undefined"
+      />
+      <g :clip-path="animate ? `url(#${animClipId})` : undefined">
+        <path
+          :d="linePath"
+          fill="none"
+          :stroke="color"
+          stroke-width="1.5"
+        />
+      </g>
+    </svg>
+  </div>
 </template>
 
 <style scoped>
+.sparkline-wrap {
+  width: 100%;
+  min-width: 0;
+  overflow: hidden;
+}
+
 .sparkline {
   display: block;
   overflow: visible;
 }
 
+.area-path { transition: opacity 0.8s ease; }
 </style>

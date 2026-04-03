@@ -85,40 +85,40 @@
      2. Semantic tokens — light mode
      ───────────────────────────────────────────────────────────────────────── */
   :root {
-    --color-bg:          oklch(96% 0.000 var(--hue-amber));
-    --color-surface:     oklch(100% 0.000 var(--hue-amber));
-    --color-surface-2:   var(--palette-neutral-200);
-    --surface-selected:  var(--palette-neutral-600);
-    --content-default:   var(--palette-neutral-900);
-    --content-secondary: var(--palette-neutral-600);
-    --content-selected:  var(--palette-neutral-50);
-    --stroke-default:    var(--palette-neutral-300);
-    --color-border-subtle:     var(--palette-neutral-200);
-    --content-accent:    var(--palette-green-600);
-    --content-success:   var(--palette-green-700);
-    --content-notice:    var(--palette-amber-600);
-    --content-error:     var(--palette-red-600);
-    --content-stopped:   var(--palette-neutral-500);
+    --color-bg:               oklch(95% 0.000 var(--hue-amber));
+    --color-surface:          oklch(100% 0.00 var(--hue-amber));
+    --color-surface-2:        oklch(92% 0.000 var(--hue-amber));
+    --color-active-bg:        oklch(55% 0.000 var(--hue-amber));
+    --color-text:             var(--palette-neutral-900);
+    --color-text-muted:       var(--palette-neutral-600);
+    --color-active-text:      oklch(98% 0.000 var(--hue-amber));
+    --color-border:           var(--palette-neutral-300);
+    --color-border-subtle:    var(--palette-neutral-200);
+    --color-accent:           var(--palette-green-600);
+    --color-status-running:   var(--palette-green-700);
+    --color-status-starting:  var(--palette-amber-600);
+    --color-status-faulted:   var(--palette-red-600);
+    --color-status-stopped:   var(--palette-neutral-500);
   }
   
   /* ─────────────────────────────────────────────────────────────────────────
      3. Semantic tokens — dark mode
      ───────────────────────────────────────────────────────────────────────── */
   [data-color-mode="dark"] {
-    --color-bg:          oklch(16% 0.013 var(--hue-blue));
-    --color-surface:     oklch(22% 0.015 var(--hue-blue));
-    --color-surface-2:   oklch(28% 0.016 var(--hue-blue)); /* behind search K, bg pills in table/rack, hover bg, skele shimmer */
-    --surface-selected:  oklch(33% 0.020 var(--hue-blue)); /* all selected pills bg */
-    --content-default:   oklch(90% 0.000 var(--hue-blue));
-    --content-secondary: oklch(68% 0.020 var(--hue-blue));
-    --content-selected:  var(--content-default);
-    --stroke-default:    oklch(30% 0.020 var(--hue-blue)); /* border, scrollbars */
-    --color-border-subtle:     oklch(from var(--stroke-default) l c h / 50%); /* border on a lot mostly invisible, chart tick line */
-    --content-accent:    var(--palette-green-800); /* slash, date range, grn cpu % in table */
-    --content-success:   var(--palette-green-800); /* KPI greens, running in table */
-    --content-notice:    var(--palette-amber-700);
-    --content-error:     var(--palette-red-700); /* KPI reds, faulted in table, high usage in rack, critical */
-    --content-stopped:   var(--palette-teal-500);
+    --color-bg:               oklch(16% 0.013 var(--hue-blue));
+    --color-surface:          oklch(22% 0.015 var(--hue-blue));
+    --color-surface-2:        oklch(28% 0.016 var(--hue-blue)); /* behind search K, bg pills in table/rack, hover bg, skele shimmer */
+    --color-active-bg:        oklch(33% 0.020 var(--hue-blue)); /* all selected pills bg */
+    --color-text:             oklch(90% 0.000 var(--hue-blue));
+    --color-text-muted:       oklch(68% 0.020 var(--hue-blue));
+    --color-active-text:      var(--color-text);
+    --color-border:           oklch(30% 0.020 var(--hue-blue)); /* border, scrollbars */
+    --color-border-subtle:    oklch(from var(--color-border) l c h / 50%); /* border on a lot mostly invisible, chart tick line */
+    --color-accent:           var(--palette-green-800); /* slash, date range, grn cpu % in table */
+    --color-status-running:   var(--palette-green-800); /* KPI greens, running in table */
+    --color-status-starting:  var(--palette-amber-700);
+    --color-status-faulted:   var(--palette-red-700); /* KPI reds, faulted in table, high usage in rack, critical */
+    --color-status-stopped:   var(--palette-teal-500);
   }
   
   /* ─────────────────────────────────────────────────────────────────────────
@@ -126,18 +126,8 @@
         Stable --color-* API; aliases semantic layer.
      ───────────────────────────────────────────────────────────────────────── */
   :root {
-    --color-text:            var(--content-default);
-    --color-text-muted:      var(--content-secondary);
-    --color-accent:          var(--content-accent);
-    --color-border:          var(--stroke-default);
-    --color-active-bg:       var(--surface-selected);
-    --color-active-text:     var(--content-selected);
-    --color-status-running:  var(--content-success);
-    --color-status-starting: var(--content-notice);
-    --color-status-stopped:  var(--content-stopped);
-    --color-status-faulted:  var(--content-error);
-    --color-positive:        var(--content-success);
-    --color-negative:        var(--content-error);
+    --color-positive:        var(--color-status-running);
+    --color-negative:        var(--color-status-faulted);
     --nav-height: 48px;
   }
   
