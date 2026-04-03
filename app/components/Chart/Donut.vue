@@ -48,8 +48,8 @@ onMounted(() => {
       d3.select(pathEl)
         .transition()
         .delay(i * 90)
-        .duration(520)
-        .ease(d3.easeQuadOut)
+        .duration(1000)
+        .ease(d3.easeCubicInOut)
         .attrTween('d', () => {
           const interp = d3.interpolate(arc.startAngle, arc.endAngle)
           return (t: number) => fn({ ...arc, endAngle: interp(t) }) ?? ''

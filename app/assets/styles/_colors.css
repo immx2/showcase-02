@@ -85,7 +85,8 @@
      2. Semantic tokens — light mode
      ───────────────────────────────────────────────────────────────────────── */
   :root {
-    --color-bg:               oklch(98% 0.000 var(--hue-amber));
+    --color-bg:               oklch(95% 0.000 var(--hue-amber));
+    --color-table-row:        oklch(98% 0.000 var(--hue-amber));
     --color-surface:          oklch(100% 0.00 var(--hue-amber));
     --color-surface-2:        oklch(92% 0.000 var(--hue-amber));
     --color-active-bg:        oklch(55% 0.000 var(--hue-amber));
@@ -106,6 +107,7 @@
      ───────────────────────────────────────────────────────────────────────── */
   [data-color-mode="dark"] {
     --color-bg:               oklch(16% 0.013 var(--hue-blue));
+    --color-table-row:        oklch(19% 0.014 var(--hue-blue));
     --color-surface:          oklch(22% 0.015 var(--hue-blue));
     --color-surface-2:        oklch(28% 0.016 var(--hue-blue)); /* behind search K, bg pills in table/rack, hover bg, skele shimmer */
     --color-active-bg:        oklch(33% 0.020 var(--hue-blue)); /* all selected pills bg */

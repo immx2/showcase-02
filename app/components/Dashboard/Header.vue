@@ -121,7 +121,7 @@ const periods: { value: Period; label: string }[] = [
   padding: 0 var(--space-3);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
-  background: transparent;
+  background-color: var(--color-surface);
   color: var(--color-text-muted);
   font-size: var(--text-sm);
   font-family: var(--font-mono);
@@ -170,6 +170,7 @@ const periods: { value: Period; label: string }[] = [
   align-items: center;
   height: 30px;
   border: 1px solid var(--color-border);
+  background-color: var(--color-surface);
   border-radius: var(--radius-md);
   overflow: hidden;
 }

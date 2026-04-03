@@ -93,8 +93,8 @@ function sparklineColor(state: Instance['state']): string {
           <td class="td-name">
             <div class="name-cell">
               <div class="name-meta">
-                <span class="inst-name">{{ inst.name }}</span>
-                <span class="inst-id">{{ inst.id }}</span>
+                <span class="name-primary">{{ inst.name }}</span>
+                <span class="name-sub">{{ inst.id }}</span>
               </div>
               <ChartSparkline
                 v-if="inst.state !== 'stopped' && inst.state !== 'faulted'"
@@ -172,11 +172,6 @@ function sparklineColor(state: Instance['state']): string {
 <style scoped>
 /* ── Instance-specific overrides (shared base lives in _tables.css) ─────── */
 
-/* Faulted row: left-border accent */
-tbody tr.faulted {
-  border-left: 2px solid var(--color-status-faulted);
-}
-
 /* Name cell */
 .td-name { min-width: 160px; }
 
@@ -186,37 +181,6 @@ tbody tr.faulted {
   justify-content: space-between;
   gap: var(--space-3);
 }
-
-.inst-name {
-  font-size: var(--text-sm);
-  font-weight: 500;
-  color: var(--color-text);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.inst-id {
-  font-family: var(--font-mono);
-  font-size: var(--text-xs);
-  color: var(--color-text-muted);
-}
-
-/* Project tag */
-.td-project .project-tag {
-  font-size: var(--text-xs);
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  padding: 1px 6px;
-  border-radius: var(--radius-sm);
-  background: var(--color-surface-2);
-  color: var(--color-text-muted);
-}
-
-.td-project .project-tag.infra { color: var(--chart-1); }
-.td-project .project-tag.web   { color: var(--chart-2); }
-.td-project .project-tag.data  { color: var(--chart-3); }
 
 /* IP */
 .td-ip {

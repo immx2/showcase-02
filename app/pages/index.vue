@@ -193,7 +193,7 @@ const storageTotal = computed(() => {
 }
 
 /* Responsive — container queries respond to actual content width, not viewport */
-@container (width <= 880px) {
+@container (width <= 700px) {
   .kpi-grid {
     grid-template-columns: repeat(2, 1fr);
   }

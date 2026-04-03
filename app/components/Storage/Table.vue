@@ -99,8 +99,8 @@ function formatGib(gib: number): string {
           <!-- Name / ID -->
           <td class="td-name">
             <div class="name-meta">
-              <span class="vol-name">{{ vol.name }}</span>
-              <span class="vol-id">{{ vol.id }}</span>
+              <span class="name-primary">{{ vol.name }}</span>
+              <span class="name-sub">{{ vol.id }}</span>
             </div>
           </td>
 
@@ -155,44 +155,8 @@ function formatGib(gib: number): string {
 <style scoped>
 /* ── Storage-specific overrides (shared base lives in _tables.css) ───────── */
 
-/* Faulted row: left-border accent */
-tbody tr.faulted {
-  border-left: 2px solid var(--color-status-faulted);
-}
-
 /* Name cell */
 .td-name { min-width: 160px; }
-
-.vol-name {
-  font-size: var(--text-sm);
-  font-weight: 500;
-  color: var(--color-text);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.vol-id {
-  font-family: var(--font-mono);
-  font-size: var(--text-xs);
-  color: var(--color-text-muted);
-}
-
-/* Project tag */
-.td-project .project-tag {
-  font-size: var(--text-xs);
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  padding: 1px 6px;
-  border-radius: var(--radius-sm);
-  background: var(--color-surface-2);
-  color: var(--color-text-muted);
-}
-
-.td-project .project-tag.infra { color: var(--chart-1); }
-.td-project .project-tag.web   { color: var(--chart-2); }
-.td-project .project-tag.data  { color: var(--chart-3); }
 
 /* Bar fill colors (amber for storage, red when high) */
 .bar-fill.storage      { background: var(--chart-3); }

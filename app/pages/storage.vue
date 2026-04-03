@@ -226,6 +226,7 @@ onMounted(() => { isMounted.value = true })
   height: 28px;
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
+  background-color: var(--color-surface);
   overflow: hidden;
   margin-left: auto;
 }
@@ -265,7 +266,7 @@ onMounted(() => { isMounted.value = true })
 }
 
 /* Responsive */
-@container (width <= 880px) {
+@container (width <= 700px) {
   .kpi-grid {
     grid-template-columns: repeat(2, 1fr);
   }

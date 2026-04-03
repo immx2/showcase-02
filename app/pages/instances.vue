@@ -175,6 +175,7 @@ const projects: { value: Project; label: string }[] = [
   height: 28px;
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
+  background-color: var(--color-surface);
   overflow: hidden;
 }
 
