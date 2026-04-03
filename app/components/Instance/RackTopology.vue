@@ -94,7 +94,6 @@ function utilizationClass(pct: number): string {
     </div>
 
     <!-- Rack enclosure -->
-    <div class="rack-scroll" role="region" aria-label="Rack topology">
     <div class="rack-enclosure" role="list" aria-label="Rack topology">
       <!-- U-labels + sled rows -->
       <div
@@ -173,7 +172,6 @@ function utilizationClass(pct: number): string {
         </div>
       </div>
     </div>
-    </div>
 
     <!-- Floating tooltip -->
     <Teleport to="body">
@@ -214,6 +212,7 @@ function utilizationClass(pct: number): string {
 <style scoped>
 .rack-wrap {
   width: 100%;
+  overflow-x: auto;
 }
 
 /* Rack header */
@@ -285,11 +284,6 @@ function utilizationClass(pct: number): string {
 .legend-swatch.ok   { background: var(--color-status-running); }
 .legend-swatch.warn { background: var(--color-status-starting); }
 .legend-swatch.crit { background: var(--color-status-faulted); }
-
-/* Rack scroll container */
-.rack-scroll {
-  overflow-x: auto;
-}
 
 /* Rack enclosure */
 .rack-enclosure {
