@@ -72,7 +72,8 @@ const storageLineSeries = storageHistory.map(s => ({ date: s.date, value: s.tota
 
 // ── Mount guard for ClientOnly ────────────────────────────────────────────
 
-const isMounted = ref(false)
+const nuxtApp = useNuxtApp()
+const isMounted = ref(import.meta.client && !nuxtApp.isHydrating)
 onMounted(() => { isMounted.value = true })
 </script>
 
@@ -87,7 +88,7 @@ onMounted(() => { isMounted.value = true })
 
       <!-- KPI row -->
       <section class="kpi-grid" aria-label="Storage metrics">
-        <DashboardKpiCard
+        <CardKpi
           v-for="(kpi, i) in storageKpis"
           :key="kpi.label"
           :kpi="kpi"
@@ -98,7 +99,7 @@ onMounted(() => { isMounted.value = true })
 
       <!-- Charts row -->
       <section class="chart-row">
-        <ChartCard title="Storage Breakdown" :description="storageTotalLabel" :index="4">
+        <CardChart title="Storage Breakdown" :description="storageTotalLabel" :index="4">
           <ClientOnly>
             <ChartDonut
               v-if="isMounted"
@@ -108,9 +109,9 @@ onMounted(() => { isMounted.value = true })
             />
             <SkeletonLoader v-else height="240px" />
           </ClientOnly>
-        </ChartCard>
+        </CardChart>
 
-        <ChartCard title="Capacity Growth" description="Total allocated storage · TiB" :index="5">
+        <CardChart title="Capacity Growth" description="Total allocated storage · TiB" :index="5">
           <ClientOnly>
             <ChartLine
               v-if="isMounted"
@@ -124,7 +125,7 @@ onMounted(() => { isMounted.value = true })
             />
             <SkeletonLoader v-else height="240px" />
           </ClientOnly>
-        </ChartCard>
+        </CardChart>
       </section>
 
       <!-- Volumes table -->

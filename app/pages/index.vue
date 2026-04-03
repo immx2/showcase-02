@@ -26,7 +26,8 @@ const brushDescription = computed(() => {
 
 useHead({ title: 'SaaS Cloud Console' })
 
-const isMounted = ref(false)
+const nuxtApp = useNuxtApp()
+const isMounted = ref(import.meta.client && !nuxtApp.isHydrating)
 onMounted(() => {
   isMounted.value = true
   hasLoaded.value = true
@@ -70,7 +71,7 @@ const storageTotal = computed(() => {
 
       <!-- KPI row -->
       <section class="kpi-grid" aria-label="Key metrics">
-        <DashboardKpiCard
+        <CardKpi
           v-for="(kpi, i) in kpis"
           :key="kpi.label"
           :kpi="kpi"
@@ -81,7 +82,7 @@ const storageTotal = computed(() => {
       </section>
 
       <!-- CPU + Memory time series -->
-      <ChartCard
+      <CardChart
         title="CPU &amp; Memory Utilization"
         :description="brushDescription"
         :index="4"
@@ -102,11 +103,11 @@ const storageTotal = computed(() => {
             @update:brush-range="brushRange = $event"
           />
         </ClientOnly>
-      </ChartCard>
+      </CardChart>
 
       <!-- Sled + Storage side by side -->
       <section class="chart-row">
-        <ChartCard title="Resource Utilization by Sled" description="Current period average · CPU / Mem / Disk" :index="5">
+        <CardChart title="Resource Utilization by Sled" description="Current period average · CPU / Mem / Disk" :index="5">
           <ClientOnly>
             <ChartBar
               v-if="isMounted"
@@ -116,9 +117,9 @@ const storageTotal = computed(() => {
             />
             <SkeletonLoader v-else height="240px" />
           </ClientOnly>
-        </ChartCard>
+        </CardChart>
 
-        <ChartCard title="Storage Breakdown" :description="`${storageTotal} total allocated`" :index="5">
+        <CardChart title="Storage Breakdown" :description="`${storageTotal} total allocated`" :index="5">
           <ClientOnly>
             <ChartDonut
               v-if="isMounted"
@@ -128,11 +129,11 @@ const storageTotal = computed(() => {
             />
             <SkeletonLoader v-else height="240px" />
           </ClientOnly>
-        </ChartCard>
+        </CardChart>
       </section>
 
       <!-- API request heatmap -->
-      <ChartCard
+      <CardChart
         title="API Request Rate"
         description="Requests per hour · last 7 days rolling average"
       >
@@ -144,7 +145,7 @@ const storageTotal = computed(() => {
           />
           <SkeletonLoader v-else height="190px" />
         </ClientOnly>
-      </ChartCard>
+      </CardChart>
     </main>
 
     <AppCommandPalette

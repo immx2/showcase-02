@@ -85,15 +85,15 @@
      2. Semantic tokens — light mode
      ───────────────────────────────────────────────────────────────────────── */
   :root {
-    --color-bg:               oklch(95% 0.000 var(--hue-amber));
+    --color-bg:               oklch(98% 0.000 var(--hue-amber));
     --color-surface:          oklch(100% 0.00 var(--hue-amber));
     --color-surface-2:        oklch(92% 0.000 var(--hue-amber));
     --color-active-bg:        oklch(55% 0.000 var(--hue-amber));
     --color-text:             var(--palette-neutral-900);
     --color-text-muted:       var(--palette-neutral-600);
     --color-active-text:      oklch(98% 0.000 var(--hue-amber));
-    --color-border:           var(--palette-neutral-300);
-    --color-border-subtle:    var(--palette-neutral-200);
+    --color-border:           oklch(85% 0.000 var(--hue-amber));
+    --color-border-subtle:    oklch(from var(--color-border) l c h / 50%);
     --color-accent:           var(--palette-green-600);
     --color-status-running:   var(--palette-green-700);
     --color-status-starting:  var(--palette-amber-600);

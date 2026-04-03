@@ -47,7 +47,7 @@ const isPositive = computed(() =>
 </script>
 
 <template>
-  <div class="kpi-card" :class="{ loading }" :style="{ '--stagger-index': index }">
+  <CardBase :index="index">
     <Transition name="kpi-swap" mode="out-in">
       <div v-if="loading" key="skeleton" class="kpi-skeleton">
         <div class="skel-line skel-label" />
@@ -74,42 +74,20 @@ const isPositive = computed(() =>
         />
       </div>
     </Transition>
-  </div>
+  </CardBase>
 </template>
 
 <style scoped>
-.kpi-card {
-  background: var(--color-surface);
-  border: 1px solid var(--color-border-subtle);
-  border-radius: var(--radius-md);
-  padding: var(--space-4) var(--space-5);
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-2);
-  transition: border-color var(--duration-base);
-  animation: kpi-enter 0.35s var(--ease-out) backwards;
-  animation-delay: calc(var(--stagger-index, 0) * 80ms);
-}
-
-@keyframes kpi-enter {
-  from { opacity: 0; transform: translateY(6px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
-
-.kpi-content {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-2);
-}
-
 .kpi-swap-leave-active { transition: opacity 0.12s ease; }
 .kpi-swap-enter-active { transition: opacity 0.2s ease; }
 
 .kpi-swap-leave-to,
 .kpi-swap-enter-from  { opacity: 0; }
 
-.kpi-card:hover {
-  border-color: var(--color-border);
+.kpi-content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
 }
 
 .kpi-top {
