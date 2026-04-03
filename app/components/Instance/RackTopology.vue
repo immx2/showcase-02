@@ -288,7 +288,8 @@ function utilizationClass(pct: number): string {
 .rack-enclosure {
   border: 1px solid var(--color-border);
   border-radius: var(--radius-lg);
-  overflow: hidden;
+  overflow-x: auto;
+  overflow-y: hidden;
   background: var(--color-bg);
 }
 
@@ -297,6 +298,7 @@ function utilizationClass(pct: number): string {
   display: flex;
   align-items: stretch;
   border-bottom: 1px solid var(--color-border-subtle);
+  min-width: 640px;
 }
 
 .rack-unit:last-child {
