@@ -12,7 +12,7 @@ const {
 
 useHead({ title: 'Instances · SaaS Cloud Console' })
 
-const instancesView = ref<'table' | 'rack'>('table')
+const instancesView = ref<'table' | 'rack'>('rack')
 const selectedInstance = ref<Instance | null>(null)
 
 useEventListener('keydown', (e: KeyboardEvent) => {

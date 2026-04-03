@@ -313,7 +313,6 @@ function utilizationClass(pct: number): string {
   font-size: 9px;
   font-weight: 600;
   color: var(--color-text-muted);
-  opacity: 0.5;
   letter-spacing: 0.04em;
   border-right: 1px solid var(--color-border-subtle);
   background: var(--color-surface);
@@ -326,13 +325,12 @@ function utilizationClass(pct: number): string {
   align-items: center;
   gap: var(--space-5);
   padding: var(--space-3) var(--space-5);
-  background: var(--color-surface);
-  transition: background var(--duration-fast);
+  background: var(--color-table-row);
   min-width: 0;
 }
 
 .sled-card:hover {
-  background: var(--color-surface-2);
+  background: var(--color-surface);
 }
 
 .sled-accent {
@@ -442,8 +440,8 @@ function utilizationClass(pct: number): string {
   height: 22px;
   padding: 0 var(--space-2);
   border: 1px solid var(--color-border-subtle);
-  border-radius: var(--radius-sm);
-  background: var(--color-surface-2);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
   color: var(--color-text);
   font-family: var(--font-mono);
   font-size: 11px;
@@ -453,7 +451,7 @@ function utilizationClass(pct: number): string {
 }
 
 .chip:hover {
-  background: var(--color-border);
+  background: var(--color-surface-2);
   border-color: var(--color-border);
 }
 
