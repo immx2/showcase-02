@@ -24,4 +24,4 @@ logs
 !.env.example
 
 # Local settings files
-*.local.json
+*.local.*
