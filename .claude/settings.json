@@ -1,7 +1,4 @@
 {
-  "enabledPlugins": {
-    "frontend-design@claude-plugins-official": true
-  },
   "permissions": {
     "allow": [
       "Bash(npm run:*)",
@@ -13,5 +10,8 @@
       "WebFetch(domain:nuxt.com)",
       "WebSearch"
     ]
+  },
+  "enabledPlugins": {
+    "frontend-design@claude-plugins-official": true
   }
 }
