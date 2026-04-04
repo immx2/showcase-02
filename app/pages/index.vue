@@ -12,7 +12,6 @@ const {
   allCpuSeries,
   allMemSeries,
   sledMultiBarData,
-  storageDonutData,
   heatmapData,
 } = useDashboard()
 
@@ -54,10 +53,6 @@ useEventListener('keydown', (e: KeyboardEvent) => {
   }
 })
 
-const storageTotal = computed(() => {
-  const totalGib = storageDonutData.value.reduce((s, d) => s + d.value, 0)
-  return totalGib >= 1024 ? `${(totalGib / 1024).toFixed(1)} TiB` : `${totalGib} GiB`
-})
 </script>
 
 <template>
@@ -119,17 +114,7 @@ const storageTotal = computed(() => {
           </ClientOnly>
         </CardChart>
 
-        <CardChart title="Storage Breakdown" :description="`${storageTotal} total allocated`" :index="5">
-          <ClientOnly>
-            <ChartDonut
-              v-if="isMounted"
-              :data="storageDonutData"
-              :size="200"
-              :format-center="(t: number) => t >= 1024 ? `${(t / 1024).toFixed(0)} TiB` : `${t} GiB`"
-            />
-            <SkeletonLoader v-else height="240px" />
-          </ClientOnly>
-        </CardChart>
+        <CardStorageBreakdown :index="5" />
       </section>
 
       <!-- API request heatmap -->

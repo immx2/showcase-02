@@ -24,11 +24,11 @@ const columns: Column[] = [
   { key: 'name',     label: 'Name',     align: 'left',  width: '22%' },
   { key: 'state',    label: 'State',    align: 'left',  width: '10%' },
   { key: 'type',     label: 'Type',     align: 'left',  width: '9%'  },
-  { key: 'sizeGib',  label: 'Size',     align: 'right', width: '8%'  },
+  { key: 'sizeGib',  label: 'Size',     align: 'right', width: '10%' },
   { key: 'usedGib',  label: 'Used',     align: 'right', width: '14%' },
-  { key: null,       label: 'Attached', align: 'left',  width: '16%' },
-  { key: 'project',  label: 'Project',  align: 'left',  width: '8%'  },
-  { key: 'created',  label: 'Created',  align: 'right', width: '10%' },
+  { key: null,       label: 'Attached', align: 'left',  width: '14%' },
+  { key: 'project',  label: 'Project',  align: 'left',  width: '5%'  },
+  { key: 'created',  label: 'Created',  align: 'right', width: '13%' },
 ]
 
 function ariaSortAttr(key: VolumeSortKey | null, sortKey: VolumeSortKey, sortDir: 'asc' | 'desc'): 'ascending' | 'descending' | 'none' {

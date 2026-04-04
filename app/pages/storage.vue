@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import {
   volumes,
-  storageBreakdown,
   storageHistory,
   storageKpiSparklines,
   type Volume,
@@ -60,12 +59,6 @@ const storageKpis = computed<Kpi[]>(() => [
 
 // ── Chart data ───────────────────────────────────────────────────────────
 
-const donutData = storageBreakdown.map(s => ({ label: s.label, value: s.gib, color: s.color }))
-
-const storageTotalLabel = computed(() => {
-  const t = storageBreakdown.reduce((s, d) => s + d.gib, 0)
-  return t >= 1024 ? `${(t / 1024).toFixed(1)} TiB total allocated` : `${t} GiB total allocated`
-})
 
 const storageLineSeries = storageHistory.map(s => ({ date: s.date, value: s.totalGib }))
 
@@ -99,17 +92,7 @@ onMounted(() => { isMounted.value = true })
 
       <!-- Charts row -->
       <section class="chart-row">
-        <CardChart title="Storage Breakdown" :description="storageTotalLabel" :index="4">
-          <ClientOnly>
-            <ChartDonut
-              v-if="isMounted"
-              :data="donutData"
-              :size="200"
-              :format-center="(t: number) => t >= 1024 ? `${(t / 1024).toFixed(0)} TiB` : `${t} GiB`"
-            />
-            <SkeletonLoader v-else height="240px" />
-          </ClientOnly>
-        </CardChart>
+        <CardStorageBreakdown :index="4" />
 
         <CardChart title="Capacity Growth" description="Total allocated storage · TiB" :index="5">
           <ClientOnly>

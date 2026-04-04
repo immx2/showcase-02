@@ -178,8 +178,17 @@ function sparklineColor(state: Instance['state']): string {
 .name-cell {
   display: flex;
   align-items: center;
-  justify-content: space-between;
   gap: var(--space-3);
+}
+
+.name-cell .name-meta {
+  flex: 1;
+  min-width: 0;
+}
+
+.name-cell :deep(.sparkline-wrap) {
+  flex-shrink: 0;
+  width: 44px;
 }
 
 /* IP */
