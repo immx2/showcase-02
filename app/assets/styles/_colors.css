@@ -9,9 +9,6 @@
    :root {
    /* UNDER CONSTRUCTION -- tweaking colors now -- inspired by Oxide console */
 
-   --hue-blue: 220;
-   --hue-amber: 95;
-   
    /* from oxide console */
    --color-bg-dark-blue:   oklch(16.24% 0.0098 255.66deg);
    --color-text-bright:    oklch(90% 0.0001 260deg);
@@ -60,7 +57,8 @@
        chart-1 = CPU      (green hue 163.7)
        chart-2 = memory   (sky)
        chart-3 = disk     (amber)
-       chart-4 = network  (violet) */
+       chart-4 = network  (violet)
+   */
 
    --chart-br: 70%;
    --chart-ch: 0.15;
@@ -85,16 +83,17 @@
      2. Semantic tokens — light mode
      ───────────────────────────────────────────────────────────────────────── */
   :root {
-    --color-bg:               oklch(95% 0.000 var(--hue-amber));
-    --color-table-row:        oklch(98% 0.000 var(--hue-amber));
-    --color-surface:          oklch(100% 0.00 var(--hue-amber));
-    --color-surface-2:        oklch(92% 0.000 var(--hue-amber));
-    --color-active-bg:        oklch(55% 0.000 var(--hue-amber));
-    --color-text:             var(--palette-neutral-900);
-    --color-text-muted:       var(--palette-neutral-600);
-    --color-active-text:      oklch(98% 0.000 var(--hue-amber));
-    --color-border:           oklch(85% 0.000 var(--hue-amber));
-    --color-border-subtle:    oklch(from var(--color-border) l c h / 50%);
+    --hue: 95;
+    --color-bg:               oklch(95% 0.000 var(--hue));
+    --color-table-row:        oklch(98% 0.000 var(--hue));
+    --color-surface:          oklch(100% 0.00 var(--hue));
+    --color-surface-2:        oklch(92% 0.000 var(--hue));
+    --color-text:             oklch(30% 0.000 var(--hue));
+    --color-text-muted:       oklch(53% 0.000 var(--hue));
+    --color-active-bg:        oklch(86% 0.000 var(--hue));
+    --color-active-text:      oklch(30% 0.000 var(--hue));
+    --color-border:           oklch(86% 0.000 var(--hue));
+    --color-border-subtle:    oklch(from var(--color-border) l c h / 60%);
     --color-accent:           var(--palette-green-600);
     --color-status-running:   var(--palette-green-700);
     --color-status-starting:  var(--palette-amber-600);
@@ -106,15 +105,16 @@
      3. Semantic tokens — dark mode
      ───────────────────────────────────────────────────────────────────────── */
   [data-color-mode="dark"] {
-    --color-bg:               oklch(16% 0.013 var(--hue-blue));
-    --color-table-row:        oklch(19% 0.014 var(--hue-blue));
-    --color-surface:          oklch(22% 0.015 var(--hue-blue));
-    --color-surface-2:        oklch(28% 0.016 var(--hue-blue)); /* behind search K, bg pills in table/rack, hover bg, skele shimmer */
-    --color-active-bg:        oklch(33% 0.020 var(--hue-blue)); /* all selected pills bg */
-    --color-text:             oklch(90% 0.000 var(--hue-blue));
-    --color-text-muted:       oklch(68% 0.020 var(--hue-blue));
+    --hue: 220;   
+    --color-bg:               oklch(16% 0.013 var(--hue));
+    --color-table-row:        oklch(19% 0.014 var(--hue));
+    --color-surface:          oklch(22% 0.015 var(--hue));
+    --color-surface-2:        oklch(26% 0.016 var(--hue)); /* behind search K, bg pills in table/rack, hover bg, skele shimmer */
+    --color-active-bg:        oklch(33% 0.020 var(--hue)); /* all selected pills bg */
+    --color-text:             oklch(90% 0.000 var(--hue));
+    --color-text-muted:       oklch(68% 0.020 var(--hue));
     --color-active-text:      var(--color-text);
-    --color-border:           oklch(30% 0.020 var(--hue-blue)); /* border, scrollbars */
+    --color-border:           oklch(30% 0.020 var(--hue)); /* border, scrollbars */
     --color-border-subtle:    oklch(from var(--color-border) l c h / 50%); /* border on a lot mostly invisible, chart tick line */
     --color-accent:           var(--palette-green-800); /* slash, date range, grn cpu % in table */
     --color-status-running:   var(--palette-green-800); /* KPI greens, running in table */

@@ -30,21 +30,18 @@
   /* ── Easing ───────────────────────────────────────────────── */
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
 
-  /* ── Type scale ───────────────────────────────────────────── */
+  /* ── Shadows ──────────────────────────────────────────────── */
+  --shadow-sm: 0 0 5px 0 rgb(0 0 0 / 5%);
 
-  /*    xs   → tiny metadata: IDs, secondary annotations        */
-
-  /*    sm   → descriptions, axis ticks, table metadata         */
-
-  /*    base → body text, table rows, general UI                */
-
-  /*    md   → slightly prominent labels                        */
-
-  /*    lg   → section headings                                 */
-
-  /*    xl   → KPI values, display numbers                      */
-
-  /*    2xl  → large display                                    */
+  /* ── Type scale ───────────────────────────────────────────── 
+        xs   → tiny metadata: IDs, secondary annotations        
+        sm   → descriptions, axis ticks, table metadata         
+        base → body text, table rows, general UI                
+        md   → slightly prominent labels                        
+        lg   → section headings                                 
+        xl   → KPI values, display numbers                      
+        2xl  → large display                                    */
+        
   --text-xs:   11px;
   --text-sm:   12px;
   --text-base: 14px;

@@ -152,7 +152,6 @@ useEventListener('keydown', (e: KeyboardEvent) => {
   height: 28px;
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
-  background-color: var(--color-surface);
   overflow: hidden;
 }
 
@@ -163,7 +162,7 @@ useEventListener('keydown', (e: KeyboardEvent) => {
   height: 100%;
   padding: 0 var(--space-3);
   border: none;
-  background: transparent;
+  background-color: var(--color-surface-2);
   color: var(--color-text-muted);
   font-size: var(--text-xs);
   font-weight: 500;
@@ -178,12 +177,12 @@ useEventListener('keydown', (e: KeyboardEvent) => {
 }
 
 .view-toggle button.active {
-  background: var(--color-active-bg);
+  background: var(--color-surface);
   color: var(--color-active-text);
 }
 
 .view-toggle button:not(.active):hover {
-  background: var(--color-surface-2);
+  background: var(--color-table-row);
   color: var(--color-text);
 }
 

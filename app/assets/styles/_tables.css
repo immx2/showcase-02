@@ -8,8 +8,9 @@
 .table-wrap {
   width: 100%;
   overflow-x: auto;
-  border: 1px solid var(--color-border-subtle);
-  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
 }
 
 .table-wrap table {
@@ -21,7 +22,7 @@
 /* ── Head ──────────────────────────────────────────────────────────────── */
 
 .table-wrap thead {
-  border-bottom: 1px solid var(--color-border);
+  border-bottom: 1px solid var(--color-border-subtle);
 }
 
 .table-wrap th {
@@ -40,12 +41,10 @@
 }
 
 .table-wrap th:first-child {
-  border-radius: var(--radius-lg) 0 0 0;
   padding-left: var(--space-5);
 }
 
 .table-wrap th:last-child {
-  border-radius: 0 var(--radius-lg) 0 0;
   padding-right: var(--space-5);
 }
 

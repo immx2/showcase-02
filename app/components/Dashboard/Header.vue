@@ -128,17 +128,18 @@ const periods: { value: Period; label: string }[] = [
   font-weight: 500;
   cursor: pointer;
   transition: all var(--duration-fast);
+  box-shadow: var(--shadow-sm);
 }
 
 .live-btn:hover {
-  background: var(--color-surface-2);
+  background: var(--color-table-row);
   color: var(--color-text);
 }
 
 .live-btn.active {
   border-color: var(--color-status-running);
   color: var(--color-status-running);
-  background: color-mix(in srgb, var(--color-status-running) 8%, transparent);
+  background: color-mix(in oklch, var(--color-status-running) 8%, transparent);
 }
 
 .live-btn-dot {
@@ -170,16 +171,16 @@ const periods: { value: Period; label: string }[] = [
   align-items: center;
   height: 30px;
   border: 1px solid var(--color-border);
-  background-color: var(--color-surface);
   border-radius: var(--radius-md);
   overflow: hidden;
+  box-shadow: var(--shadow-sm);
 }
 
 .period-pill button {
   height: 100%;
   padding: 0 var(--space-4);
   border: none;
-  background: transparent;
+  background-color: var(--color-surface-2);
   color: var(--color-text-muted);
   font-size: var(--text-sm);
   font-weight: 500;
@@ -193,12 +194,12 @@ const periods: { value: Period; label: string }[] = [
 }
 
 .period-pill button.active {
-  background: var(--color-active-bg);
+  background: var(--color-surface);
   color: var(--color-active-text);
 }
 
 .period-pill button:not(.active):hover {
-  background: var(--color-surface-2);
+  background: var(--color-table-row);
   color: var(--color-text);
 }
 </style>

@@ -31,7 +31,7 @@ const options: { value: Project; label: string }[] = [
   height: 28px;
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
-  background-color: var(--color-surface);
+  background-color: var(--color-surface-2);
   overflow: hidden;
 }
 
@@ -54,12 +54,12 @@ const options: { value: Project; label: string }[] = [
 }
 
 .project-filter button.active {
-  background: var(--color-active-bg);
+  background: var(--color-surface);
   color: var(--color-active-text);
 }
 
 .project-filter button:not(.active):hover {
-  background: var(--color-surface-2);
+  background: var(--color-table-row);
   color: var(--color-text);
 }
 </style>

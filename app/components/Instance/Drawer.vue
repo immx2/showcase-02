@@ -341,7 +341,7 @@ const memSparkline = computed(() =>
   align-items: center;
   gap: var(--space-5);
   padding: var(--space-3) var(--space-4);
-  background: var(--color-surface-2);
+  background: var(--color-table-row);
   border: 1px solid var(--color-border-subtle);
   border-radius: var(--radius-md);
 }
@@ -384,6 +384,7 @@ const memSparkline = computed(() =>
   border: 1px solid var(--color-border-subtle);
   border-radius: var(--radius-md);
   overflow: hidden;
+  background: var(--color-table-row);
 }
 
 .meta-row {
@@ -478,6 +479,7 @@ const memSparkline = computed(() =>
   border: 1px solid var(--color-border-subtle);
   border-radius: var(--radius-md);
   overflow: hidden;
+  background: var(--color-table-row);
 }
 
 .log-row {
