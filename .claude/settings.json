@@ -1,5 +1,17 @@
 {
   "enabledPlugins": {
     "frontend-design@claude-plugins-official": true
+  },
+  "permissions": {
+    "allow": [
+      "Bash(npm run:*)",
+      "Bash(git add:*)",
+      "mcp__nuxt-remote__list-documentation-pages",
+      "mcp__nuxt-remote__list-modules",
+      "mcp__nuxt-remote__get-documentation-page",
+      "mcp__nuxt-remote__get-module",
+      "WebFetch(domain:nuxt.com)",
+      "WebSearch"
+    ]
   }
 }
