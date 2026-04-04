@@ -288,8 +288,7 @@ function utilizationClass(pct: number): string {
 .rack-enclosure {
   border: 1px solid var(--color-border);
   border-radius: var(--radius-lg);
-  overflow-x: auto;
-  overflow-y: hidden;
+  overflow: auto hidden;
   background: var(--color-bg);
 }
 

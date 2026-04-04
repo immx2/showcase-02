@@ -116,17 +116,7 @@ onMounted(() => { isMounted.value = true })
         <div class="section-header">
           <h2 class="section-title">Volumes</h2>
           <span class="section-count">{{ filteredVolumes.length }}</span>
-          <div class="filter-group" role="group" aria-label="Filter by project">
-            <button
-              v-for="proj in (['all', 'infra', 'web', 'data'] as const)"
-              :key="proj"
-              class="filter-btn"
-              :class="{ active: selectedProject === proj }"
-              @click="selectedProject = proj"
-            >
-              {{ proj }}
-            </button>
-          </div>
+          <ProjectFilter v-model="selectedProject" style="margin-left: auto" />
         </div>
         <StorageTable
           :volumes="filteredVolumes"
@@ -204,39 +194,6 @@ onMounted(() => { isMounted.value = true })
   margin: 0;
 }
 
-.filter-group {
-  display: flex;
-  height: 28px;
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
-  background-color: var(--color-surface);
-  overflow: hidden;
-  margin-left: auto;
-}
-
-.filter-btn {
-  padding: 0 var(--space-3);
-  border: none;
-  border-right: 1px solid var(--color-border);
-  background: transparent;
-  color: var(--color-text-muted);
-  font-size: var(--text-xs);
-  font-family: var(--font-mono);
-  cursor: pointer;
-  transition: background var(--duration-fast), color var(--duration-fast);
-}
-
-.filter-btn:last-child { border-right: none; }
-
-.filter-btn:hover {
-  background: var(--color-surface-2);
-  color: var(--color-text);
-}
-
-.filter-btn.active {
-  background: var(--color-active-bg);
-  color: var(--color-active-text);
-}
 
 .section-count {
   font-size: var(--text-xs);

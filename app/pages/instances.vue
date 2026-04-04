@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import type { Project } from '~/composables/useDashboard'
 import type { Instance } from '~/data/analytics'
 
 const {
@@ -24,13 +23,6 @@ useEventListener('keydown', (e: KeyboardEvent) => {
     instancesView.value = instancesView.value === 'table' ? 'rack' : 'table'
   }
 })
-
-const projects: { value: Project; label: string }[] = [
-  { value: 'all',   label: 'All projects' },
-  { value: 'infra', label: 'infra' },
-  { value: 'web',   label: 'web' },
-  { value: 'data',  label: 'data' },
-]
 </script>
 
 <template>
@@ -39,21 +31,7 @@ const projects: { value: Project; label: string }[] = [
       <div class="instances-header">
         <h1 class="page-title">Instances</h1>
         <div class="instances-controls">
-          <div
-            v-show="instancesView === 'table'"
-            class="project-filter"
-            role="group"
-            aria-label="Filter by project"
-          >
-            <button
-              v-for="p in projects"
-              :key="p.value"
-              :class="{ active: selectedProject === p.value }"
-              @click="selectedProject = p.value"
-            >
-              {{ p.label }}
-            </button>
-          </div>
+          <ProjectFilter v-show="instancesView === 'table'" v-model="selectedProject" />
 
           <div class="view-toggle" role="group" aria-label="View mode">
             <button
@@ -168,7 +146,6 @@ const projects: { value: Project; label: string }[] = [
   }
 }
 
-.project-filter,
 .view-toggle {
   display: flex;
   align-items: center;
@@ -179,8 +156,10 @@ const projects: { value: Project; label: string }[] = [
   overflow: hidden;
 }
 
-.project-filter button,
 .view-toggle button {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
   height: 100%;
   padding: 0 var(--space-3);
   border: none;
@@ -194,24 +173,15 @@ const projects: { value: Project; label: string }[] = [
   white-space: nowrap;
 }
 
-.view-toggle button {
-  display: flex;
-  align-items: center;
-  gap: var(--space-2);
-}
-
-.project-filter button + button,
 .view-toggle button + button {
   border-left: 1px solid var(--color-border);
 }
 
-.project-filter button.active,
 .view-toggle button.active {
   background: var(--color-active-bg);
   color: var(--color-active-text);
 }
 
-.project-filter button:not(.active):hover,
 .view-toggle button:not(.active):hover {
   background: var(--color-surface-2);
   color: var(--color-text);
