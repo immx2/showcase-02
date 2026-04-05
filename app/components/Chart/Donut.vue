@@ -87,7 +87,7 @@ onMounted(() => {
         <span class="legend-dot" :style="{ background: seg.color }" />
         <span class="legend-label">{{ seg.label }}</span>
         <span class="legend-value">
-          {{ seg.value >= 1024 ? `${(seg.value / 1024).toFixed(1)} TiB` : `${seg.value} GiB` }}
+          {{ formatGib(seg.value) }}
         </span>
       </li>
     </ul>

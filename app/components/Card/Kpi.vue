@@ -26,8 +26,7 @@ const formattedValue = computed(() => {
     case 'throughput':
       return `${v.toFixed(2)} ${props.kpi!.unit ?? ''}`
     case 'bytes':
-      if (v >= 1024) return `${(v / 1024).toFixed(1)} TiB`
-      return `${Math.round(v)} GiB`
+      return formatGib(v)
     case 'number':
     default:
       if (v >= 1_000_000) return `${(v / 1_000_000).toFixed(1)}M`

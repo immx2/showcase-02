@@ -19,9 +19,8 @@ const periods: { value: Period; label: string }[] = [
 </script>
 
 <template>
-  <header class="dash-header">
-    <div>
-      <h1 class="dash-title">System Overview</h1>
+  <BasePageHeader title="System Overview">
+    <template #subtitle>
       <p class="dash-subtitle">
         Rack 01 — 6 sleds · 24 instances ·
         <span v-if="isLive" class="live-indicator" aria-live="polite">
@@ -30,56 +29,37 @@ const periods: { value: Period; label: string }[] = [
         </span>
         <span v-else>Updated just now</span>
       </p>
-    </div>
+    </template>
 
-    <div class="header-controls">
+    <button
+      :class="['live-btn', { active: isLive }]"
+      :aria-pressed="isLive"
+      title="Toggle live mode (L)"
+      @click="emit('toggle-live')"
+    >
+      <span class="live-btn-dot" aria-hidden="true" />
+      {{ isLive ? 'Live' : 'Live' }}
+      <kbd class="btn-kbd">L</kbd>
+    </button>
+
+    <div class="period-pill" role="group" aria-label="Time period">
       <button
-        :class="['live-btn', { active: isLive }]"
-        :aria-pressed="isLive"
-        title="Toggle live mode (L)"
-        @click="emit('toggle-live')"
+        v-for="p in periods"
+        :key="p.value"
+        :class="{ active: period === p.value }"
+        @click="emit('update:period', p.value)"
       >
-        <span class="live-btn-dot" aria-hidden="true" />
-        {{ isLive ? 'Live' : 'Live' }}
-        <kbd class="btn-kbd">L</kbd>
+        {{ p.label }}
       </button>
-
-      <div class="period-pill" role="group" aria-label="Time period">
-        <button
-          v-for="p in periods"
-          :key="p.value"
-          :class="{ active: period === p.value }"
-          @click="emit('update:period', p.value)"
-        >
-          {{ p.label }}
-        </button>
-      </div>
     </div>
-  </header>
+  </BasePageHeader>
 </template>
 
 <style scoped>
-.dash-header {
-  display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
-  gap: var(--space-4);
-  flex-wrap: wrap;
-}
-
-.dash-title {
-  font-family: var(--font-display);
-  font-size: var(--text-lg);
-  font-weight: 700;
-  letter-spacing: -0.02em;
-  line-height: 1.2;
-}
-
 .dash-subtitle {
   font-size: var(--text-sm);
   color: var(--color-text-muted);
   font-family: var(--font-mono);
-  margin-top: var(--space-1);
   display: flex;
   align-items: center;
   gap: var(--space-2);

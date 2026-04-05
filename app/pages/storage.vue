@@ -1,134 +1,22 @@
 <script setup lang="ts">
-import {
-  volumes,
-  storageHistory,
-  storageKpiSparklines,
-  type Volume,
-} from '~/data/analytics'
-import type { Kpi } from '~/composables/useDashboard'
+import type { Volume } from '~/data/analytics'
 
 useHead({ title: 'Storage — SaaS Cloud Console' })
 
-const { selectedProject, sortKey, sortDir, filteredVolumes, toggleSort } = useStorage()
-
 const selectedVolume = ref<Volume | null>(null)
 
-// ── KPI computed values ──────────────────────────────────────────────────
-
-const totalCapacityGib = volumes.reduce((s, v) => s + v.sizeGib, 0)
-const totalUsedGib     = volumes.reduce((s, v) => s + v.usedGib, 0)
-const usedPct          = totalCapacityGib > 0 ? (totalUsedGib / totalCapacityGib) * 100 : 0
-const prevCapacityGib  = totalCapacityGib - 4096  // vol-ml-training-set added recently
-const prevUsedPct      = usedPct - 4.2
-
-const storageKpis = computed<Kpi[]>(() => [
-  {
-    label: 'Total Capacity',
-    value: totalCapacityGib,
-    previousValue: prevCapacityGib,
-    format: 'bytes',
-    trend: ((totalCapacityGib - prevCapacityGib) / prevCapacityGib) * 100,
-    sparkline: storageKpiSparklines.capacitySparkline,
-  },
-  {
-    label: 'Used',
-    value: usedPct,
-    previousValue: prevUsedPct,
-    format: 'percent',
-    trend: prevUsedPct > 0 ? ((usedPct - prevUsedPct) / prevUsedPct) * 100 : 0,
-    trendPositiveWhenDown: true,
-    sparkline: storageKpiSparklines.usedPctSparkline,
-  },
-  {
-    label: 'Volumes',
-    value: volumes.length,
-    previousValue: volumes.length - 1,
-    format: 'number',
-    trend: ((volumes.length - (volumes.length - 1)) / (volumes.length - 1)) * 100,
-    sparkline: storageKpiSparklines.volumeCountSparkline,
-  },
-  {
-    label: 'Snapshots',
-    value: 23,
-    previousValue: 22,
-    format: 'number',
-    trend: ((23 - 22) / 22) * 100,
-    sparkline: storageKpiSparklines.snapshotCountSparkline,
-  },
-])
-
-// ── Chart data ───────────────────────────────────────────────────────────
-
-
-const storageLineSeries = storageHistory.map(s => ({ date: s.date, value: s.totalGib }))
-
-
-// ── Mount guard for ClientOnly ────────────────────────────────────────────
-
-const nuxtApp = useNuxtApp()
-const isMounted = ref(import.meta.client && !nuxtApp.isHydrating)
-onMounted(() => { isMounted.value = true })
+const isMounted = useIsMounted()
 </script>
 
 <template>
   <div class="page">
-    <main class="storage-content">
+    <BasePageContent>
+      <BasePageHeader title="Storage" />
 
-      <!-- Header -->
-      <div class="storage-header">
-        <h1 class="page-title">Storage</h1>
-      </div>
-
-      <!-- KPI row -->
-      <section class="kpi-grid" aria-label="Storage metrics">
-        <CardKpi
-          v-for="(kpi, i) in storageKpis"
-          :key="kpi.label"
-          :kpi="kpi"
-          :index="i"
-          :loading="!isMounted"
-        />
-      </section>
-
-      <!-- Charts row -->
-      <section class="chart-row">
-        <CardStorageBreakdown :index="4" />
-
-        <CardChart title="Capacity Growth" description="Total allocated storage · TiB" :index="5">
-          <ClientOnly>
-            <ChartLine
-              v-if="isMounted"
-              :data="storageLineSeries"
-              color="var(--chart-3)"
-              :format-value="(v: number) => `${Math.round(v / 1024)} TiB`"
-              :format-tooltip="(v: number) => `${(v / 1024).toFixed(1)} TiB`"
-              :height="240"
-              :margin-left="62"
-              animate
-            />
-            <BaseSkeleton v-else height="240px" />
-          </ClientOnly>
-        </CardChart>
-      </section>
-
-      <!-- Volumes table -->
-      <section class="volumes-section">
-        <div class="section-header">
-          <h2 class="section-title">Volumes</h2>
-          <span class="section-count">{{ filteredVolumes.length }}</span>
-          <ProjectFilter v-model="selectedProject" style="margin-left: auto" />
-        </div>
-        <StorageTable
-          :volumes="filteredVolumes"
-          :sort-key="sortKey"
-          :sort-dir="sortDir"
-          :index="6"
-          @sort="toggleSort"
-          @select="selectedVolume = $event"
-        />
-      </section>
-
-    </main>
+      <StorageSectionKpis :is-mounted="isMounted" :base-index="0" />
+      <StorageSectionCharts :is-mounted="isMounted" :base-index="4" />
+      <StorageSectionVolumes :base-index="6" @select="selectedVolume = $event" />
+    </BasePageContent>
 
     <StorageDrawer
       :volume="selectedVolume"
@@ -144,90 +32,4 @@ onMounted(() => { isMounted.value = true })
   flex-direction: column;
 }
 
-.storage-content {
-  flex: 1;
-  overflow-y: auto;
-  padding: var(--space-5) var(--space-8);
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-4);
-  container-type: inline-size;
-}
-
-/* Header */
-.storage-header {
-  display: flex;
-  align-items: center;
-  gap: var(--space-4);
-}
-
-/* KPI grid */
-.kpi-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: var(--space-4);
-}
-
-/* Charts row */
-.chart-row {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: var(--space-4);
-}
-
-/* Volumes section */
-.volumes-section {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-3);
-}
-
-.section-header {
-  display: flex;
-  align-items: center;
-  gap: var(--space-3);
-}
-
-.section-title {
-  font-size: var(--text-base);
-  font-weight: 600;
-  color: var(--color-text);
-  margin: 0;
-}
-
-
-.section-count {
-  font-size: var(--text-xs);
-  font-family: var(--font-mono);
-  color: var(--color-text-muted);
-  background: var(--color-surface-2);
-  border: 1px solid var(--color-border-subtle);
-  border-radius: var(--radius-sm);
-  padding: 1px 6px;
-}
-
-/* Responsive */
-@container (width <= 700px) {
-  .kpi-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-
-@container (width <= 560px) {
-  .chart-row {
-    grid-template-columns: 1fr;
-  }
-}
-
-@container (width <= 420px) {
-  .kpi-grid {
-    grid-template-columns: 1fr;
-  }
-}
-
-@media (width <= 768px) {
-  .storage-content {
-    padding: var(--space-4);
-  }
-}
 </style>

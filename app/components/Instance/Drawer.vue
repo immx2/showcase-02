@@ -109,29 +109,20 @@ const memSparkline = computed(() =>
 </script>
 
 <template>
-  <AppDrawer
+  <BaseDrawer
     :open="!!instance"
     :label="instance ? `Instance details: ${instance.name}` : ''"
     @close="emit('close')"
   >
     <template v-if="instance">
-      <!-- Header -->
-      <div class="drawer-header">
-            <div class="drawer-title-row">
-              <StatusBadge :status="instance.state" />
-              <h2 class="drawer-title">{{ instance.name }}</h2>
-            </div>
-            <div class="drawer-header-meta">
-              <span class="project-tag" :class="instance.project">{{ instance.project }}</span>
-              <button class="close-btn" aria-label="Close drawer" @click="emit('close')">
-                <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
-                  <path d="M2 2l10 10M12 2L2 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-                </svg>
-              </button>
-            </div>
-          </div>
+      <BaseDrawerHeader
+        :title="instance.name"
+        :status="instance.state"
+        :project="instance.project"
+        @close="emit('close')"
+      />
 
-          <div class="drawer-body">
+      <div class="drawer-body">
             <!-- Sparklines row -->
             <div class="sparklines-row">
               <div class="sparkline-block">
@@ -158,32 +149,14 @@ const memSparkline = computed(() =>
             </div>
 
             <!-- Metadata grid -->
-            <dl class="meta-grid">
-              <div class="meta-row">
-                <dt>Instance ID</dt>
-                <dd>{{ instance.id }}</dd>
-              </div>
-              <div class="meta-row">
-                <dt>IPv4</dt>
-                <dd>{{ instance.ipv4 }}</dd>
-              </div>
-              <div class="meta-row">
-                <dt>vCPUs</dt>
-                <dd>{{ instance.cpuCount }}</dd>
-              </div>
-              <div class="meta-row">
-                <dt>Memory</dt>
-                <dd>{{ instance.memGiB }} GiB</dd>
-              </div>
-              <div class="meta-row">
-                <dt>Sled</dt>
-                <dd>{{ instance.sledId }}</dd>
-              </div>
-              <div class="meta-row">
-                <dt>Uptime</dt>
-                <dd>{{ instance.uptime !== '—' ? instance.uptime : 'Not running' }}</dd>
-              </div>
-            </dl>
+            <BaseDrawerMetaGrid>
+              <div class="meta-row"><dt>Instance ID</dt><dd>{{ instance.id }}</dd></div>
+              <div class="meta-row"><dt>IPv4</dt><dd>{{ instance.ipv4 }}</dd></div>
+              <div class="meta-row"><dt>vCPUs</dt><dd>{{ instance.cpuCount }}</dd></div>
+              <div class="meta-row"><dt>Memory</dt><dd>{{ instance.memGiB }} GiB</dd></div>
+              <div class="meta-row"><dt>Sled</dt><dd>{{ instance.sledId }}</dd></div>
+              <div class="meta-row"><dt>Uptime</dt><dd>{{ instance.uptime !== '—' ? instance.uptime : 'Not running' }}</dd></div>
+            </BaseDrawerMetaGrid>
 
             <!-- Action buttons -->
             <div class="action-row">
@@ -234,97 +207,13 @@ const memSparkline = computed(() =>
             </div>
 
             <!-- Event log -->
-            <div class="event-log">
-              <div class="section-heading">Event log</div>
-              <div class="log-list">
-                <div
-                  v-for="(ev, i) in eventLog"
-                  :key="i"
-                  :class="['log-row', ev.level]"
-                >
-                  <span class="log-dot" aria-hidden="true" />
-                  <span class="log-msg">{{ ev.message }}</span>
-                  <span class="log-time">{{ ev.time }}</span>
-                </div>
-              </div>
-            </div>
+            <BaseDrawerEventLog :events="eventLog" />
         </div>
     </template>
-  </AppDrawer>
+  </BaseDrawer>
 </template>
 
 <style scoped>
-/* Header */
-.drawer-header {
-  flex-shrink: 0;
-  padding: var(--space-4) var(--space-5);
-  border-bottom: 1px solid var(--color-border);
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-2);
-  background: var(--color-surface);
-}
-
-.drawer-title-row {
-  display: flex;
-  align-items: center;
-  gap: var(--space-3);
-}
-
-.drawer-title {
-  font-family: var(--font-mono);
-  font-size: var(--text-sm);
-  font-weight: 600;
-  color: var(--color-text);
-  flex: 1;
-  min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.drawer-header-meta {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.project-tag {
-  font-size: var(--text-xs);
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  padding: 2px 6px;
-  border-radius: var(--radius-sm);
-  background: var(--color-surface-2);
-  color: var(--color-text-muted);
-  font-family: var(--font-mono);
-}
-
-.project-tag.infra { color: var(--chart-1); }
-.project-tag.web   { color: var(--chart-2); }
-.project-tag.data  { color: var(--chart-3); }
-
-.close-btn {
-  width: 28px;
-  height: 28px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border: 1px solid transparent;
-  border-radius: var(--radius-md);
-  background: transparent;
-  color: var(--color-text-muted);
-  cursor: pointer;
-  transition: background var(--duration-fast), color var(--duration-fast);
-}
-
-.close-btn:hover {
-  background: var(--color-surface-2);
-  color: var(--color-text);
-  border-color: var(--color-border);
-}
-
 /* Body */
 .drawer-body {
   flex: 1;
@@ -374,42 +263,6 @@ const memSparkline = computed(() =>
   height: 48px;
   background: var(--color-border);
   flex-shrink: 0;
-}
-
-/* Metadata */
-.meta-grid {
-  display: flex;
-  flex-direction: column;
-  gap: 0;
-  border: 1px solid var(--color-border-subtle);
-  border-radius: var(--radius-md);
-  overflow: hidden;
-  background: var(--color-table-row);
-}
-
-.meta-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: var(--space-2) var(--space-4);
-  border-bottom: 1px solid var(--color-border-subtle);
-}
-
-.meta-row:last-child {
-  border-bottom: none;
-}
-
-.meta-row dt {
-  font-size: var(--text-xs);
-  color: var(--color-text-muted);
-  font-weight: 500;
-}
-
-.meta-row dd {
-  font-family: var(--font-mono);
-  font-size: var(--text-xs);
-  color: var(--color-text);
-  text-align: right;
 }
 
 /* Actions */
@@ -462,67 +315,5 @@ const memSparkline = computed(() =>
   background: color-mix(in srgb, var(--color-status-faulted) 10%, transparent);
 }
 
-/* Event log */
-.section-heading {
-  font-size: var(--text-xs);
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.07em;
-  color: var(--color-text-muted);
-  margin-bottom: var(--space-2);
-}
-
-.log-list {
-  display: flex;
-  flex-direction: column;
-  gap: 0;
-  border: 1px solid var(--color-border-subtle);
-  border-radius: var(--radius-md);
-  overflow: hidden;
-  background: var(--color-table-row);
-}
-
-.log-row {
-  display: grid;
-  grid-template-columns: 8px 1fr auto;
-  align-items: center;
-  gap: var(--space-3);
-  padding: var(--space-2) var(--space-4);
-  border-bottom: 1px solid var(--color-border-subtle);
-  font-size: var(--text-xs);
-}
-
-.log-row:last-child {
-  border-bottom: none;
-}
-
-.log-dot {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  flex-shrink: 0;
-}
-
-.log-row.info    .log-dot { background: var(--color-accent); }
-.log-row.warning .log-dot { background: var(--color-status-starting); }
-.log-row.error   .log-dot { background: var(--color-status-faulted); }
-
-.log-msg {
-  color: var(--color-text);
-  font-family: var(--font-mono);
-  font-size: 11px;
-  line-height: 1.4;
-}
-
-.log-row.warning .log-msg { color: var(--color-status-starting); }
-.log-row.error   .log-msg { color: var(--color-status-faulted); }
-
-.log-time {
-  font-family: var(--font-mono);
-  font-size: 10px;
-  color: var(--color-text-muted);
-  white-space: nowrap;
-  flex-shrink: 0;
-}
 
 </style>

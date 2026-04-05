@@ -5,14 +5,10 @@ const { storageDonutData } = useDashboard()
 
 const description = computed(() => {
   const totalGib = storageDonutData.value.reduce((s, d) => s + d.value, 0)
-  return totalGib >= 1024
-    ? `${(totalGib / 1024).toFixed(1)} TiB total allocated`
-    : `${totalGib} GiB total allocated`
+  return `${formatGib(totalGib)} total allocated`
 })
 
-const nuxtApp = useNuxtApp()
-const isMounted = ref(import.meta.client && !nuxtApp.isHydrating)
-onMounted(() => { isMounted.value = true })
+const isMounted = useIsMounted()
 </script>
 
 <template>

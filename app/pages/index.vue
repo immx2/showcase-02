@@ -25,12 +25,8 @@ const brushDescription = computed(() => {
 
 useHead({ title: 'SaaS Cloud Console' })
 
-const nuxtApp = useNuxtApp()
-const isMounted = ref(import.meta.client && !nuxtApp.isHydrating)
-onMounted(() => {
-  isMounted.value = true
-  hasLoaded.value = true
-})
+const isMounted = useIsMounted()
+onMounted(() => { hasLoaded.value = true })
 
 const selectedInstance = ref<Instance | null>(null)
 
@@ -57,7 +53,7 @@ useEventListener('keydown', (e: KeyboardEvent) => {
 
 <template>
   <div class="page">
-    <main class="dashboard-content">
+    <BasePageContent>
       <DashboardHeader
         v-model:period="period"
         :is-live="isLive"
@@ -131,7 +127,7 @@ useEventListener('keydown', (e: KeyboardEvent) => {
           <BaseSkeleton v-else height="190px" />
         </ClientOnly>
       </CardChart>
-    </main>
+    </BasePageContent>
 
     <AppCommandPalette
       @select-instance="selectedInstance = $event"
@@ -151,16 +147,6 @@ useEventListener('keydown', (e: KeyboardEvent) => {
   height: 100%;
   display: flex;
   flex-direction: column;
-}
-
-.dashboard-content {
-  flex: 1;
-  overflow-y: auto;
-  padding: var(--space-5) var(--space-8);
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-4);
-  container-type: inline-size;
 }
 
 /* KPI row */
@@ -196,10 +182,5 @@ useEventListener('keydown', (e: KeyboardEvent) => {
   }
 }
 
-/* Padding on the container itself can't use @container — viewport query only */
-@media (width <= 768px) {
-  .dashboard-content {
-    padding: var(--space-4);
-  }
-}
+
 </style>

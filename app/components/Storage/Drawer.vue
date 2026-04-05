@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { Volume, InstanceState } from '~/data/analytics'
+import type { Volume } from '~/data/analytics'
 
 const props = defineProps<{
   volume: Volume | null
@@ -7,25 +7,9 @@ const props = defineProps<{
 
 const emit = defineEmits<{ close: [] }>()
 
-function stateToStatus(state: Volume['state']): InstanceState {
-  if (state === 'attached')  return 'running'
-  if (state === 'creating')  return 'starting'
-  if (state === 'faulted')   return 'faulted'
-  return 'stopped'
-}
-
-function formatGib(gib: number): string {
-  return gib >= 1024 ? `${(gib / 1024).toFixed(1)} TiB` : `${gib} GiB`
-}
-
-function usedPct(v: Volume): string {
-  if (v.sizeGib === 0 || v.usedGib === 0) return '—'
-  return `${Math.round((v.usedGib / v.sizeGib) * 100)}%`
-}
-
 interface LogEntry {
   level: 'info' | 'warning' | 'error'
-  msg: string
+  message: string
   time: string
 }
 
@@ -34,85 +18,58 @@ const events = computed<LogEntry[]>(() => {
   if (!v) return []
   if (v.state === 'faulted') {
     return [
-      { level: 'error',   msg: 'I/O error — volume marked faulted',    time: '2d ago' },
-      { level: 'warning', msg: 'Elevated write latency detected',       time: '3d ago' },
-      { level: 'info',    msg: 'Volume created',                        time: v.created },
+      { level: 'error',   message: 'I/O error — volume marked faulted',    time: '2d ago' },
+      { level: 'warning', message: 'Elevated write latency detected',       time: '3d ago' },
+      { level: 'info',    message: 'Volume created',                        time: v.created },
     ]
   }
   if (v.state === 'attached') {
     return [
-      { level: 'info', msg: `Attached to ${v.attachedInstance}`,        time: '—' },
-      { level: 'info', msg: `Snapshot ${v.name}.snap-02 created`,       time: '3d ago' },
-      { level: 'info', msg: `Snapshot ${v.name}.snap-01 created`,       time: '14d ago' },
-      { level: 'info', msg: 'Volume created',                           time: v.created },
+      { level: 'info', message: `Attached to ${v.attachedInstance}`,        time: '—' },
+      { level: 'info', message: `Snapshot ${v.name}.snap-02 created`,       time: '3d ago' },
+      { level: 'info', message: `Snapshot ${v.name}.snap-01 created`,       time: '14d ago' },
+      { level: 'info', message: 'Volume created',                           time: v.created },
     ]
   }
   return [
-    { level: 'info', msg: 'Detached from previous instance', time: '—' },
-    { level: 'info', msg: 'Volume created',                  time: v.created },
+    { level: 'info', message: 'Detached from previous instance', time: '—' },
+    { level: 'info', message: 'Volume created',                  time: v.created },
   ]
 })
 </script>
 
 <template>
-  <AppDrawer
+  <BaseDrawer
     :open="!!volume"
     :label="volume ? `Volume: ${volume.name}` : ''"
     @close="emit('close')"
   >
     <template v-if="volume">
-      <!-- Header -->
-      <div class="drawer-header">
-        <div class="drawer-title-row">
-          <StatusBadge :status="stateToStatus(volume.state)" />
-          <h2 class="drawer-title">{{ volume.name }}</h2>
-        </div>
-        <div class="drawer-header-meta">
-          <span class="project-tag" :class="volume.project">{{ volume.project }}</span>
-          <button class="close-btn" aria-label="Close drawer" @click="emit('close')">
-            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
-              <path d="M2 2l10 10M12 2L2 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-            </svg>
-          </button>
-        </div>
-      </div>
+      <BaseDrawerHeader
+        :title="volume.name"
+        :status="stateToStatus(volume.state)"
+        :project="volume.project"
+        @close="emit('close')"
+      />
 
       <!-- Body -->
       <div class="drawer-body">
         <!-- Metadata -->
-        <dl class="meta-grid">
-          <div class="meta-row">
-            <dt>Type</dt>
-            <dd>{{ volume.type }}</dd>
-          </div>
-          <div class="meta-row">
-            <dt>Size</dt>
-            <dd>{{ formatGib(volume.sizeGib) }}</dd>
-          </div>
+        <BaseDrawerMetaGrid>
+          <div class="meta-row"><dt>Type</dt><dd>{{ volume.type }}</dd></div>
+          <div class="meta-row"><dt>Size</dt><dd>{{ formatGib(volume.sizeGib) }}</dd></div>
           <div class="meta-row">
             <dt>Used</dt>
             <dd>
               {{ volume.usedGib > 0 ? formatGib(volume.usedGib) : '—' }}
-              <span v-if="volume.usedGib > 0" class="meta-pct">({{ usedPct(volume) }})</span>
+              <span v-if="volume.usedGib > 0" class="meta-pct">({{ usedPct(volume) }}%)</span>
             </dd>
           </div>
-          <div class="meta-row">
-            <dt>Attached to</dt>
-            <dd>{{ volume.attachedInstance ?? '—' }}</dd>
-          </div>
-          <div class="meta-row">
-            <dt>Project</dt>
-            <dd>{{ volume.project }}</dd>
-          </div>
-          <div class="meta-row">
-            <dt>Volume ID</dt>
-            <dd>{{ volume.id }}</dd>
-          </div>
-          <div class="meta-row">
-            <dt>Created</dt>
-            <dd>{{ volume.created }}</dd>
-          </div>
-        </dl>
+          <div class="meta-row"><dt>Attached to</dt><dd>{{ volume.attachedInstance ?? '—' }}</dd></div>
+          <div class="meta-row"><dt>Project</dt><dd>{{ volume.project }}</dd></div>
+          <div class="meta-row"><dt>Volume ID</dt><dd>{{ volume.id }}</dd></div>
+          <div class="meta-row"><dt>Created</dt><dd>{{ volume.created }}</dd></div>
+        </BaseDrawerMetaGrid>
 
         <!-- I/O stats -->
         <div class="section-heading">I/O</div>
@@ -137,97 +94,13 @@ const events = computed<LogEntry[]>(() => {
         </div>
 
         <!-- Event log -->
-        <div class="event-log">
-          <div class="section-heading">Event log</div>
-          <div class="log-list">
-            <div
-              v-for="(ev, i) in events"
-              :key="i"
-              :class="['log-row', ev.level]"
-            >
-              <span class="log-dot" aria-hidden="true" />
-              <span class="log-msg">{{ ev.msg }}</span>
-              <span class="log-time">{{ ev.time }}</span>
-            </div>
-          </div>
-        </div>
+        <BaseDrawerEventLog :events="events" />
       </div>
     </template>
-  </AppDrawer>
+  </BaseDrawer>
 </template>
 
 <style scoped>
-/* Header */
-.drawer-header {
-  flex-shrink: 0;
-  padding: var(--space-4) var(--space-5);
-  border-bottom: 1px solid var(--color-border);
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-2);
-  background: var(--color-surface);
-}
-
-.drawer-title-row {
-  display: flex;
-  align-items: center;
-  gap: var(--space-3);
-}
-
-.drawer-title {
-  font-family: var(--font-mono);
-  font-size: var(--text-sm);
-  font-weight: 600;
-  color: var(--color-text);
-  flex: 1;
-  min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.drawer-header-meta {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.project-tag {
-  font-size: var(--text-xs);
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  padding: 2px 6px;
-  border-radius: var(--radius-sm);
-  background: var(--color-surface-2);
-  color: var(--color-text-muted);
-  font-family: var(--font-mono);
-}
-
-.project-tag.infra { color: var(--chart-1); }
-.project-tag.web   { color: var(--chart-2); }
-.project-tag.data  { color: var(--chart-3); }
-
-.close-btn {
-  width: 28px;
-  height: 28px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border: 1px solid transparent;
-  border-radius: var(--radius-md);
-  background: transparent;
-  color: var(--color-text-muted);
-  cursor: pointer;
-  transition: background var(--duration-fast), color var(--duration-fast);
-}
-
-.close-btn:hover {
-  background: var(--color-surface-2);
-  color: var(--color-text);
-  border-color: var(--color-border);
-}
-
 /* Body */
 .drawer-body {
   flex: 1;
@@ -238,61 +111,18 @@ const events = computed<LogEntry[]>(() => {
   gap: var(--space-5);
 }
 
-/* Metadata */
-.meta-grid {
-  display: flex;
-  flex-direction: column;
-  gap: 0;
-  border: 1px solid var(--color-border-subtle);
-  border-radius: var(--radius-md);
-  overflow: hidden;
-}
-
-.meta-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: var(--space-2) var(--space-4);
-  border-bottom: 1px solid var(--color-border-subtle);
-}
-
-.meta-row:last-child { border-bottom: none; }
-
-.meta-row dt {
-  font-size: var(--text-xs);
-  color: var(--color-text-muted);
-  font-weight: 500;
-}
-
-.meta-row dd {
-  font-family: var(--font-mono);
-  font-size: var(--text-xs);
-  color: var(--color-text);
-  text-align: right;
-}
-
 .meta-pct {
   color: var(--color-text-muted);
   margin-left: var(--space-1);
 }
 
-/* Section heading */
-.section-heading {
-  font-size: var(--text-xs);
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.07em;
-  color: var(--color-text-muted);
-  margin-bottom: var(--space-2);
-}
-
-/* I/O row — reuse sparklines-row pattern from Instance/Drawer */
+/* I/O row */
 .sparklines-row {
   display: flex;
   align-items: center;
   gap: var(--space-5);
   padding: var(--space-3) var(--space-4);
-  background: var(--color-surface-2);
+  background: var(--color-table-row);
   border: 1px solid var(--color-border-subtle);
   border-radius: var(--radius-md);
 }
@@ -366,56 +196,5 @@ const events = computed<LogEntry[]>(() => {
   background: color-mix(in srgb, var(--color-status-faulted) 10%, transparent);
 }
 
-/* Event log */
-.event-log { display: flex; flex-direction: column; }
 
-.log-list {
-  display: flex;
-  flex-direction: column;
-  gap: 0;
-  border: 1px solid var(--color-border-subtle);
-  border-radius: var(--radius-md);
-  overflow: hidden;
-}
-
-.log-row {
-  display: grid;
-  grid-template-columns: 8px 1fr auto;
-  align-items: center;
-  gap: var(--space-3);
-  padding: var(--space-2) var(--space-4);
-  border-bottom: 1px solid var(--color-border-subtle);
-  font-size: var(--text-xs);
-}
-
-.log-row:last-child { border-bottom: none; }
-
-.log-dot {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  flex-shrink: 0;
-}
-
-.log-row.info    .log-dot { background: var(--color-accent); }
-.log-row.warning .log-dot { background: var(--color-status-starting); }
-.log-row.error   .log-dot { background: var(--color-status-faulted); }
-
-.log-msg {
-  color: var(--color-text);
-  font-family: var(--font-mono);
-  font-size: 11px;
-  line-height: 1.4;
-}
-
-.log-row.warning .log-msg { color: var(--color-status-starting); }
-.log-row.error   .log-msg { color: var(--color-status-faulted); }
-
-.log-time {
-  font-family: var(--font-mono);
-  font-size: 10px;
-  color: var(--color-text-muted);
-  white-space: nowrap;
-  flex-shrink: 0;
-}
 </style>

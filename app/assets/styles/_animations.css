@@ -1,7 +1,7 @@
 /* ─────────────────────────────────────────────────────────────────────────
    Shared entrance animations
    Apply .card-enter to any element that should animate in with stagger.
-   Set --stagger-index via inline style or a parent to control delay.
+   Set --stagger-index via inline style to control delay.
    ───────────────────────────────────────────────────────────────────────── */
 
 .card-enter {
