@@ -34,7 +34,7 @@ const brushDescription = computed(() => {
         color="var(--chart-1)"
         color2="var(--chart-2)"
         :series-meta="[{ label: 'CPU', color: 'var(--chart-1)' }, { label: 'Mem', color: 'var(--chart-2)' }]"
-        :format-value="(v: number) => `${v.toFixed(1)}%`"
+        :format-value="formatPercent"
         :height="240"
         animate
         @update:brush-range="brushRange = $event"
@@ -49,7 +49,7 @@ const brushDescription = computed(() => {
         <ChartBar
           v-if="isMounted"
           :groups="sledMultiBarData"
-          :format-value="(v: number) => `${v}%`"
+          :format-value="(v: number) => formatPercent(v, 0)"
           :height="240"
         />
         <BaseSkeleton v-else height="240px" />

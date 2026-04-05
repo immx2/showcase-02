@@ -1,9 +1,5 @@
 import type { Volume, InstanceState } from '~/data/analytics'
 
-export function formatGib(gib: number): string {
-  return gib >= 1024 ? `${(gib / 1024).toFixed(1)} TiB` : `${gib} GiB`
-}
-
 export function usedPct(v: Volume): number {
   return v.sizeGib > 0 ? Math.round((v.usedGib / v.sizeGib) * 100) : 0
 }

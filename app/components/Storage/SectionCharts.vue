@@ -19,8 +19,8 @@ const storageLineSeries = storageHistory.map(s => ({ date: s.date, value: s.tota
           v-if="isMounted"
           :data="storageLineSeries"
           color="var(--chart-3)"
-          :format-value="(v: number) => `${Math.round(v / 1024)} TiB`"
-          :format-tooltip="(v: number) => `${(v / 1024).toFixed(1)} TiB`"
+          :format-value="(v: number) => formatGib(v, 0)"
+          :format-tooltip="(v: number) => formatGib(v)"
           :height="240"
           :margin-left="62"
           animate

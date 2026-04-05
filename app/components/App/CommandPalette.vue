@@ -1,16 +1,10 @@
 <script setup lang="ts">
-import { instances } from '~/data/analytics'
-import type { Instance } from '~/data/analytics'
-import type { Period } from '~/composables/useDashboard'
-
-const emit = defineEmits<{
-  'select-instance': [instance: Instance]
-  'set-period': [period: Period]
-  'toggle-view': []
-  'toggle-live': []
-}>()
+import { instances, type Instance } from '~/data/analytics'
 
 const { isOpen, close } = useCommandPalette()
+const { period, toggleLive } = useDashboard()
+const { openInstance } = useAppDrawer()
+const { toggle: toggleView } = useInstancesView()
 const colorMode = useColorMode()
 
 const query = ref('')
@@ -73,11 +67,11 @@ interface ActionItem {
 }
 
 const ALL_ACTIONS = computed<ActionItem[]>(() => [
-  { id: 'period-7d',  label: 'Set period: 7 days',       hint: '7d',  category: 'Period',     action: () => { emit('set-period', '7d');  close() } },
-  { id: 'period-30d', label: 'Set period: 30 days',      hint: '30d', category: 'Period',     action: () => { emit('set-period', '30d'); close() } },
-  { id: 'period-90d', label: 'Set period: 90 days',      hint: '90d', category: 'Period',     action: () => { emit('set-period', '90d'); close() } },
-  { id: 'view-rack',  label: 'Toggle rack / table view', hint: 'R',   category: 'Navigation', action: () => { emit('toggle-view');        close() } },
-  { id: 'live',       label: 'Toggle live mode',         hint: 'L',   category: 'Navigation', action: () => { emit('toggle-live');        close() } },
+  { id: 'period-7d',  label: 'Set period: 7 days',       hint: '7d',  category: 'Period',     action: () => { period.value = '7d';  close() } },
+  { id: 'period-30d', label: 'Set period: 30 days',      hint: '30d', category: 'Period',     action: () => { period.value = '30d'; close() } },
+  { id: 'period-90d', label: 'Set period: 90 days',      hint: '90d', category: 'Period',     action: () => { period.value = '90d'; close() } },
+  { id: 'view-rack',  label: 'Toggle rack / table view', hint: 'R',   category: 'Navigation', action: () => { toggleView();          close() } },
+  { id: 'live',       label: 'Toggle live mode',         hint: 'L',   category: 'Navigation', action: () => { toggleLive();          close() } },
   { id: 'mode-light', label: 'Color mode: Light',                     category: 'Appearance', action: () => { colorMode.preference = 'light';  close() } },
   { id: 'mode-dark',  label: 'Color mode: Dark',                      category: 'Appearance', action: () => { colorMode.preference = 'dark';   close() } },
   { id: 'mode-auto',  label: 'Color mode: Auto',                      category: 'Appearance', action: () => { colorMode.preference = 'system'; close() } },
@@ -135,7 +129,7 @@ function selectByIndex(idx: number) {
   const r = flatResults.value[idx]
   if (!r) return
   if (r.type === 'instance' && r.inst) {
-    emit('select-instance', r.inst)
+    openInstance(r.inst)
     close()
   } else if (r.type === 'action' && r.action) {
     r.action.action()
@@ -222,7 +216,7 @@ const stateColors: Record<string, string> = {
                   :key="inst.id"
                   :class="['result-row', { active: activeIndex === instanceFlatIdx(i) }]"
                   @mouseenter="activeIndex = instanceFlatIdx(i)"
-                  @click="emit('select-instance', inst); close()"
+                  @click="openInstance(inst); close()"
                 >
                   <span
                     class="state-dot"

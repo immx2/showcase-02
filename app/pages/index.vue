@@ -1,14 +1,9 @@
 <script setup lang="ts">
-import type { Instance } from '~/data/analytics'
-
-const { period, hasLoaded, isLive, toggleLive } = useDashboard()
+const { period, isLive, toggleLive } = useDashboard()
 
 useHead({ title: 'SaaS Cloud Console' })
 
 const isMounted = useIsMounted()
-onMounted(() => { hasLoaded.value = true })
-
-const selectedInstance = ref<Instance | null>(null)
 
 useEventListener('keydown', (e: KeyboardEvent) => {
   const focused = document.activeElement
@@ -28,34 +23,13 @@ useEventListener('keydown', (e: KeyboardEvent) => {
 </script>
 
 <template>
-  <div class="page">
-    <BasePageContent>
-      <DashboardHeader
-        v-model:period="period"
-        :is-live="isLive"
-        @toggle-live="toggleLive"
-      />
-      <DashboardSectionKpis :is-mounted="isMounted" :base-index="0" />
-      <DashboardSectionCharts :is-mounted="isMounted" :base-index="4" />
-    </BasePageContent>
-
-    <AppCommandPalette
-      @select-instance="selectedInstance = $event"
-      @set-period="period = $event"
+  <BasePageContent>
+    <DashboardHeader
+      v-model:period="period"
+      :is-live="isLive"
       @toggle-live="toggleLive"
     />
-
-    <InstanceDrawer
-      :instance="selectedInstance"
-      @close="selectedInstance = null"
-    />
-  </div>
+    <DashboardSectionKpis :is-mounted="isMounted" :base-index="0" />
+    <DashboardSectionCharts :is-mounted="isMounted" :base-index="4" />
+  </BasePageContent>
 </template>
-
-<style scoped>
-.page {
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-}
-</style>

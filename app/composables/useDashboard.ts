@@ -7,6 +7,7 @@ import {
   storageHistory,
   heatmapData,
   type MetricSample,
+  type Instance,
   type InstanceState,
 } from '~/data/analytics'
 
@@ -60,25 +61,28 @@ const STATE_ORDER: Record<InstanceState, number> = {
   stopped: 3,
 }
 
-// Live simulation state — module-level so it persists across hot reloads
+// liveSamples and liveInterval are module-level intentionally:
+// - liveSamples uses shallowRef + triggerRef for in-place mutation (perf; useState can't replicate this)
+// - liveInterval is a non-reactive timer handle, not state
 const liveSamples = shallowRef<MetricSample[]>([...metricSamples])
-const isLive = ref(false)
 let liveInterval: ReturnType<typeof setInterval> | undefined
 
 export function useDashboard() {
-  const period = ref<Period>('30d')
-  const selectedProject = ref<Project>('all')
-  const sortKey = ref<SortKey>('cpuPct')
-  const sortDir = ref<SortDir>('desc')
-  const isLoading = ref(false)
-  const hasLoaded = ref(false)
+  // useState provides SSR-safe singletons: same key → same ref across all callers
+  const period = useState<Period>('dashboard.period', () => '30d')
+  const isLive = useState<boolean>('dashboard.isLive', () => false)
 
-  let loadTimer: ReturnType<typeof setTimeout> | undefined
-  watch(period, () => {
-    if (!hasLoaded.value) return
-    isLoading.value = true
-    clearTimeout(loadTimer)
-    loadTimer = setTimeout(() => { isLoading.value = false }, 350)
+  const {
+    selectedProject,
+    sortKey,
+    sortDir,
+    filtered: filteredInstances,
+    toggleSort,
+  } = useTableState<Instance, SortKey>(instances, {
+    initialKey: 'cpuPct',
+    initialDir: 'desc',
+    stateOrder: STATE_ORDER,
+    stringKeys: ['name', 'project'],
   })
 
   function startLive() {
@@ -206,35 +210,6 @@ export function useDashboard() {
     ]
   })
 
-  // Instance table: filter then sort
-  const filteredInstances = computed(() => {
-    const rows = selectedProject.value === 'all'
-      ? instances
-      : instances.filter(i => i.project === selectedProject.value)
-
-    return [...rows].sort((a, b) => {
-      const dir = sortDir.value === 'asc' ? 1 : -1
-      const key = sortKey.value
-
-      if (key === 'state') {
-        return (STATE_ORDER[a.state] - STATE_ORDER[b.state]) * dir
-      }
-      if (key === 'name' || key === 'project') {
-        return a[key].localeCompare(b[key]) * dir
-      }
-      return ((a[key] as number) - (b[key] as number)) * dir
-    })
-  })
-
-  function toggleSort(key: SortKey) {
-    if (sortKey.value === key) {
-      sortDir.value = sortDir.value === 'asc' ? 'desc' : 'asc'
-    } else {
-      sortKey.value = key
-      sortDir.value = 'desc'
-    }
-  }
-
   // Chart data derived from metrics
   const cpuSeries = computed(() =>
     filteredMetrics.value.map(d => ({ date: d.date, value: d.cpu })),
@@ -281,8 +256,6 @@ export function useDashboard() {
     selectedProject,
     sortKey,
     sortDir,
-    isLoading,
-    hasLoaded,
     isLive: readonly(isLive),
     kpis,
     filteredInstances,

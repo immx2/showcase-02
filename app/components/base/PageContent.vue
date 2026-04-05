@@ -6,7 +6,7 @@
 
 <style scoped>
 .page-content {
-  flex: 1;
+  height: 100%;
   overflow-y: auto;
   padding: var(--space-5) var(--space-8);
   display: flex;

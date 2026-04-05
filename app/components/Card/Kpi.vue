@@ -21,17 +21,11 @@ const animated = useAnimatedCounter(target, 600, snap)
 const formattedValue = computed(() => {
   const v = animated.value
   switch (props.kpi!.format) {
-    case 'percent':
-      return `${v.toFixed(1)}%`
-    case 'throughput':
-      return `${v.toFixed(2)} ${props.kpi!.unit ?? ''}`
-    case 'bytes':
-      return formatGib(v)
+    case 'percent':     return formatPercent(v)
+    case 'throughput':  return formatThroughput(v, props.kpi!.unit ?? '')
+    case 'bytes':       return formatGib(v)
     case 'number':
-    default:
-      if (v >= 1_000_000) return `${(v / 1_000_000).toFixed(1)}M`
-      if (v >= 1_000) return `${(v / 1_000).toFixed(1)}K`
-      return Math.round(v).toString()
+    default:            return formatNumber(v)
   }
 })
 

@@ -19,7 +19,7 @@ const isMounted = useIsMounted()
           v-if="isMounted"
           :data="storageDonutData"
           :size="200"
-          :format-center="(t: number) => t >= 1024 ? `${(t / 1024).toFixed(0)} TiB` : `${t} GiB`"
+          :format-center="(t: number) => formatGib(t, 0)"
         />
         <BaseSkeleton v-else height="240px" />
       </ClientOnly>
