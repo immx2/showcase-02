@@ -124,7 +124,7 @@ const memSparkline = computed(() =>
 
       <div class="drawer-body">
             <!-- Sparklines row -->
-            <div class="sparklines-row">
+            <BaseDrawerStatRow>
               <div class="sparkline-block">
                 <span class="spark-label">CPU</span>
                 <ChartSparkline
@@ -135,7 +135,7 @@ const memSparkline = computed(() =>
                 />
                 <span class="spark-value">{{ instance.cpuPct }}%</span>
               </div>
-              <div class="sparklines-divider" />
+              <div class="stat-divider" />
               <div class="sparkline-block">
                 <span class="spark-label">Mem</span>
                 <ChartSparkline
@@ -146,7 +146,7 @@ const memSparkline = computed(() =>
                 />
                 <span class="spark-value">{{ instance.memPct }}%</span>
               </div>
-            </div>
+            </BaseDrawerStatRow>
 
             <!-- Metadata grid -->
             <BaseDrawerMetaGrid>
@@ -160,8 +160,8 @@ const memSparkline = computed(() =>
 
             <!-- Action buttons -->
             <div class="action-row">
-              <button
-                class="action-btn primary"
+              <BaseButton
+                variant="primary"
                 :disabled="!canSSH"
                 :title="canSSH ? 'Copy IP for SSH' : 'Instance must be running'"
                 @click="sshCopy"
@@ -171,9 +171,8 @@ const memSparkline = computed(() =>
                   <path d="M4 7l2 1.5L4 10M8 9h2" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
                 </svg>
                 SSH
-              </button>
-              <button
-                class="action-btn"
+              </BaseButton>
+              <BaseButton
                 :disabled="!canSSH"
                 title="Queue a reboot"
                 @click="reboot"
@@ -183,27 +182,26 @@ const memSparkline = computed(() =>
                   <path d="M7 1l2 2-2 2" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
                 </svg>
                 Reboot
-              </button>
-              <button
+              </BaseButton>
+              <BaseButton
                 v-if="canStop"
-                class="action-btn danger"
+                variant="danger"
                 @click="stopInstance"
               >
                 <svg width="12" height="12" viewBox="0 0 14 14" fill="none" aria-hidden="true">
                   <rect x="3" y="3" width="8" height="8" rx="1" stroke="currentColor" stroke-width="1.3"/>
                 </svg>
                 Stop
-              </button>
-              <button
+              </BaseButton>
+              <BaseButton
                 v-if="canStart"
-                class="action-btn"
                 @click="startInstance"
               >
                 <svg width="12" height="12" viewBox="0 0 14 14" fill="none" aria-hidden="true">
                   <path d="M4 2.5l7 4.5-7 4.5V2.5Z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/>
                 </svg>
                 Start
-              </button>
+              </BaseButton>
             </div>
 
             <!-- Event log -->
@@ -217,6 +215,7 @@ const memSparkline = computed(() =>
 /* Body */
 .drawer-body {
   flex: 1;
+  min-height: 0;
   overflow-y: auto;
   padding: var(--space-4) var(--space-5);
   display: flex;
@@ -224,96 +223,12 @@ const memSparkline = computed(() =>
   gap: var(--space-5);
 }
 
-/* Sparklines */
-.sparklines-row {
-  display: flex;
-  align-items: center;
-  gap: var(--space-5);
-  padding: var(--space-3) var(--space-4);
-  background: var(--color-table-row);
-  border: 1px solid var(--color-border-subtle);
-  border-radius: var(--radius-md);
-}
-
-.sparkline-block {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.spark-label {
-  font-family: var(--font-mono);
-  font-size: 10px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: var(--color-text-muted);
-}
-
-.spark-value {
-  font-family: var(--font-mono);
-  font-size: var(--text-sm);
-  font-weight: 600;
-  color: var(--color-text);
-}
-
-.sparklines-divider {
-  width: 1px;
-  height: 48px;
-  background: var(--color-border);
-  flex-shrink: 0;
-}
-
 /* Actions */
 .action-row {
+  flex-shrink: 0;
   display: flex;
   gap: var(--space-2);
   flex-wrap: wrap;
 }
-
-.action-btn {
-  display: flex;
-  align-items: center;
-  gap: var(--space-2);
-  height: 30px;
-  padding: 0 var(--space-3);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
-  background: transparent;
-  color: var(--color-text);
-  font-size: var(--text-xs);
-  font-family: var(--font-mono);
-  cursor: pointer;
-  transition: background var(--duration-fast), color var(--duration-fast);
-}
-
-.action-btn:disabled {
-  opacity: 0.4;
-  cursor: not-allowed;
-}
-
-.action-btn:hover:not(:disabled) {
-  background: var(--color-surface-2);
-}
-
-.action-btn.primary {
-  border-color: var(--color-accent);
-  color: var(--color-accent);
-}
-
-.action-btn.primary:hover:not(:disabled) {
-  background: color-mix(in srgb, var(--color-accent) 10%, transparent);
-}
-
-.action-btn.danger {
-  border-color: var(--color-status-faulted);
-  color: var(--color-status-faulted);
-}
-
-.action-btn.danger:hover:not(:disabled) {
-  background: color-mix(in srgb, var(--color-status-faulted) 10%, transparent);
-}
-
 
 </style>

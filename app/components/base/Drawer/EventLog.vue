@@ -24,6 +24,7 @@ defineProps<{
 
 <style scoped>
 .event-log {
+  flex-shrink: 0;
   display: flex;
   flex-direction: column;
 }
@@ -43,7 +44,8 @@ defineProps<{
   gap: 0;
   border: 1px solid var(--color-border-subtle);
   border-radius: var(--radius-md);
-  overflow: hidden;
+  max-height: 240px;
+  overflow-y: auto;
   background: var(--color-table-row);
 }
 

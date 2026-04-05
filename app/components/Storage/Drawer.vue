@@ -72,25 +72,24 @@ const events = computed<LogEntry[]>(() => {
         </BaseDrawerMetaGrid>
 
         <!-- I/O stats -->
-        <div class="section-heading">I/O</div>
-        <div class="sparklines-row">
+        <BaseDrawerStatRow>
           <div class="sparkline-block">
             <span class="spark-label">Read IOPS</span>
             <span class="spark-value">{{ volume.iopsRead > 0 ? volume.iopsRead.toLocaleString() : '—' }}</span>
           </div>
-          <div class="sparklines-divider" />
+          <div class="stat-divider" />
           <div class="sparkline-block">
             <span class="spark-label">Write IOPS</span>
             <span class="spark-value">{{ volume.iopsWrite > 0 ? volume.iopsWrite.toLocaleString() : '—' }}</span>
           </div>
-        </div>
+        </BaseDrawerStatRow>
 
         <!-- Actions -->
         <div class="action-row">
-          <button class="action-btn" disabled>Attach</button>
-          <button class="action-btn" disabled>Detach</button>
-          <button class="action-btn" disabled>Snapshot</button>
-          <button class="action-btn danger" disabled>Delete</button>
+          <BaseButton disabled>Attach</BaseButton>
+          <BaseButton disabled>Detach</BaseButton>
+          <BaseButton disabled>Snapshot</BaseButton>
+          <BaseButton variant="danger" disabled>Delete</BaseButton>
         </div>
 
         <!-- Event log -->
@@ -104,6 +103,7 @@ const events = computed<LogEntry[]>(() => {
 /* Body */
 .drawer-body {
   flex: 1;
+  min-height: 0;
   overflow-y: auto;
   padding: var(--space-4) var(--space-5);
   display: flex;
@@ -116,85 +116,12 @@ const events = computed<LogEntry[]>(() => {
   margin-left: var(--space-1);
 }
 
-/* I/O row */
-.sparklines-row {
-  display: flex;
-  align-items: center;
-  gap: var(--space-5);
-  padding: var(--space-3) var(--space-4);
-  background: var(--color-table-row);
-  border: 1px solid var(--color-border-subtle);
-  border-radius: var(--radius-md);
-}
-
-.sparkline-block {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.spark-label {
-  font-family: var(--font-mono);
-  font-size: 10px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: var(--color-text-muted);
-}
-
-.spark-value {
-  font-family: var(--font-mono);
-  font-size: var(--text-sm);
-  font-weight: 600;
-  color: var(--color-text);
-}
-
-.sparklines-divider {
-  width: 1px;
-  height: 48px;
-  background: var(--color-border);
-  flex-shrink: 0;
-}
-
 /* Actions */
 .action-row {
+  flex-shrink: 0;
   display: flex;
   gap: var(--space-2);
   flex-wrap: wrap;
 }
-
-.action-btn {
-  display: flex;
-  align-items: center;
-  gap: var(--space-2);
-  height: 30px;
-  padding: 0 var(--space-3);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
-  background: transparent;
-  color: var(--color-text);
-  font-size: var(--text-xs);
-  font-family: var(--font-mono);
-  cursor: pointer;
-  transition: background var(--duration-fast), color var(--duration-fast);
-}
-
-.action-btn:disabled {
-  opacity: 0.4;
-  cursor: not-allowed;
-}
-
-.action-btn:hover:not(:disabled) { background: var(--color-surface-2); }
-
-.action-btn.danger {
-  border-color: var(--color-status-faulted);
-  color: var(--color-status-faulted);
-}
-
-.action-btn.danger:hover:not(:disabled) {
-  background: color-mix(in srgb, var(--color-status-faulted) 10%, transparent);
-}
-
 
 </style>

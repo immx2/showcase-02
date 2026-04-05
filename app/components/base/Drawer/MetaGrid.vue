@@ -6,6 +6,7 @@
 
 <style scoped>
 .meta-grid {
+  flex-shrink: 0;
   display: flex;
   flex-direction: column;
   gap: 0;
