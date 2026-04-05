@@ -72,11 +72,12 @@ useEventListener('keydown', (e: KeyboardEvent) => {
               :instances="filteredInstances"
               :sort-key="sortKey"
               :sort-dir="sortDir"
+              :index="0"
               @sort="toggleSort"
               @select="selectedInstance = $event"
             />
             <template #fallback>
-              <SkeletonLoader height="320px" />
+              <BaseSkeleton height="320px" />
             </template>
           </ClientOnly>
         </div>
@@ -85,7 +86,7 @@ useEventListener('keydown', (e: KeyboardEvent) => {
           <ClientOnly>
             <InstanceRackTopology @select-instance="selectedInstance = $event" />
             <template #fallback>
-              <SkeletonLoader height="400px" />
+              <BaseSkeleton height="400px" />
             </template>
           </ClientOnly>
         </div>

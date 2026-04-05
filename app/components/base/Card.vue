@@ -9,7 +9,7 @@ const style = computed(() =>
 </script>
 
 <template>
-  <div class="base-card" :style="style">
+  <div class="base-card card-enter" :style="style">
     <slot />
   </div>
 </template>
@@ -23,13 +23,6 @@ const style = computed(() =>
   display: flex;
   flex-direction: column;
   min-width: 0;
-  animation: card-enter 0.4s var(--ease-out) backwards;
-  animation-delay: calc(var(--stagger-index, 0) * 80ms);
   box-shadow: var(--shadow-sm);
-}
-
-@keyframes card-enter {
-  from { opacity: 0; transform: translateY(8px); }
-  to   { opacity: 1; transform: translateY(0); }
 }
 </style>

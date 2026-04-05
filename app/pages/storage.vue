@@ -106,7 +106,7 @@ onMounted(() => { isMounted.value = true })
               :margin-left="62"
               animate
             />
-            <SkeletonLoader v-else height="240px" />
+            <BaseSkeleton v-else height="240px" />
           </ClientOnly>
         </CardChart>
       </section>
@@ -122,6 +122,7 @@ onMounted(() => { isMounted.value = true })
           :volumes="filteredVolumes"
           :sort-key="sortKey"
           :sort-dir="sortDir"
+          :index="6"
           @sort="toggleSort"
           @select="selectedVolume = $event"
         />

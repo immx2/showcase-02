@@ -25,7 +25,7 @@ onMounted(() => { isMounted.value = true })
           :size="200"
           :format-center="(t: number) => t >= 1024 ? `${(t / 1024).toFixed(0)} TiB` : `${t} GiB`"
         />
-        <SkeletonLoader v-else height="240px" />
+        <BaseSkeleton v-else height="240px" />
       </ClientOnly>
     </div>
   </CardChart>

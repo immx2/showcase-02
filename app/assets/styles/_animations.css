@@ -1,0 +1,15 @@
+/* ─────────────────────────────────────────────────────────────────────────
+   Shared entrance animations
+   Apply .card-enter to any element that should animate in with stagger.
+   Set --stagger-index via inline style or a parent to control delay.
+   ───────────────────────────────────────────────────────────────────────── */
+
+.card-enter {
+  animation: card-enter 0.4s var(--ease-out) backwards;
+  animation-delay: calc(var(--stagger-index, 0) * 80ms);
+}
+
+@keyframes card-enter {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}

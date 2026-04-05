@@ -47,7 +47,7 @@ const isPositive = computed(() =>
 </script>
 
 <template>
-  <CardBase :index="index">
+  <BaseCard :index="index">
     <Transition name="kpi-swap" mode="out-in">
       <div v-if="loading" key="skeleton" class="kpi-skeleton">
         <div class="skel-line skel-label" />
@@ -65,16 +65,18 @@ const isPositive = computed(() =>
             {{ trendFormatted }}
           </span>
         </div>
-        <div class="kpi-value">{{ formattedValue }}</div>
-        <ChartSparkline
+        <div class="kpi-bottom">
+          <div class="kpi-value">{{ formattedValue }}</div>
+          <ChartSparkline
           :data="kpi!.sparkline"
           :color="isPositive ? 'var(--color-positive)' : 'var(--color-negative)'"
           :height="28"
           :animate="true"
-        />
+          />
+        </div>
       </div>
     </Transition>
-  </CardBase>
+  </BaseCard>
 </template>
 
 <style scoped>
@@ -88,6 +90,14 @@ const isPositive = computed(() =>
   display: flex;
   flex-direction: column;
   gap: var(--space-2);
+  flex: 1;
+}
+
+.kpi-bottom {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin-top: auto;
 }
 
 .kpi-top {

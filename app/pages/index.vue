@@ -110,7 +110,7 @@ useEventListener('keydown', (e: KeyboardEvent) => {
               :format-value="(v: number) => `${v}%`"
               :height="240"
             />
-            <SkeletonLoader v-else height="240px" />
+            <BaseSkeleton v-else height="240px" />
           </ClientOnly>
         </CardChart>
 
@@ -128,7 +128,7 @@ useEventListener('keydown', (e: KeyboardEvent) => {
             :data="heatmapData"
             :height="190"
           />
-          <SkeletonLoader v-else height="190px" />
+          <BaseSkeleton v-else height="190px" />
         </ClientOnly>
       </CardChart>
     </main>

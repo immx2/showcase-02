@@ -7,7 +7,12 @@ const props = defineProps<{
   instances: Instance[]
   sortKey: SortKey
   sortDir: SortDir
+  index?: number
 }>()
+
+const style = computed(() =>
+  props.index !== undefined ? { '--stagger-index': props.index } : undefined
+)
 
 const emit = defineEmits<{
   sort: [key: SortKey]
@@ -46,7 +51,7 @@ function sparklineColor(state: Instance['state']): string {
 </script>
 
 <template>
-  <div class="table-wrap" role="region" aria-label="Instance list">
+  <div class="table-wrap card-enter" role="region" aria-label="Instance list" :style="style">
     <table class="instance-table">
       <thead>
         <tr>

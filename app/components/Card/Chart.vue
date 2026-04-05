@@ -7,7 +7,7 @@ defineProps<{
 </script>
 
 <template>
-  <CardBase :index="index">
+  <BaseCard :index="index">
     <div class="chart-card-inner">
       <div class="chart-card-header">
         <h3 class="chart-card-title">{{ title }}</h3>
@@ -17,7 +17,7 @@ defineProps<{
         <slot />
       </div>
     </div>
-  </CardBase>
+  </BaseCard>
 </template>
 
 <style scoped>

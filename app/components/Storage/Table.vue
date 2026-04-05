@@ -2,11 +2,16 @@
 import type { Volume, InstanceState } from '~/data/analytics'
 import type { VolumeSortKey } from '~/composables/useStorage'
 
-defineProps<{
+const props = defineProps<{
   volumes: Volume[]
   sortKey: VolumeSortKey
   sortDir: 'asc' | 'desc'
+  index?: number
 }>()
+
+const style = computed(() =>
+  props.index !== undefined ? { '--stagger-index': props.index } : undefined
+)
 
 const emit = defineEmits<{
   sort: [key: VolumeSortKey]
@@ -53,7 +58,7 @@ function formatGib(gib: number): string {
 </script>
 
 <template>
-  <div class="table-wrap" role="region" aria-label="Volume list">
+  <div class="table-wrap card-enter" role="region" aria-label="Volume list" :style="style">
     <table class="storage-table">
       <thead>
         <tr>
