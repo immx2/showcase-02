@@ -9,7 +9,7 @@ const { toasts } = useToast()
         <div
           v-for="toast in toasts"
           :key="toast.id"
-          :class="['toast', toast.type]"
+          :class="['toast', 'ui-surface', toast.type]"
           role="status"
         >
           <span class="toast-dot" aria-hidden="true" />
@@ -41,12 +41,8 @@ const { toasts } = useToast()
   align-items: center;
   gap: var(--space-3);
   padding: var(--space-3) var(--space-4);
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
   font-size: var(--text-sm);
   font-family: var(--font-mono);
-  color: var(--color-text);
   box-shadow: 0 8px 24px rgb(0 0 0 / 18%);
   white-space: nowrap;
   pointer-events: auto;

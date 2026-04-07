@@ -5,7 +5,7 @@ defineProps<{
 </script>
 
 <template>
-  <button class="action-btn" :class="variant">
+  <button class="action-btn ui-surface" :class="variant">
     <slot />
   </button>
 </template>
@@ -17,10 +17,7 @@ defineProps<{
   gap: var(--space-2);
   height: 30px;
   padding: 0 var(--space-3);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
   background: transparent;
-  color: var(--color-text);
   font-size: var(--text-xs);
   font-family: var(--font-mono);
   cursor: pointer;

@@ -3,7 +3,7 @@ const { instancesView } = useInstancesView()
 </script>
 
 <template>
-  <div class="view-toggle" role="group" aria-label="View mode">
+  <div class="view-toggle ui-surface" role="group" aria-label="View mode">
     <button
       :class="{ active: instancesView === 'table' }"
       :aria-pressed="instancesView === 'table'"
@@ -39,8 +39,6 @@ const { instancesView } = useInstancesView()
   display: flex;
   align-items: center;
   height: 28px;
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
   overflow: hidden;
 }
 

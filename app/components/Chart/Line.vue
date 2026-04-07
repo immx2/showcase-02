@@ -598,22 +598,20 @@ function onMouseLeave() { tooltip.show = false }
     </svg>
 
     <!-- Tooltip -->
-    <div
-      v-if="tooltip.show"
-      class="tooltip"
-      :style="{ left: `clamp(72px, ${tooltip.x}px, calc(100% - 72px))`, top: `${tooltip.y - 12}px` }"
-    >
-      <span class="tooltip-date">{{ tooltip.date }}</span>
-      <span class="tooltip-row">
-        <span class="tooltip-dot" :style="{ background: color }" />
-        {{ tooltip.value }}
-        <template v-if="tooltip.value2">
-          <span class="tooltip-sep">·</span>
-          <span class="tooltip-dot" :style="{ background: color2 }" />
-          {{ tooltip.value2 }}
-        </template>
-      </span>
-    </div>
+    <ChartTooltip :show="tooltip.show" :x="tooltip.x" :y="tooltip.y - 12">
+      <div class="tt-inner">
+        <span class="tooltip-date">{{ tooltip.date }}</span>
+        <span class="tooltip-row">
+          <span class="tooltip-dot" :style="{ background: color }" />
+          {{ tooltip.value }}
+          <template v-if="tooltip.value2">
+            <span class="tooltip-sep">·</span>
+            <span class="tooltip-dot" :style="{ background: color2 }" />
+            {{ tooltip.value2 }}
+          </template>
+        </span>
+      </div>
+    </ChartTooltip>
   </div>
 </template>
 
@@ -721,19 +719,11 @@ function onMouseLeave() { tooltip.show = false }
 }
 
 /* Tooltip */
-.tooltip {
-  position: absolute;
-  transform: translate(-50%, -100%);
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
-  padding: var(--space-2) var(--space-3);
-  pointer-events: none;
+.tt-inner {
   display: flex;
   flex-direction: column;
   gap: 3px;
-  box-shadow: 0 4px 12px rgb(0 0 0 / 15%);
-  z-index: 10;
+  padding: var(--space-2) var(--space-3);
 }
 
 .tooltip-date {

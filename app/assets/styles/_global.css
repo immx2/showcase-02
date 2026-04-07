@@ -56,6 +56,16 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+/* ── Surface primitive ───────────────────────────────────────────────────── */
+
+.ui-surface {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  color: var(--color-text);
+  box-shadow: var(--shadow-sm);
+}
+
 /* ── Page title ──────────────────────────────────────────────────────────── */
 
 .page-title {

@@ -32,7 +32,7 @@ const periods: { value: Period; label: string }[] = [
     </template>
 
     <button
-      :class="['live-btn', { active: isLive }]"
+      :class="['live-btn', 'ui-surface', { active: isLive }]"
       :aria-pressed="isLive"
       title="Toggle live mode (L)"
       @click="emit('toggle-live')"
@@ -99,16 +99,12 @@ const periods: { value: Period; label: string }[] = [
   gap: var(--space-2);
   height: 30px;
   padding: 0 var(--space-3);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
-  background-color: var(--color-surface);
   color: var(--color-text-muted);
   font-size: var(--text-sm);
   font-family: var(--font-mono);
   font-weight: 500;
   cursor: pointer;
   transition: all var(--duration-fast);
-  box-shadow: var(--shadow-sm);
 }
 
 .live-btn:hover {

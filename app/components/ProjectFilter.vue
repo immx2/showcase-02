@@ -12,7 +12,7 @@ const options: { value: Project; label: string }[] = [
 </script>
 
 <template>
-  <div class="project-filter" role="group" aria-label="Filter by project">
+  <div class="project-filter ui-surface" role="group" aria-label="Filter by project">
     <button
       v-for="opt in options"
       :key="opt.value"
@@ -29,9 +29,6 @@ const options: { value: Project; label: string }[] = [
   display: flex;
   align-items: center;
   height: 28px;
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
-  background-color: var(--color-surface-2);
   overflow: hidden;
 }
 
@@ -39,7 +36,7 @@ const options: { value: Project; label: string }[] = [
   height: 100%;
   padding: 0 var(--space-3);
   border: none;
-  background: transparent;
+  background: var(--color-surface-2);
   color: var(--color-text-muted);
   font-size: var(--text-xs);
   font-weight: 500;

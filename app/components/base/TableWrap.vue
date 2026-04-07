@@ -1,6 +1,7 @@
 <script setup lang="ts">
 const props = defineProps<{
   index?: number
+  label?: string
 }>()
 
 const style = computed(() =>
@@ -9,16 +10,12 @@ const style = computed(() =>
 </script>
 
 <template>
-  <div class="base-card ui-surface card-enter" :style="style">
+  <div
+    class="table-wrap ui-surface card-enter"
+    role="region"
+    :aria-label="label"
+    :style="style"
+  >
     <slot />
   </div>
 </template>
-
-<style scoped>
-.base-card {
-  padding: var(--space-4) var(--space-5);
-  display: flex;
-  flex-direction: column;
-  min-width: 0;
-}
-</style>

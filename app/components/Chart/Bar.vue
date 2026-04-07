@@ -207,14 +207,12 @@ function onBarLeave() {
       </g>
     </svg>
 
-    <div
-      v-if="tooltip.show"
-      class="tooltip"
-      :style="{ left: `clamp(72px, ${tooltip.x}px, calc(100% - 72px))`, top: `${tooltip.y}px` }"
-    >
-      <strong>{{ tooltip.value }}</strong>
-      <span>{{ tooltip.label }}</span>
-    </div>
+    <ChartTooltip :show="tooltip.show" :x="tooltip.x" :y="tooltip.y">
+      <div class="tt-inner">
+        <strong>{{ tooltip.value }}</strong>
+        <span>{{ tooltip.label }}</span>
+      </div>
+    </ChartTooltip>
   </div>
 </template>
 
@@ -275,22 +273,14 @@ function onBarLeave() {
   flex-shrink: 0;
 }
 
-.tooltip {
-  position: absolute;
-  transform: translate(-50%, -100%);
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
-  padding: var(--space-2) var(--space-3);
-  pointer-events: none;
+.tt-inner {
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 2px;
-  box-shadow: 0 4px 12px rgb(0 0 0 / 8%);
-  z-index: 10;
+  padding: var(--space-2) var(--space-3);
 }
 
-.tooltip strong { font-family: var(--font-mono); font-size: var(--text-sm); font-weight: 600; }
-.tooltip span { font-family: var(--font-mono); font-size: var(--text-xs); color: var(--color-text-muted); }
+.tt-inner strong { font-family: var(--font-mono); font-size: var(--text-sm); font-weight: 600; }
+.tt-inner span { font-family: var(--font-mono); font-size: var(--text-xs); color: var(--color-text-muted); }
 </style>

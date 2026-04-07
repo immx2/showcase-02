@@ -177,7 +177,7 @@ function utilizationClass(pct: number): string {
     <Teleport to="body">
       <div
         v-if="tooltip"
-        class="inst-tooltip"
+        class="inst-tooltip ui-surface"
         :style="{
           left: `${tooltip.x}px`,
           top: `${tooltip.y - 8}px`,
@@ -494,9 +494,6 @@ function utilizationClass(pct: number): string {
   position: fixed;
   z-index: 9999;
   transform: translate(-50%, -100%) translateY(-8px);
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
   padding: var(--space-3);
   box-shadow: 0 8px 24px rgb(0 0 0 / 18%);
   min-width: 180px;

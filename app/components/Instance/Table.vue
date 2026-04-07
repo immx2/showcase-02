@@ -10,9 +10,6 @@ const props = defineProps<{
   index?: number
 }>()
 
-const style = computed(() =>
-  props.index !== undefined ? { '--stagger-index': props.index } : undefined
-)
 
 const emit = defineEmits<{
   sort: [key: SortKey]
@@ -51,7 +48,7 @@ function sparklineColor(state: Instance['state']): string {
 </script>
 
 <template>
-  <div class="table-wrap card-enter" role="region" aria-label="Instance list" :style="style">
+  <BaseTableWrap :index="index" label="Instance list">
     <table class="instance-table">
       <thead>
         <tr>
@@ -171,7 +168,7 @@ function sparklineColor(state: Instance['state']): string {
     <p v-if="instances.length === 0" class="empty-state">
       No instances match the current filter.
     </p>
-  </div>
+  </BaseTableWrap>
 </template>
 
 <style scoped>

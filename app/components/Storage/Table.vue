@@ -2,16 +2,13 @@
 import type { Volume } from '~/data/analytics'
 import type { VolumeSortKey } from '~/composables/useStorage'
 
-const props = defineProps<{
+const { index } = defineProps<{
   volumes: Volume[]
   sortKey: VolumeSortKey
   sortDir: 'asc' | 'desc'
   index?: number
 }>()
 
-const style = computed(() =>
-  props.index !== undefined ? { '--stagger-index': props.index } : undefined
-)
 
 const emit = defineEmits<{
   sort: [key: VolumeSortKey]
@@ -44,7 +41,7 @@ function ariaSortAttr(key: VolumeSortKey | null, sortKey: VolumeSortKey, sortDir
 </script>
 
 <template>
-  <div class="table-wrap card-enter" role="region" aria-label="Volume list" :style="style">
+  <BaseTableWrap :index="index" label="Volume list">
     <table class="storage-table">
       <thead>
         <tr>
@@ -140,7 +137,7 @@ function ariaSortAttr(key: VolumeSortKey | null, sortKey: VolumeSortKey, sortDir
     <p v-if="volumes.length === 0" class="empty-state">
       No volumes match the current filter.
     </p>
-  </div>
+  </BaseTableWrap>
 </template>
 
 <style scoped>
