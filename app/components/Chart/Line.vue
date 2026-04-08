@@ -442,7 +442,7 @@ watch(innerWidth, (w) => {
 
 // ── Tooltip ───────────────────────────────────────────────────────────────────
 
-const tooltip = reactive({ show: false, x: 0, y: 0, date: '', value: '', value2: '' })
+const tooltip = reactive({ show: false, x: 0, y: 0, svgX: 0, svgY: 0, svgY2: 0, date: '', value: '', value2: '' })
 const bisectDate = d3.bisector<Pt, Date>(d => d.date).left
 
 function onMouseMove(e: MouseEvent) {
@@ -455,13 +455,18 @@ function onMouseMove(e: MouseEvent) {
   const d    = fp[idx]
   if (!d) return
 
+  const sx       = focusXScale.value(d.date)
+  const sy       = focusYScale.value(d.value)
   tooltip.show   = true
-  tooltip.x      = focusXScale.value(d.date) + margin.value.left
-  tooltip.y      = focusYScale.value(d.value) + margin.value.top
+  tooltip.svgX   = sx
+  tooltip.svgY   = sy
+  tooltip.x      = rect.left + sx
+  tooltip.y      = rect.top  + sy
   tooltip.date   = d3.timeFormat('%b %d, %Y')(d.date)
   const fmt = props.formatTooltip ?? props.formatValue
   tooltip.value  = fmt(d.value)
   tooltip.value2 = fp2[idx] ? fmt(fp2[idx].value) : ''
+  tooltip.svgY2  = fp2[idx] ? focusYScale.value(fp2[idx].value) : 0
 }
 
 function onMouseLeave() { tooltip.show = false }
@@ -548,13 +553,22 @@ function onMouseLeave() { tooltip.show = false }
           </g>
         </g>
 
-        <!-- Crosshair dot -->
+        <!-- Crosshair dots -->
         <circle
           v-if="tooltip.show"
-          :cx="tooltip.x - margin.left"
-          :cy="tooltip.y - margin.top"
+          :cx="tooltip.svgX"
+          :cy="tooltip.svgY"
           r="3"
           :fill="color"
+          stroke="var(--color-surface)"
+          stroke-width="1.5"
+        />
+        <circle
+          v-if="tooltip.show && tooltip.value2"
+          :cx="tooltip.svgX"
+          :cy="tooltip.svgY2"
+          r="3"
+          :fill="color2"
           stroke="var(--color-surface)"
           stroke-width="1.5"
         />
@@ -598,7 +612,7 @@ function onMouseLeave() { tooltip.show = false }
     </svg>
 
     <!-- Tooltip -->
-    <ChartTooltip :show="tooltip.show" :x="tooltip.x" :y="tooltip.y - 12">
+    <ChartTooltip :show="tooltip.show" :x="tooltip.x" :y="tooltip.y - 26">
       <div class="tt-inner">
         <span class="tooltip-date">{{ tooltip.date }}</span>
         <span class="tooltip-row">

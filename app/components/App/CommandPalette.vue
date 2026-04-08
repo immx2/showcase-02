@@ -289,7 +289,7 @@ const stateColors: Record<string, string> = {
   background: var(--color-surface);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-xl);
-  box-shadow: 0 24px 64px rgb(0 0 0 / 32%), 0 0 0 1px var(--color-border-subtle);
+  box-shadow: var(--shadow-lg), 0 0 0 1px var(--color-border-subtle);
   overflow: hidden;
 }
 

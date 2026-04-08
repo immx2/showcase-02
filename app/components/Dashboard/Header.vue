@@ -31,16 +31,17 @@ const periods: { value: Period; label: string }[] = [
       </p>
     </template>
 
+    <BaseTooltip content="Toggle live mode (L)">
     <button
       :class="['live-btn', 'ui-surface', { active: isLive }]"
       :aria-pressed="isLive"
-      title="Toggle live mode (L)"
       @click="emit('toggle-live')"
     >
       <span class="live-btn-dot" aria-hidden="true" />
       {{ isLive ? 'Live' : 'Live' }}
       <kbd class="btn-kbd">L</kbd>
     </button>
+    </BaseTooltip>
 
     <div class="period-pill" role="group" aria-label="Time period">
       <button

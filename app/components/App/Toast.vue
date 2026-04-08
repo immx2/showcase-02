@@ -43,7 +43,7 @@ const { toasts } = useToast()
   padding: var(--space-3) var(--space-4);
   font-size: var(--text-sm);
   font-family: var(--font-mono);
-  box-shadow: 0 8px 24px rgb(0 0 0 / 18%);
+  box-shadow: var(--shadow-md);
   white-space: nowrap;
   pointer-events: auto;
 }

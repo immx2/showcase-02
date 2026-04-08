@@ -57,6 +57,7 @@ watch(sidebarOpen, (open) => {
       </div>
     </div>
     <AppToast />
+    <AppTooltip />
     <AppCommandPalette />
     <AppDrawer />
   </div>

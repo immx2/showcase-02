@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { instances, sledUsage } from '~/data/analytics'
 import type { Instance, SledUsage } from '~/data/analytics'
+import InstanceTooltipContent from './TooltipContent.vue'
 
 const instancesBySled = (() => {
   const m = new Map<string, Instance[]>()
@@ -40,14 +41,15 @@ function abbreviate(name: string, max = 17): string {
   return name.length > max ? name.slice(0, max - 1) + '…' : name
 }
 
-const tooltip = ref<{ inst: Instance; x: number; y: number } | null>(null)
+const { show: showTip, hide: hideTip } = useTooltip()
 
 function showTooltip(inst: Instance, e: MouseEvent) {
-  tooltip.value = { inst, x: (e.target as HTMLElement).getBoundingClientRect().left, y: (e.target as HTMLElement).getBoundingClientRect().top }
+  const rect = (e.target as HTMLElement).getBoundingClientRect()
+  showTip({ is: InstanceTooltipContent, props: { instance: inst } }, rect.left + rect.width / 2, rect.top - 8)
 }
 
 function hideTooltip() {
-  tooltip.value = null
+  hideTip()
 }
 
 function onChipClick(inst: Instance) {
@@ -94,7 +96,7 @@ function utilizationClass(pct: number): string {
     </div>
 
     <!-- Rack enclosure -->
-    <div class="rack-enclosure" role="list" aria-label="Rack topology">
+    <div class="rack-enclosure ui-surface" role="list" aria-label="Rack topology">
       <!-- U-labels + sled rows -->
       <div
         v-for="(row, idx) in sledRows"
@@ -159,7 +161,6 @@ function utilizationClass(pct: number): string {
               v-for="inst in row.instances"
               :key="inst.id"
               :class="['chip', inst.state]"
-              :title="`${inst.name} · ${inst.state} · CPU ${inst.cpuPct}%`"
               :aria-label="`${inst.name}, ${inst.state}`"
               @mouseenter="showTooltip(inst, $event)"
               @mouseleave="hideTooltip"
@@ -173,39 +174,6 @@ function utilizationClass(pct: number): string {
       </div>
     </div>
 
-    <!-- Floating tooltip -->
-    <Teleport to="body">
-      <div
-        v-if="tooltip"
-        class="inst-tooltip ui-surface"
-        :style="{
-          left: `${tooltip.x}px`,
-          top: `${tooltip.y - 8}px`,
-        }"
-      >
-        <div class="tt-name">{{ tooltip.inst.name }}</div>
-        <div class="tt-row">
-          <span class="tt-label">State</span>
-          <StatusBadge :status="tooltip.inst.state" />
-        </div>
-        <div class="tt-row">
-          <span class="tt-label">Project</span>
-          <span class="tt-val">{{ tooltip.inst.project }}</span>
-        </div>
-        <div class="tt-row">
-          <span class="tt-label">CPU</span>
-          <span class="tt-val">{{ tooltip.inst.cpuPct }}%</span>
-        </div>
-        <div class="tt-row">
-          <span class="tt-label">Mem</span>
-          <span class="tt-val">{{ tooltip.inst.memPct }}%</span>
-        </div>
-        <div class="tt-row">
-          <span class="tt-label">IPv4</span>
-          <span class="tt-val">{{ tooltip.inst.ipv4 }}</span>
-        </div>
-      </div>
-    </Teleport>
   </div>
 </template>
 
@@ -286,10 +254,7 @@ function utilizationClass(pct: number): string {
 
 /* Rack enclosure */
 .rack-enclosure {
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-lg);
   overflow: auto hidden;
-  background: var(--color-bg);
 }
 
 /* Rack unit row */
@@ -489,44 +454,4 @@ function utilizationClass(pct: number): string {
   text-overflow: ellipsis;
 }
 
-/* Floating tooltip */
-.inst-tooltip {
-  position: fixed;
-  z-index: 9999;
-  transform: translate(-50%, -100%) translateY(-8px);
-  padding: var(--space-3);
-  box-shadow: 0 8px 24px rgb(0 0 0 / 18%);
-  min-width: 180px;
-  pointer-events: none;
-}
-
-.tt-name {
-  font-family: var(--font-mono);
-  font-size: var(--text-sm);
-  font-weight: 600;
-  color: var(--color-text);
-  margin-bottom: var(--space-2);
-  padding-bottom: var(--space-2);
-  border-bottom: 1px solid var(--color-border-subtle);
-}
-
-.tt-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: var(--space-4);
-  padding: 2px 0;
-}
-
-.tt-label {
-  font-family: var(--font-mono);
-  font-size: var(--text-xs);
-  color: var(--color-text-muted);
-}
-
-.tt-val {
-  font-family: var(--font-mono);
-  font-size: var(--text-xs);
-  color: var(--color-text);
-}
 </style>

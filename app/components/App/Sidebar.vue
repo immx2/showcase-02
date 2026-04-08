@@ -113,12 +113,19 @@ onUnmounted(() => {
     height: calc(100dvh - var(--portfolio-nav-height, 32px));
     z-index: 40;
     border-right: none;
-    box-shadow: 4px 0 32px oklch(0% 0 0deg / 40%);
+    box-shadow: var(--shadow-lg);
     transform: translateX(-100%);
-    transition: transform var(--duration-base) var(--ease-out);
+    transition: transform var(--duration-base) var(--ease-out),
+                box-shadow var(--duration-base) var(--ease-out);
   }
 
-  .sidebar.is-open { transform: translateX(0); }
+  .sidebar.is-open {
+    transform: translateX(0);
+  }
+
+  .sidebar:not(.is-open) {
+    box-shadow: none;
+  }
 
   .sidebar-header-top {
     display: flex;

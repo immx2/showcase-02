@@ -71,9 +71,11 @@ const hourLabels = computed(() =>
 const tooltip = reactive({ show: false, x: 0, y: 0, content: '' })
 
 function onCellEnter(cell: (typeof cells.value)[0]) {
+  const rect = containerRef.value?.getBoundingClientRect()
+  if (!rect) return
   tooltip.show = true
-  tooltip.x = cell.x + cell.w / 2 + margin.left
-  tooltip.y = cell.y + margin.top - 4
+  tooltip.x = rect.left + cell.x + cell.w / 2 + margin.left
+  tooltip.y = rect.top  + cell.y + margin.top - 4
   tooltip.content = `${dayLabels[cell.day]} ${cell.hour}:00 — ${cell.count} sessions`
 }
 

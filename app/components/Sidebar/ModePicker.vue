@@ -16,7 +16,6 @@ const activeIndex = computed(() => {
   <div class="mode-picker" role="group" aria-label="Color mode" :style="{ '--active-index': activeIndex }">
     <button
       :class="{ active: activeIndex === 0 }"
-      title="Auto (device)"
       aria-label="Auto (device)"
       @click="setMode('system')"
     >
@@ -28,7 +27,6 @@ const activeIndex = computed(() => {
     </button>
     <button
       :class="{ active: activeIndex === 1 }"
-      title="Light"
       aria-label="Light"
       @click="setMode('light')"
     >
@@ -47,7 +45,6 @@ const activeIndex = computed(() => {
     </button>
     <button
       :class="{ active: activeIndex === 2 }"
-      title="Dark"
       aria-label="Dark"
       @click="setMode('dark')"
     >

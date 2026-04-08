@@ -132,9 +132,11 @@ watch([xScale, x0Scale, isGrouped], renderAxis)
 const tooltip = reactive({ show: false, x: 0, y: 0, label: '', value: '' })
 
 function onBarEnter(x: number, y: number, label: string, value: number, key?: string) {
+  const rect = containerRef.value?.getBoundingClientRect()
+  if (!rect) return
   tooltip.show = true
-  tooltip.x = x + margin.left
-  tooltip.y = y + margin.top - 8
+  tooltip.x = rect.left + x + margin.left
+  tooltip.y = rect.top  + y + margin.top - 8
   tooltip.label = key ? `${label} · ${key}` : label
   tooltip.value = props.formatValue(value)
 }
