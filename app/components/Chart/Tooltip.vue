@@ -11,17 +11,19 @@ const half = computed(() => Math.ceil(width.value / 2) || 72)
 </script>
 
 <template>
-  <div
-    v-if="props.show"
-    ref="tooltipRef"
-    class="chart-tooltip ui-surface"
-    :style="{
-      left: `clamp(${half}px, ${x}px, calc(100vw - ${half}px))`,
-      top: `${y}px`,
-    }"
-  >
-    <slot />
-  </div>
+  <BaseTooltip>
+      <div
+        v-if="props.show"
+        ref="tooltipRef"
+        class="chart-tooltip ui-surface"
+        :style="{
+          left: `clamp(${half}px, ${x}px, calc(100vw - ${half}px))`,
+          top: `${y}px`,
+        }"
+      >
+        <slot />
+      </div>
+  </BaseTooltip>
 </template>
 
 <style scoped>
@@ -36,6 +38,7 @@ const half = computed(() => Math.ceil(width.value / 2) || 72)
   padding: var(--space-2) var(--space-3);
   gap: var(--space-1);
 }
+
 </style>
 
 <style>

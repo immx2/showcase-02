@@ -41,17 +41,6 @@ function abbreviate(name: string, max = 17): string {
   return name.length > max ? name.slice(0, max - 1) + '…' : name
 }
 
-const { show: showTip, hide: hideTip } = useTooltip()
-
-function showTooltip(inst: Instance, e: MouseEvent) {
-  const rect = (e.target as HTMLElement).getBoundingClientRect()
-  showTip({ is: InstanceTooltipContent, props: { instance: inst } }, rect.left + rect.width / 2, rect.top - 8)
-}
-
-function hideTooltip() {
-  hideTip()
-}
-
 function onChipClick(inst: Instance) {
   emit('select-instance', inst)
 }
@@ -157,18 +146,20 @@ function utilizationClass(pct: number): string {
 
           <!-- Instance chips -->
           <div class="instance-chips" aria-label="Instances on this sled">
-            <button
+            <TextTooltip
               v-for="inst in row.instances"
               :key="inst.id"
-              :class="['chip', inst.state]"
-              :aria-label="`${inst.name}, ${inst.state}`"
-              @mouseenter="showTooltip(inst, $event)"
-              @mouseleave="hideTooltip"
-              @click="onChipClick(inst)"
+              :content="{ is: InstanceTooltipContent, props: { instance: inst } }"
             >
-              <span class="chip-dot" :class="inst.state" aria-hidden="true" />
-              <span class="chip-name">{{ abbreviate(inst.name) }}</span>
-            </button>
+              <button
+                :class="['chip', inst.state]"
+                :aria-label="`${inst.name}, ${inst.state}`"
+                @click="onChipClick(inst)"
+              >
+                <span class="chip-dot" :class="inst.state" aria-hidden="true" />
+                <span class="chip-name">{{ abbreviate(inst.name) }}</span>
+              </button>
+            </TextTooltip>
           </div>
         </div>
       </div>

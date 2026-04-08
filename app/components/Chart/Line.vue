@@ -461,7 +461,7 @@ function onMouseMove(e: MouseEvent) {
   tooltip.svgX   = sx
   tooltip.svgY   = sy
   tooltip.x      = rect.left + sx
-  tooltip.y      = rect.top  + sy
+  tooltip.y      = rect.top  + sy - 26
   tooltip.date   = d3.timeFormat('%b %d, %Y')(d.date)
   const fmt = props.formatTooltip ?? props.formatValue
   tooltip.value  = fmt(d.value)
@@ -612,7 +612,7 @@ function onMouseLeave() { tooltip.show = false }
     </svg>
 
     <!-- Tooltip -->
-    <ChartTooltip :show="tooltip.show" :x="tooltip.x" :y="tooltip.y - 26">
+    <ChartTooltip :show="tooltip.show" :x="tooltip.x" :y="tooltip.y">
       <span class="tt-muted">{{ tooltip.date }}</span>
       <span class="tt-row">
         <span class="tt-dot" :style="{ background: color }" />
