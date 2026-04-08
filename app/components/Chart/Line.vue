@@ -443,9 +443,11 @@ watch(innerWidth, (w) => {
 
 // ── Tooltip ───────────────────────────────────────────────────────────────────
 
-const tooltip = reactive({ show: false, svgX: 0, svgY: 0, svgY2: 0 })
 const bisectDate = d3.bisector<Pt, Date>(d => d.date).left
 const { show: showTip, hide: hideTip } = useTooltip()
+
+// Null when no hover; non-null drives the SVG crosshair circles.
+const crosshair = ref<{ x: number; y: number; y2: number } | null>(null)
 
 function onMouseMove(e: MouseEvent) {
   const rect = (e.currentTarget as SVGRectElement).getBoundingClientRect()
@@ -460,10 +462,7 @@ function onMouseMove(e: MouseEvent) {
   const sx  = focusXScale.value(d.date)
   const sy  = focusYScale.value(d.value)
   const fmt = props.formatTooltip ?? props.formatValue
-  tooltip.show  = true
-  tooltip.svgX  = sx
-  tooltip.svgY  = sy
-  tooltip.svgY2 = fp2[idx] ? focusYScale.value(fp2[idx].value) : 0
+  crosshair.value = { x: sx, y: sy, y2: fp2[idx] ? focusYScale.value(fp2[idx].value) : 0 }
   showTip({
     is: ChartLineTooltipContent,
     props: {
@@ -476,7 +475,7 @@ function onMouseMove(e: MouseEvent) {
   }, rect.left + sx, rect.top + sy - 26)
 }
 
-function onMouseLeave() { tooltip.show = false; hideTip() }
+function onMouseLeave() { crosshair.value = null; hideTip() }
 </script>
 
 <template>
@@ -562,18 +561,18 @@ function onMouseLeave() { tooltip.show = false; hideTip() }
 
         <!-- Crosshair dots -->
         <circle
-          v-if="tooltip.show"
-          :cx="tooltip.svgX"
-          :cy="tooltip.svgY"
+          v-if="crosshair"
+          :cx="crosshair.x"
+          :cy="crosshair.y"
           r="3"
           :fill="color"
           stroke="var(--color-surface)"
           stroke-width="1.5"
         />
         <circle
-          v-if="tooltip.show && tooltip.svgY2"
-          :cx="tooltip.svgX"
-          :cy="tooltip.svgY2"
+          v-if="crosshair && crosshair.y2"
+          :cx="crosshair.x"
+          :cy="crosshair.y2"
           r="3"
           :fill="color2"
           stroke="var(--color-surface)"
@@ -597,18 +596,6 @@ function onMouseLeave() { tooltip.show = false; hideTip() }
         <!-- Context line(s) -->
         <path :d="ctxLinePath" fill="none" :stroke="color" stroke-width="1" opacity="0.5" />
         <path v-if="fullData2?.length" :d="ctxLine2Path" fill="none" :stroke="color2" stroke-width="1" opacity="0.4" />
-
-        <!-- Period highlight band (shows current filter relative to full data) -->
-        <rect
-          v-if="!brushRange"
-          :x="periodX1"
-          y="0"
-          :width="Math.max(0, periodX2 - periodX1)"
-          :height="CTX_H"
-          fill="var(--color-accent)"
-          fill-opacity="0.08"
-          rx="2"
-        />
 
         <!-- Context x-axis -->
         <g ref="ctxXAxisRef" class="axis ctx-axis" :transform="`translate(0,${CTX_H})`" />
