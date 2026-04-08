@@ -613,18 +613,16 @@ function onMouseLeave() { tooltip.show = false }
 
     <!-- Tooltip -->
     <ChartTooltip :show="tooltip.show" :x="tooltip.x" :y="tooltip.y - 26">
-      <div class="tt-inner">
-        <span class="tooltip-date">{{ tooltip.date }}</span>
-        <span class="tooltip-row">
-          <span class="tooltip-dot" :style="{ background: color }" />
-          {{ tooltip.value }}
-          <template v-if="tooltip.value2">
-            <span class="tooltip-sep">·</span>
-            <span class="tooltip-dot" :style="{ background: color2 }" />
-            {{ tooltip.value2 }}
-          </template>
-        </span>
-      </div>
+      <span class="tt-muted">{{ tooltip.date }}</span>
+      <span class="tt-row">
+        <span class="tt-dot" :style="{ background: color }" />
+        <span class="tt-value">{{ tooltip.value }}</span>
+        <template v-if="tooltip.value2">
+          <span class="tt-sep">·</span>
+          <span class="tt-dot" :style="{ background: color2 }" />
+          <span class="tt-value">{{ tooltip.value2 }}</span>
+        </template>
+      </span>
     </ChartTooltip>
   </div>
 </template>
@@ -731,38 +729,6 @@ function onMouseLeave() { tooltip.show = false }
 .line-chart-wrap :deep(.brush-group .handle) {
   fill: var(--color-accent);
 }
-
-/* Tooltip */
-.tt-inner {
-  display: flex;
-  flex-direction: column;
-  gap: 3px;
-  padding: var(--space-2) var(--space-3);
-}
-
-.tooltip-date {
-  font-family: var(--font-mono);
-  font-size: var(--text-xs);
-  color: var(--color-text-muted);
-}
-
-.tooltip-row {
-  display: flex;
-  align-items: center;
-  gap: var(--space-2);
-  font-family: var(--font-mono);
-  font-size: var(--text-sm);
-  font-weight: 600;
-}
-
-.tooltip-dot {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  flex-shrink: 0;
-}
-
-.tooltip-sep { color: var(--color-text-muted); }
 
 /* Fade transition for reset button */
 .fade-enter-active,

@@ -68,7 +68,7 @@ const hourLabels = computed(() =>
   })),
 )
 
-const tooltip = reactive({ show: false, x: 0, y: 0, content: '' })
+const tooltip = reactive({ show: false, x: 0, y: 0, content: { label: '', value: '', color: '' } })
 
 function onCellEnter(cell: (typeof cells.value)[0]) {
   const rect = containerRef.value?.getBoundingClientRect()
@@ -76,7 +76,9 @@ function onCellEnter(cell: (typeof cells.value)[0]) {
   tooltip.show = true
   tooltip.x = rect.left + cell.x + cell.w / 2 + margin.left
   tooltip.y = rect.top  + cell.y + margin.top - 4
-  tooltip.content = `${dayLabels[cell.day]} ${cell.hour}:00 — ${cell.count} sessions`
+  tooltip.content.label = `${dayLabels[cell.day]} ${cell.hour}:00`
+  tooltip.content.value = `${cell.count} sessions`
+  tooltip.content.color = cell.fill
 }
 
 function onCellLeave() {
@@ -135,7 +137,13 @@ onMounted(() => {
     </svg>
 
     <ChartTooltip :show="tooltip.show" :x="tooltip.x" :y="tooltip.y">
-      <div class="tt-inner">{{ tooltip.content }}</div>
+      <span class="tt-row">
+        <span class="tt-label">{{ tooltip.content.label }}</span>
+      </span>
+      <span class="tt-row">
+        <span class="tt-dot" :style="{ background: tooltip.content.color }" />
+        <span class="tt-value">{{ tooltip.content.value }}</span>
+      </span>
     </ChartTooltip>
   </div>
 </template>
@@ -163,10 +171,4 @@ onMounted(() => {
   stroke-width: 1;
 }
 
-.tt-inner {
-  padding: var(--space-1) var(--space-3);
-  font-family: var(--font-mono);
-  font-size: var(--text-sm);
-  white-space: nowrap;
-}
 </style>

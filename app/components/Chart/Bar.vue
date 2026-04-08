@@ -129,9 +129,9 @@ watch([xScale, x0Scale, isGrouped], renderAxis)
 
 // ── Tooltip ─────────────────────────────────────────────────────────────────
 
-const tooltip = reactive({ show: false, x: 0, y: 0, label: '', value: '' })
+const tooltip = reactive({ show: false, x: 0, y: 0, label: '', value: '', color: '' })
 
-function onBarEnter(x: number, y: number, label: string, value: number, key?: string) {
+function onBarEnter(x: number, y: number, label: string, value: number, key?: string, color?: string) {
   const rect = containerRef.value?.getBoundingClientRect()
   if (!rect) return
   tooltip.show = true
@@ -139,6 +139,7 @@ function onBarEnter(x: number, y: number, label: string, value: number, key?: st
   tooltip.y = rect.top  + y + margin.top - 8
   tooltip.label = key ? `${label} · ${key}` : label
   tooltip.value = props.formatValue(value)
+  tooltip.color = color ?? ''
 }
 
 function onBarLeave() {
@@ -170,7 +171,7 @@ function onBarLeave() {
               :fill="bar.color"
               rx="4"
               class="bar-rect"
-              @mouseenter="onBarEnter(bar.x + bar.w / 2, bar.y, bar.label, bar.value)"
+              @mouseenter="onBarEnter(bar.x + bar.w / 2, bar.y, bar.label, bar.value, undefined, bar.color)"
               @mouseleave="onBarLeave"
             />
             <text
@@ -201,7 +202,7 @@ function onBarLeave() {
               :fill="bar.color"
               rx="3"
               class="bar-rect"
-              @mouseenter="onBarEnter(group.gx + bar.bx + bar.bw / 2, bar.by, group.label, bar.value, bar.key)"
+              @mouseenter="onBarEnter(group.gx + bar.bx + bar.bw / 2, bar.by, group.label, bar.value, bar.key, bar.color)"
               @mouseleave="onBarLeave"
             />
           </g>
@@ -210,9 +211,10 @@ function onBarLeave() {
     </svg>
 
     <ChartTooltip :show="tooltip.show" :x="tooltip.x" :y="tooltip.y">
-      <div class="tt-inner">
-        <strong>{{ tooltip.value }}</strong>
-        <span>{{ tooltip.label }}</span>
+      <span class="tt-muted">{{ tooltip.label }}</span>
+      <div class="tt-row">
+        <span v-if="tooltip.color" class="tt-dot" :style="{ background: tooltip.color }" />
+        <span class="tt-value">{{ tooltip.value }}</span>
       </div>
     </ChartTooltip>
   </div>
@@ -275,14 +277,4 @@ function onBarLeave() {
   flex-shrink: 0;
 }
 
-.tt-inner {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 2px;
-  padding: var(--space-2) var(--space-3);
-}
-
-.tt-inner strong { font-family: var(--font-mono); font-size: var(--text-sm); font-weight: 600; }
-.tt-inner span { font-family: var(--font-mono); font-size: var(--text-xs); color: var(--color-text-muted); }
 </style>
