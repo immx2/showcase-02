@@ -571,7 +571,7 @@ function onMouseLeave() { tooltip.show = false; hideTip() }
           stroke-width="1.5"
         />
         <circle
-          v-if="tooltip.show && tooltip.value2"
+          v-if="tooltip.show && tooltip.svgY2"
           :cx="tooltip.svgX"
           :cy="tooltip.svgY2"
           r="3"
