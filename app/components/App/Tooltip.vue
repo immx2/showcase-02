@@ -1,8 +1,13 @@
 <script setup lang="ts">
 const { state } = useTooltip()
 const isText = computed(() => typeof state.content === 'string')
+
+const tooltipRef = ref<HTMLElement | null>(null)
+const { width } = useElementSize(tooltipRef)
+const half = computed(() => Math.ceil(width.value / 2) || 72)
+
 const pos = computed(() => ({
-  left: `${state.x}px`,
+  left: `clamp(${half.value}px, ${state.x}px, calc(100vw - ${half.value}px))`,
   top: `${state.y}px`,
 }))
 </script>
@@ -11,6 +16,7 @@ const pos = computed(() => ({
   <BaseTooltip>
     <div
       v-if="state.show"
+      ref="tooltipRef"
       class="app-tooltip ui-surface"
       :class="isText ? 'tt-text' : 'tt-rich'"
       :style="pos"
@@ -28,18 +34,5 @@ const pos = computed(() => ({
   transform: translate(-50%, calc(-100% - 6px));
   pointer-events: none;
   z-index: 8000;
-}
-
-.tt-text {
-  font-family: var(--font-mono);
-  font-size: var(--text-xs);
-  padding: var(--space-1) var(--space-2);
-  white-space: nowrap;
-}
-
-.tt-rich {
-  padding: var(--space-3);
-  min-width: 180px;
-  box-shadow: var(--shadow-md);
 }
 </style>

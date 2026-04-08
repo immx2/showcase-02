@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import * as d3 from 'd3'
+import ChartLineTooltipContent from './LineTooltipContent.vue'
 
 interface DataPoint {
   date: string
@@ -442,8 +443,9 @@ watch(innerWidth, (w) => {
 
 // ── Tooltip ───────────────────────────────────────────────────────────────────
 
-const tooltip = reactive({ show: false, x: 0, y: 0, svgX: 0, svgY: 0, svgY2: 0, date: '', value: '', value2: '' })
+const tooltip = reactive({ show: false, svgX: 0, svgY: 0, svgY2: 0 })
 const bisectDate = d3.bisector<Pt, Date>(d => d.date).left
+const { show: showTip, hide: hideTip } = useTooltip()
 
 function onMouseMove(e: MouseEvent) {
   const rect = (e.currentTarget as SVGRectElement).getBoundingClientRect()
@@ -455,21 +457,26 @@ function onMouseMove(e: MouseEvent) {
   const d    = fp[idx]
   if (!d) return
 
-  const sx       = focusXScale.value(d.date)
-  const sy       = focusYScale.value(d.value)
-  tooltip.show   = true
-  tooltip.svgX   = sx
-  tooltip.svgY   = sy
-  tooltip.x      = rect.left + sx
-  tooltip.y      = rect.top  + sy - 26
-  tooltip.date   = d3.timeFormat('%b %d, %Y')(d.date)
+  const sx  = focusXScale.value(d.date)
+  const sy  = focusYScale.value(d.value)
   const fmt = props.formatTooltip ?? props.formatValue
-  tooltip.value  = fmt(d.value)
-  tooltip.value2 = fp2[idx] ? fmt(fp2[idx].value) : ''
-  tooltip.svgY2  = fp2[idx] ? focusYScale.value(fp2[idx].value) : 0
+  tooltip.show  = true
+  tooltip.svgX  = sx
+  tooltip.svgY  = sy
+  tooltip.svgY2 = fp2[idx] ? focusYScale.value(fp2[idx].value) : 0
+  showTip({
+    is: ChartLineTooltipContent,
+    props: {
+      date: d3.timeFormat('%b %d, %Y')(d.date),
+      value: fmt(d.value),
+      color: props.color,
+      value2: fp2[idx] ? fmt(fp2[idx].value) : undefined,
+      color2: props.color2,
+    },
+  }, rect.left + sx, rect.top + sy - 26)
 }
 
-function onMouseLeave() { tooltip.show = false }
+function onMouseLeave() { tooltip.show = false; hideTip() }
 </script>
 
 <template>
@@ -611,19 +618,6 @@ function onMouseLeave() { tooltip.show = false }
       </g>
     </svg>
 
-    <!-- Tooltip -->
-    <ChartTooltip :show="tooltip.show" :x="tooltip.x" :y="tooltip.y">
-      <span class="tt-muted">{{ tooltip.date }}</span>
-      <span class="tt-row">
-        <span class="tt-dot" :style="{ background: color }" />
-        <span class="tt-value">{{ tooltip.value }}</span>
-        <template v-if="tooltip.value2">
-          <span class="tt-sep">·</span>
-          <span class="tt-dot" :style="{ background: color2 }" />
-          <span class="tt-value">{{ tooltip.value2 }}</span>
-        </template>
-      </span>
-    </ChartTooltip>
   </div>
 </template>
 

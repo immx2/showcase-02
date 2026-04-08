@@ -146,20 +146,17 @@ function utilizationClass(pct: number): string {
 
           <!-- Instance chips -->
           <div class="instance-chips" aria-label="Instances on this sled">
-            <TextTooltip
+            <button
               v-for="inst in row.instances"
               :key="inst.id"
-              :content="{ is: InstanceTooltipContent, props: { instance: inst } }"
+              :class="['chip', inst.state]"
+              :aria-label="`${inst.name}, ${inst.state}`"
+              v-bind="useTooltipTrigger({ is: InstanceTooltipContent, props: { instance: inst } })"
+              @click="onChipClick(inst)"
             >
-              <button
-                :class="['chip', inst.state]"
-                :aria-label="`${inst.name}, ${inst.state}`"
-                @click="onChipClick(inst)"
-              >
-                <span class="chip-dot" :class="inst.state" aria-hidden="true" />
-                <span class="chip-name">{{ abbreviate(inst.name) }}</span>
-              </button>
-            </TextTooltip>
+              <span class="chip-dot" :class="inst.state" aria-hidden="true" />
+              <span class="chip-name">{{ abbreviate(inst.name) }}</span>
+            </button>
           </div>
         </div>
       </div>

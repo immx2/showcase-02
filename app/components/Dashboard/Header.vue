@@ -31,7 +31,7 @@ const periods: { value: Period; label: string }[] = [
       </p>
     </template>
 
-    <TextTooltip content="Toggle live mode (L)">
+    <TooltipTrigger content="Toggle live mode (L)">
     <button
       :class="['live-btn', 'ui-surface', { active: isLive }]"
       :aria-pressed="isLive"
@@ -41,7 +41,7 @@ const periods: { value: Period; label: string }[] = [
       {{ isLive ? 'Live' : 'Live' }}
       <kbd class="btn-kbd">L</kbd>
     </button>
-    </TextTooltip>
+    </TooltipTrigger>
 
     <div class="period-pill" role="group" aria-label="Time period">
       <button

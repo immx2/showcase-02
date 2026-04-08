@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import * as d3 from 'd3'
+import ChartBarTooltipContent from './BarTooltipContent.vue'
 
 interface BarDatum {
   label: string
@@ -129,21 +130,23 @@ watch([xScale, x0Scale, isGrouped], renderAxis)
 
 // ── Tooltip ─────────────────────────────────────────────────────────────────
 
-const tooltip = reactive({ show: false, x: 0, y: 0, label: '', value: '', color: '' })
+const { show: showTip, hide: hideTip } = useTooltip()
 
 function onBarEnter(x: number, y: number, label: string, value: number, key?: string, color?: string) {
   const rect = containerRef.value?.getBoundingClientRect()
   if (!rect) return
-  tooltip.show = true
-  tooltip.x = rect.left + x + margin.left
-  tooltip.y = rect.top  + y + margin.top - 8
-  tooltip.label = key ? `${label} · ${key}` : label
-  tooltip.value = props.formatValue(value)
-  tooltip.color = color ?? ''
+  showTip({
+    is: ChartBarTooltipContent,
+    props: {
+      label: key ? `${label} · ${key}` : label,
+      value: props.formatValue(value),
+      color: color ?? '',
+    },
+  }, rect.left + x + margin.left, rect.top + y + margin.top - 8)
 }
 
 function onBarLeave() {
-  tooltip.show = false
+  hideTip()
 }
 </script>
 
@@ -210,13 +213,6 @@ function onBarLeave() {
       </g>
     </svg>
 
-    <ChartTooltip :show="tooltip.show" :x="tooltip.x" :y="tooltip.y">
-      <span class="tt-muted">{{ tooltip.label }}</span>
-      <div class="tt-row">
-        <span v-if="tooltip.color" class="tt-dot" :style="{ background: tooltip.color }" />
-        <span class="tt-value">{{ tooltip.value }}</span>
-      </div>
-    </ChartTooltip>
   </div>
 </template>
 

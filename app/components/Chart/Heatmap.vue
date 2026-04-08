@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import * as d3 from 'd3'
+import ChartHeatmapTooltipContent from './HeatmapTooltipContent.vue'
 import type { HeatmapCell } from '~/data/analytics'
 
 const props = withDefaults(defineProps<{
@@ -68,21 +69,23 @@ const hourLabels = computed(() =>
   })),
 )
 
-const tooltip = reactive({ show: false, x: 0, y: 0, content: { label: '', value: '', color: '' } })
+const { show: showTip, hide: hideTip } = useTooltip()
 
 function onCellEnter(cell: (typeof cells.value)[0]) {
   const rect = containerRef.value?.getBoundingClientRect()
   if (!rect) return
-  tooltip.show = true
-  tooltip.x = rect.left + cell.x + cell.w / 2 + margin.left
-  tooltip.y = rect.top  + cell.y + margin.top - 4
-  tooltip.content.label = `${dayLabels[cell.day]} ${cell.hour}:00`
-  tooltip.content.value = `${cell.count} sessions`
-  tooltip.content.color = cell.fill
+  showTip({
+    is: ChartHeatmapTooltipContent,
+    props: {
+      label: `${dayLabels[cell.day]} ${cell.hour}:00`,
+      value: `${cell.count} sessions`,
+      color: cell.fill,
+    },
+  }, rect.left + cell.x + cell.w / 2 + margin.left, rect.top + cell.y + margin.top - 4)
 }
 
 function onCellLeave() {
-  tooltip.show = false
+  hideTip()
 }
 
 const appeared = ref(false)
@@ -136,15 +139,6 @@ onMounted(() => {
       </g>
     </svg>
 
-    <ChartTooltip :show="tooltip.show" :x="tooltip.x" :y="tooltip.y">
-      <span class="tt-row">
-        <span class="tt-label">{{ tooltip.content.label }}</span>
-      </span>
-      <span class="tt-row">
-        <span class="tt-dot" :style="{ background: tooltip.content.color }" />
-        <span class="tt-value">{{ tooltip.content.value }}</span>
-      </span>
-    </ChartTooltip>
   </div>
 </template>
 

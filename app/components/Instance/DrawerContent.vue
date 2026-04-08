@@ -116,7 +116,7 @@ const memSparkline = computed(() => instanceMemSparklines[props.item.id] ?? [])
     </BaseDrawerMetaGrid>
 
     <BaseDrawerActions>
-      <TextTooltip :content="canSSH ? 'Copy IP for SSH' : 'Instance must be running'">
+      <TooltipTrigger :content="canSSH ? 'Copy IP for SSH' : 'Instance must be running'">
       <BaseButton
         variant="primary"
         :disabled="!canSSH"
@@ -128,8 +128,8 @@ const memSparkline = computed(() => instanceMemSparklines[props.item.id] ?? [])
         </svg>
         SSH
       </BaseButton>
-      </TextTooltip>
-      <TextTooltip content="Queue a reboot">
+      </TooltipTrigger>
+      <TooltipTrigger content="Queue a reboot">
       <BaseButton :disabled="!canSSH" @click="reboot">
         <svg width="12" height="12" viewBox="0 0 14 14" fill="none" aria-hidden="true">
           <path d="M11 7A4 4 0 1 1 7 3" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
@@ -137,7 +137,7 @@ const memSparkline = computed(() => instanceMemSparklines[props.item.id] ?? [])
         </svg>
         Reboot
       </BaseButton>
-      </TextTooltip>
+      </TooltipTrigger>
       <BaseButton v-if="canStop" variant="danger" @click="stopInstance">
         <svg width="12" height="12" viewBox="0 0 14 14" fill="none" aria-hidden="true">
           <rect x="3" y="3" width="8" height="8" rx="1" stroke="currentColor" stroke-width="1.3"/>

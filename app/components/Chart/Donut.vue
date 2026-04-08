@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import * as d3 from 'd3'
+import ChartDonutTooltipContent from './DonutTooltipContent.vue'
+import type { TooltipContent } from '~/composables/useTooltip'
 
 interface Segment {
   label: string
@@ -39,20 +41,19 @@ const total = computed(() =>
 
 const pathRefs = ref<SVGPathElement[]>([])
 
-// Tooltip state
-const tooltip = ref<{ show: boolean; x: number; y: number; segment: Segment | null }>({
-  show: false, x: 0, y: 0, segment: null,
-})
+const { show: showTip, hide: hideTip } = useTooltip()
+let activeContent: TooltipContent | null = null
 
 function onArcEnter(event: MouseEvent, seg: Segment) {
-  tooltip.value = { show: true, x: event.clientX, y: event.clientY - 12, segment: seg }
+  activeContent = { is: ChartDonutTooltipContent, props: { label: seg.label, value: seg.value, total: total.value, color: seg.color } }
+  showTip(activeContent, event.clientX, event.clientY - 12)
 }
 function onArcMove(event: MouseEvent) {
-  tooltip.value.x = event.clientX
-  tooltip.value.y = event.clientY - 12
+  if (activeContent) showTip(activeContent, event.clientX, event.clientY - 12)
 }
 function onArcLeave() {
-  tooltip.value.show = false
+  activeContent = null
+  hideTip()
 }
 
 onMounted(() => {
@@ -101,15 +102,6 @@ onMounted(() => {
       </g>
     </svg>
 
-    <ChartTooltip :show="tooltip.show" :x="tooltip.x" :y="tooltip.y">
-      <template v-if="tooltip.segment">
-        <span class="tt-label">{{ tooltip.segment.label }} · {{ formatGib(tooltip.segment.value) }}</span>
-        <div class="tt-row">
-          <span class="tt-dot" :style="{ background: tooltip.segment.color }" />
-          <span class="tt-value">{{ total > 0 ? ((tooltip.segment.value / total) * 100).toFixed(1) : 0 }}%</span>
-        </div>
-      </template>
-    </ChartTooltip>
 
     <ul class="legend">
       <li v-for="seg in data" :key="seg.label" class="legend-item">
