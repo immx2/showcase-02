@@ -81,6 +81,7 @@ app/
       Drawer.vue           # <AppDrawer> — single drawer shell; switches Instance/Storage content
       Sidebar.vue          # <AppSidebar> — nav + search hint + color mode picker
       Toast.vue            # <AppToast> — toast renderer (Teleport to body)
+      Tooltip.vue          # <AppTooltip> — tooltip overlay (Teleport to body)
     base/
       Button.vue           # <BaseButton>
       Card.vue             # <BaseCard>
@@ -91,11 +92,14 @@ app/
         EventLog.vue       # <BaseDrawerEventLog>
         Header.vue         # <BaseDrawerHeader>
         MetaGrid.vue       # <BaseDrawerMetaGrid>
+        ModePicker.vue     # <BaseDrawerModePicker>
         StatRow.vue        # <BaseDrawerStatRow>
       PageContent.vue      # <BasePageContent>
       PageHeader.vue       # <BasePageHeader>
       SectionHeader.vue    # <BaseSectionHeader>
       Skeleton.vue         # <BaseSkeleton>
+      TableWrap.vue        # <BaseTableWrap> — scrollable table container
+      Tooltip.vue          # <BaseTooltip> — tooltip shell
     Card/
       Chart.vue            # <CardChart> — chart wrapper with title + description
       Kpi.vue              # <CardKpi> — KPI card with sparkline + trend
@@ -115,6 +119,7 @@ app/
       DrawerContent.vue    # <InstanceDrawerContent> — instance detail body
       RackTopology.vue     # <InstanceRackTopology>
       Table.vue            # <InstanceTable>
+      TooltipContent.vue   # <InstanceTooltipContent> — instance tooltip body
       ViewToggle.vue       # <InstanceViewToggle> — table / rack switcher
     Storage/
       DrawerContent.vue    # <StorageDrawerContent> — volume detail body
@@ -123,7 +128,10 @@ app/
       SectionVolumes.vue   # <StorageSectionVolumes>
       Table.vue            # <StorageTable>
     ProjectFilter.vue      # <ProjectFilter>
+    Sidebar/
+      ModePicker.vue       # <SidebarModePicker> — color mode picker in sidebar
     StatusBadge.vue        # <StatusBadge> — animated state indicator
+    TooltipTrigger.vue     # <TooltipTrigger> — tooltip anchor wrapper
   composables/
     useAppDrawer.ts        # Single drawer state (discriminated union: instance | volume)
     useCommandPalette.ts

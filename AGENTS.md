@@ -85,7 +85,7 @@ Registered via `useEventListener` in `App/CommandPalette.vue` (Ctrl+K, ?) and `i
 `useToast().addToast(message, type, duration?)` from any component. `App/Toast.vue` (`<AppToast>`) is mounted in `app.vue` via `<Teleport to="body">`.
 
 ### Instance detail drawer
-`Instance/Drawer.vue` (`<InstanceDrawer>`) receives `:instance` from `index.vue`'s `selectedInstance` ref. Opened by clicking a table row, clicking an instance chip in rack view, or selecting from the command palette.
+`App/Drawer.vue` (`<AppDrawer>`) is the single drawer shell; it renders `<InstanceDrawerContent>` or `<StorageDrawerContent>` based on `useAppDrawer` state. Opened by clicking a table row, clicking an instance chip in rack view, or selecting from the command palette.
 
 ### Rack topology view
 `Instance/RackTopology.vue` (`<InstanceRackTopology>`) reads `instances` + `sledUsage` from `analytics.ts`. Instances are grouped once into a module-level `Map<string, Instance[]>` (by `sledId`) so sled rows do not filter the full list per sled. Toggle between `instancesView = 'table' | 'rack'` in `index.vue` header controls. Keyboard shortcut `R`.
