@@ -81,7 +81,7 @@ app/
       Drawer.vue           # <AppDrawer> — single drawer shell; switches Instance/Storage content
       Sidebar.vue          # <AppSidebar> — nav + search hint + color mode picker
       Toast.vue            # <AppToast> — toast renderer (Teleport to body)
-      Tooltip.vue          # <AppTooltip> — tooltip overlay (Teleport to body)
+      Tooltip.vue          # <AppTooltip> — tooltip overlay (Teleport + flip positioning)
     base/
       Button.vue           # <BaseButton>
       Card.vue             # <BaseCard>
@@ -99,7 +99,6 @@ app/
       SectionHeader.vue    # <BaseSectionHeader>
       Skeleton.vue         # <BaseSkeleton>
       TableWrap.vue        # <BaseTableWrap> — scrollable table container
-      Tooltip.vue          # <BaseTooltip> — tooltip shell
     Card/
       Chart.vue            # <CardChart> — chart wrapper with title + description
       Kpi.vue              # <CardKpi> — KPI card with sparkline + trend
@@ -131,6 +130,16 @@ app/
     Sidebar/
       ModePicker.vue       # <SidebarModePicker> — color mode picker in sidebar
     StatusBadge.vue        # <StatusBadge> — animated state indicator
+    Tt/
+      Row.vue              # <TtRow> — flex row (tight prop for tighter gap)
+      Dot.vue              # <TtDot> — colored circle
+      Value.vue            # <TtValue> — mono semibold value
+      Muted.vue            # <TtMuted> — mono muted text
+      Sep.vue              # <TtSep> — · separator
+      Title.vue            # <TtTitle> — header with border-bottom
+      KvRow.vue            # <TtKvRow> — key-value row
+      KvLabel.vue          # <TtKvLabel> — kv label
+      KvVal.vue            # <TtKvVal> — kv value
     TooltipTrigger.vue     # <TooltipTrigger> — tooltip anchor wrapper
   composables/
     useAppDrawer.ts        # Single drawer state (discriminated union: instance | volume)

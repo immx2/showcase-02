@@ -5,15 +5,17 @@ export type TooltipContent = string | { is: Component; props?: Record<string, un
 const state = shallowReactive({
   show: false,
   x: 0,
-  y: 0,
+  yTop: 0,
+  yBottom: 0,
   content: '' as TooltipContent,
 })
 
 export function useTooltip() {
-  function show(content: TooltipContent, x: number, y: number) {
+  function show(content: TooltipContent, x: number, yTop: number, yBottom: number = yTop) {
     state.content = content
     state.x = x
-    state.y = y
+    state.yTop = yTop
+    state.yBottom = yBottom
     state.show = true
   }
 

@@ -33,7 +33,7 @@ Dev server defaults to port 3002 (`devServer.port` in `nuxt.config.ts`; `npm run
 
 **Global singleton state** (module-level in composables — not SSR-safe, client-only):
 - `useToast` — module-level `toasts` array, auto-dismiss via `setTimeout`
-- `useTooltip` — module-level `shallowReactive` state (`show`, `x`, `y`, `content`); `show(content, x, y)` / `hide()`
+- `useTooltip` — module-level `shallowReactive` state (`show`, `x`, `yTop`, `yBottom`, `content`); `show(content, x, yTop, yBottom?)` / `hide()` — `yBottom` defaults to `yTop` for callers that pass a point rather than an element rect
 
 **Nuxt `useState` singletons** (SSR-safe, keyed):
 - `useDashboard` — `'dashboard.period'` (`Period`), `'dashboard.isLive'` (`boolean`)
@@ -98,7 +98,7 @@ Registered via `useEventListener` in `App/CommandPalette.vue` (Ctrl+K, ?) and `i
 `useToast().addToast(message, type, duration?)` from any component. `App/Toast.vue` (`<AppToast>`) is mounted in `app.vue` via `<Teleport to="body">`.
 
 ### Tooltip system
-`App/Tooltip.vue` (`<AppTooltip>`) is the single global tooltip renderer; mount it once in `app.vue`. All charts and UI route through it via `useTooltip`.
+`App/Tooltip.vue` (`<AppTooltip>`) is the single global tooltip renderer; mount it once in `app.vue`. All charts and UI route through it via `useTooltip`. It owns the `<Teleport>`, fade `<Transition>`, positioning, and flip logic (shows below the trigger when in the top quarter of the viewport).
 
 **`TooltipContent` type**: `string | { is: Component; props?: Record<string, unknown> }` — pass a component reference for rich tooltips, a string for plain text.
 
@@ -106,7 +106,23 @@ Two ways to trigger:
 - **Declarative**: `<TooltipTrigger :content="..." :delay="400">` wraps any element
 - **Programmatic**: `v-bind="useTooltipTrigger(content, delay)"` spreads `onMouseenter`/`onMouseleave` directly onto an element (used in `RackTopology` for chip buttons)
 
-CSS vocabulary in `_tooltip.css`: `.tt-text` / `.tt-rich` set container style; `.tt-label`, `.tt-value`, `.tt-dot`, `.tt-row` etc. compose tooltip body markup. Use these classes in `*TooltipContent.vue` components; do not write bespoke tooltip styles.
+**Tooltip primitives** live in `Tt/` and are Nuxt auto-imported. Use these to compose `*TooltipContent.vue` components — do not write bespoke tooltip styles or raw `tt-*` class markup.
+
+| Component | Class | Notes |
+|-----------|-------|-------|
+| `<TtRow>` | `tt-row` | Flex row, `gap: --space-2`. Add `tight` prop for `--space-1` (text + sep rows) |
+| `<TtDot color>` | `tt-dot` | Colored circle; requires `color` prop |
+| `<TtValue>` | `tt-value` | Mono semibold value |
+| `<TtMuted>` | `tt-muted` | Mono muted text — dates, labels, secondary info |
+| `<TtSep>` | `tt-sep` | Muted `·` separator |
+| `<TtTitle>` | `tt-title` | Mono semibold header with border-bottom |
+| `<TtKvRow>` | `tt-kv-row` | Key-value row: space-between, mono xs font set at row level |
+| `<TtKvLabel>` | `tt-kv-label` | Muted key label (inherits font from `TtKvRow`) |
+| `<TtKvVal>` | `tt-kv-val` | Value (inherits font from `TtKvRow`) |
+
+**Two layout families:**
+- **Chart** (`TtRow`, `TtDot`, `TtValue`, `TtMuted`, `TtSep`) — inline data series display
+- **Key-value** (`TtTitle`, `TtKvRow`, `TtKvLabel`, `TtKvVal`) — structured property lists (e.g. `Instance/TooltipContent`)
 
 Per-chart tooltip markup lives in `Chart/{Line,Bar,Heatmap,Donut}TooltipContent.vue`. Non-chart tooltips follow the same pattern: e.g. `Instance/TooltipContent.vue` (used by rack topology chips). Create a new `*TooltipContent.vue` alongside any new chart or UI surface rather than inlining HTML in the component.
 
@@ -141,6 +157,7 @@ Subdirectory names are prepended to the component name: `Chart/Bar.vue` → `<Ch
 | `Instance/` | Instance UI | `Instance/Table.vue` → `<InstanceTable>` |
 | `Sidebar/` | Sidebar UI | `Sidebar/ModePicker.vue` → `<SidebarModePicker>` |
 | `Storage/` | Storage UI | `Storage/Table.vue` → `<StorageTable>` |
+| `Tt/` | Tooltip primitives | `Tt/Row.vue` → `<TtRow>` |
 | root | Shared utilities | `StatusBadge.vue` → `<StatusBadge>` |
 
 ### Adding a new chart

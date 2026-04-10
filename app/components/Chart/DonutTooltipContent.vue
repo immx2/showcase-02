@@ -12,9 +12,12 @@ const pct = computed(() =>
 </script>
 
 <template>
-  <span class="tt-label">{{ label }} · {{ formatGib(value) }}</span>
-  <div class="tt-row">
-    <span class="tt-dot" :style="{ background: color }" />
-    <span class="tt-value">{{ pct }}%</span>
-  </div>
+  <TtRow tight>
+    <TtMuted>{{ label }}</TtMuted>
+  </TtRow>
+  <TtRow>
+    <TtDot :color="color" />
+    <TtValue>{{ pct }}%</TtValue>
+    <TtValue>({{ formatGib(value, 0) }})</TtValue>
+  </TtRow>
 </template>

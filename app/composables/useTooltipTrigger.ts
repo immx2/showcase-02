@@ -13,7 +13,7 @@ export function useTooltipTrigger(
     timer = setTimeout(() => {
       const rect = target.getBoundingClientRect()
       const resolvedContent = typeof content === 'function' ? content() : content
-      show(resolvedContent, rect.left + rect.width / 2, rect.top)
+      show(resolvedContent, rect.left + rect.width / 2, rect.top, rect.bottom)
     }, resolvedDelay)
   }
 

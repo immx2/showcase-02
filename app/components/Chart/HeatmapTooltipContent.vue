@@ -1,17 +1,20 @@
 <script setup lang="ts">
 defineProps<{
-  label: string
+  day: string
+  time: string
   value: string
   color: string
 }>()
 </script>
 
 <template>
-  <span class="tt-row">
-    <span class="tt-label">{{ label }}</span>
-  </span>
-  <span class="tt-row">
-    <span class="tt-dot" :style="{ background: color }" />
-    <span class="tt-value">{{ value }}</span>
-  </span>
+  <TtRow tight>
+    <TtMuted>{{ day }}</TtMuted>
+    <TtSep />
+    <TtMuted>{{ time }}</TtMuted>
+  </TtRow>
+  <TtRow>
+    <TtDot :color="color" />
+    <TtValue>{{ value }}</TtValue>
+  </TtRow>
 </template>

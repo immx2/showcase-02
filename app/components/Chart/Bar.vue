@@ -138,7 +138,8 @@ function onBarEnter(x: number, y: number, label: string, value: number, key?: st
   showTip({
     is: ChartBarTooltipContent,
     props: {
-      label: key ? `${label} · ${key}` : label,
+      label,
+      subLabel: key,
       value: props.formatValue(value),
       color: color ?? '',
     },

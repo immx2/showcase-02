@@ -16,7 +16,7 @@ const isDark = computed(() => colorMode.value === 'dark')
 const containerRef = ref<HTMLElement>()
 const { width: cw } = useElementSize(containerRef)
 
-const dayLabels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+const dayLabels = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
 
 const margin = { top: 4, right: 8, bottom: 24, left: 36 }
 const width = computed(() => Math.max(cw.value - margin.left - margin.right, 0))
@@ -77,7 +77,8 @@ function onCellEnter(cell: (typeof cells.value)[0]) {
   showTip({
     is: ChartHeatmapTooltipContent,
     props: {
-      label: `${dayLabels[cell.day]} ${cell.hour}:00`,
+      day: dayLabels[cell.day],
+      time: `${cell.hour}:00`,
       value: `${cell.count} sessions`,
       color: cell.fill,
     },

@@ -1,15 +1,22 @@
 <script setup lang="ts">
 defineProps<{
   label: string
+  subLabel?: string
   value: string
   color?: string
 }>()
 </script>
 
 <template>
-  <span class="tt-muted">{{ label }}</span>
-  <div class="tt-row">
-    <span v-if="color" class="tt-dot" :style="{ background: color }" />
-    <span class="tt-value">{{ value }}</span>
-  </div>
+  <TtRow tight>
+    <TtMuted>{{ label }}</TtMuted>
+    <template v-if="subLabel">
+      <TtSep />
+      <TtMuted>{{ subLabel }}</TtMuted>
+    </template>
+  </TtRow>
+  <TtRow>
+    <TtDot v-if="color" :color="color" />
+    <TtValue>{{ value }}</TtValue>
+  </TtRow>
 </template>

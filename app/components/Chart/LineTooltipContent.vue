@@ -9,14 +9,14 @@ defineProps<{
 </script>
 
 <template>
-  <span class="tt-muted">{{ date }}</span>
-  <span class="tt-row">
-    <span class="tt-dot" :style="{ background: color }" />
-    <span class="tt-value">{{ value }}</span>
+  <TtMuted>{{ date }}</TtMuted>
+  <TtRow>
+    <TtDot :color="color" />
+    <TtValue>{{ value }}</TtValue>
     <template v-if="value2 && color2">
-      <span class="tt-sep">·</span>
-      <span class="tt-dot" :style="{ background: color2 }" />
-      <span class="tt-value">{{ value2 }}</span>
+      <TtSep />
+      <TtDot :color="color2" />
+      <TtValue>{{ value2 }}</TtValue>
     </template>
-  </span>
+  </TtRow>
 </template>
