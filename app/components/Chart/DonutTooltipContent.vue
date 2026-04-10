@@ -18,6 +18,7 @@ const pct = computed(() =>
   <TtRow>
     <TtDot :color="color" />
     <TtValue>{{ pct }}%</TtValue>
-    <TtValue>({{ formatGib(value, 0) }})</TtValue>
+    <TtSep />
+    <TtValue>{{ formatGib(value, 0) }}</TtValue>
   </TtRow>
 </template>
