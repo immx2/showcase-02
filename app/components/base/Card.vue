@@ -1,15 +1,8 @@
 <script setup lang="ts">
-const props = defineProps<{
-  index?: number
-}>()
-
-const style = computed(() =>
-  props.index !== undefined ? { '--stagger-index': props.index } : undefined
-)
 </script>
 
 <template>
-  <div class="base-card ui-surface card-enter" :style="style">
+  <div class="base-card ui-surface">
     <slot />
   </div>
 </template>

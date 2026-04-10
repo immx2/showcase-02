@@ -1,10 +1,11 @@
 <script setup lang="ts">
 const props = defineProps<{
   isMounted: boolean
-  baseIndex?: number
+  baseIndex: number
 }>()
 
 const { kpis, isLive } = useDashboard()
+const stagger = useStagger(props.baseIndex)
 </script>
 
 <template>
@@ -12,8 +13,8 @@ const { kpis, isLive } = useDashboard()
     <CardKpi
       v-for="(kpi, i) in kpis"
       :key="kpi.label"
+      v-bind="stagger(i)"
       :kpi="kpi"
-      :index="(props.baseIndex ?? 0) + i"
       :loading="!isMounted"
       :live="isLive"
     />

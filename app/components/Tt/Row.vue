@@ -3,5 +3,5 @@ defineProps<{ tight?: boolean }>()
 </script>
 
 <template>
-  <div class="tt-row" :class="{ 'tt-row--tight': tight }"><slot /></div>
+  <div class="tt-row" :class="{ 'tt-row-tight': tight }"><slot /></div>
 </template>

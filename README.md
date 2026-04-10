@@ -152,6 +152,7 @@ app/
     useToast.ts
     useIsMounted.ts
     useAnimatedCounter.ts
+    useStagger.ts          # Card-enter stagger attrs factory — v-bind="stagger(i)"
   data/
     analytics.ts           # Deterministic infrastructure data (seeded PRNG)
   utils/

@@ -2,11 +2,10 @@
 import type { Volume } from '~/data/analytics'
 import type { VolumeSortKey } from '~/composables/useStorage'
 
-const { index } = defineProps<{
+defineProps<{
   volumes: Volume[]
   sortKey: VolumeSortKey
   sortDir: 'asc' | 'desc'
-  index?: number
 }>()
 
 
@@ -41,7 +40,7 @@ function ariaSortAttr(key: VolumeSortKey | null, sortKey: VolumeSortKey, sortDir
 </script>
 
 <template>
-  <BaseTableWrap :index="index" label="Volume list">
+  <BaseTableWrap label="Volume list">
     <table class="storage-table">
       <thead>
         <tr>

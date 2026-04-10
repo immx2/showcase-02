@@ -28,14 +28,13 @@ useEventListener('keydown', (e: KeyboardEvent) => {
       <InstanceViewToggle />
     </BasePageHeader>
 
-    <Transition name="view-fade" mode="out-in">
-      <div v-if="instancesView === 'table'" key="table">
+    <Transition name="view" mode="out-in">
+      <div v-if="instancesView === 'table'" key="table" class="card-enter">
         <ClientOnly>
           <InstanceTable
             :instances="filteredInstances"
             :sort-key="sortKey"
             :sort-dir="sortDir"
-            :index="0"
             @sort="toggleSort"
             @select="openInstance($event)"
           />
@@ -45,7 +44,7 @@ useEventListener('keydown', (e: KeyboardEvent) => {
         </ClientOnly>
       </div>
 
-      <div v-else key="rack">
+      <div v-else key="rack" class="card-enter">
         <ClientOnly>
           <InstanceRackTopology @select-instance="openInstance($event)" />
           <template #fallback>
@@ -58,13 +57,11 @@ useEventListener('keydown', (e: KeyboardEvent) => {
 </template>
 
 <style scoped>
-.view-fade-enter-active,
-.view-fade-leave-active {
-  transition: opacity var(--duration-base) var(--ease-out);
+.view-leave-active {
+  transition: opacity var(--duration-fast) var(--ease-out);
 }
 
-.view-fade-enter-from,
-.view-fade-leave-to {
+.view-leave-to {
   opacity: 0;
 }
 </style>

@@ -2,12 +2,11 @@
 defineProps<{
   title: string
   description?: string
-  index?: number
 }>()
 </script>
 
 <template>
-  <BaseCard :index="index">
+  <BaseCard>
     <div class="chart-card-inner">
       <div class="chart-card-header">
         <h3 class="chart-card-title">{{ title }}</h3>

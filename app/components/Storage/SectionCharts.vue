@@ -3,17 +3,18 @@ import { storageHistory } from '~/data/analytics'
 
 const props = defineProps<{
   isMounted: boolean
-  baseIndex?: number
+  baseIndex: number
 }>()
 
 const storageLineSeries = storageHistory.map(s => ({ date: s.date, value: s.totalGib }))
+const stagger = useStagger(props.baseIndex)
 </script>
 
 <template>
   <section class="chart-row">
-    <CardStorageBreakdown :index="props.baseIndex ?? 0" />
+    <CardStorageBreakdown v-bind="stagger(0)" />
 
-    <CardChart title="Capacity Growth" description="Total allocated storage · TiB" :index="(props.baseIndex ?? 0) + 1">
+    <CardChart title="Capacity Growth" description="Total allocated storage · TiB" v-bind="stagger(1)">
       <ClientOnly>
         <ChartLine
           v-if="isMounted"

@@ -7,8 +7,10 @@ import type { Kpi } from '~/composables/useDashboard'
 
 const props = defineProps<{
   isMounted: boolean
-  baseIndex?: number
+  baseIndex: number
 }>()
+
+const stagger = useStagger(props.baseIndex)
 
 const totalCapacityGib = volumes.reduce((s, v) => s + v.sizeGib, 0)
 const totalUsedGib     = volumes.reduce((s, v) => s + v.usedGib, 0)
@@ -58,8 +60,8 @@ const storageKpis = computed<Kpi[]>(() => [
     <CardKpi
       v-for="(kpi, i) in storageKpis"
       :key="kpi.label"
+      v-bind="stagger(i)"
       :kpi="kpi"
-      :index="(props.baseIndex ?? 0) + i"
       :loading="!isMounted"
     />
   </section>

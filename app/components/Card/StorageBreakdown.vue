@@ -1,6 +1,4 @@
 <script setup lang="ts">
-defineProps<{ index?: number }>()
-
 const { storageDonutData } = useDashboard()
 
 const description = computed(() => {
@@ -12,7 +10,7 @@ const isMounted = useIsMounted()
 </script>
 
 <template>
-  <CardChart title="Storage Breakdown" :description="description" :index="index">
+  <CardChart title="Storage Breakdown" :description="description">
     <div class="donut-center">
       <ClientOnly>
         <ChartDonut

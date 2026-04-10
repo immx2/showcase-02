@@ -1,20 +1,14 @@
 <script setup lang="ts">
-const props = defineProps<{
-  index?: number
+defineProps<{
   label?: string
 }>()
-
-const style = computed(() =>
-  props.index !== undefined ? { '--stagger-index': props.index } : undefined
-)
 </script>
 
 <template>
   <div
-    class="table-wrap ui-surface card-enter"
+    class="table-wrap ui-surface"
     role="region"
     :aria-label="label"
-    :style="style"
   >
     <slot />
   </div>

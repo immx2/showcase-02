@@ -4,13 +4,11 @@ import { useAnimatedCounter } from '~/composables/useAnimatedCounter'
 
 const props = withDefaults(defineProps<{
   kpi?: Kpi
-  index?: number
   loading?: boolean
   /** When true (live mode), numeric display snaps without RAF animation. */
   live?: boolean
 }>(), {
   kpi: undefined,
-  index: 0,
   live: false,
 })
 
@@ -40,7 +38,7 @@ const isPositive = computed(() =>
 </script>
 
 <template>
-  <BaseCard :index="index">
+  <BaseCard>
     <Transition name="kpi-swap" mode="out-in">
       <div v-if="loading" key="skeleton" class="kpi-skeleton">
         <div class="skel-line skel-label" />

@@ -7,7 +7,6 @@ const props = defineProps<{
   instances: Instance[]
   sortKey: SortKey
   sortDir: SortDir
-  index?: number
 }>()
 
 
@@ -48,7 +47,7 @@ function sparklineColor(state: Instance['state']): string {
 </script>
 
 <template>
-  <BaseTableWrap :index="index" label="Instance list">
+  <BaseTableWrap label="Instance list">
     <table class="instance-table">
       <thead>
         <tr>

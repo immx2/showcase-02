@@ -110,7 +110,7 @@ Two ways to trigger:
 
 | Component | Class | Notes |
 |-----------|-------|-------|
-| `<TtRow>` | `tt-row` | Flex row, `gap: --space-2`. Add `tight` prop for `--space-1` (text + sep rows) |
+| `<TtRow>` | `tt-row` | Flex row, `gap: --space-2`. Add `tight` prop (`tt-row-tight`) for `--space-1` (text + sep rows) |
 | `<TtDot color>` | `tt-dot` | Colored circle; requires `color` prop |
 | `<TtValue>` | `tt-value` | Mono semibold value |
 | `<TtMuted>` | `tt-muted` | Mono muted text — dates, labels, secondary info |
@@ -137,6 +137,20 @@ Per-chart tooltip markup lives in `Chart/{Line,Bar,Heatmap,Donut}TooltipContent.
 
 ### KPI cards and live metrics
 `<CardKpi>` (`Card/Kpi.vue`) receives `:live="isLive"` from `index.vue`. When live is on, `useAnimatedCounter` **snaps** the displayed value (no RAF easing) so rapid ticks do not spin four animation loops. Sparklines still update from the `kpis` computed data.
+
+### Entrance animations and stagger
+`.card-enter` (defined in `_animations.css`) is the single entrance animation — opacity + translateY slide-up over 400ms. Apply it at the **page or section level**, never inside base primitives (`BaseCard`, `BaseTableWrap` are animation-agnostic).
+
+Use `useStagger(baseIndex)` to produce `v-bind`-ready attrs for staggered sequences. `baseIndex` is the section's starting position in the page's overall stagger sequence; `i` is the item's position within the section:
+
+```ts
+const stagger = useStagger(props.baseIndex)
+// in template:
+<CardKpi v-for="(kpi, i)" v-bind="stagger(i)" />
+<CardChart v-bind="stagger(0)" />
+```
+
+`baseIndex` is required on all section components — the page always declares the full sequence explicitly (dashboard: KPIs 0, charts 4; storage: KPIs 0, charts 4, volumes 6).
 
 ### D3 brush (ChartLine)
 Pass `:full-data` and `:full-data2` to `<ChartLine>` to enable the context minimap. Brush emits `update:brush-range` with `[Date, Date] | null`. `index.vue` displays the zoomed range in the `<ChartCard>` description.

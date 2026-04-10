@@ -1,12 +1,11 @@
 <script setup lang="ts">
 const props = defineProps<{
   isMounted: boolean
-  baseIndex?: number
+  baseIndex: number
 }>()
 
 const { cpuSeries, memSeries, allCpuSeries, allMemSeries, sledMultiBarData, heatmapData } = useDashboard()
-
-const b = computed(() => props.baseIndex ?? 0)
+const stagger = useStagger(props.baseIndex)
 
 const brushRange = ref<[Date, Date] | null>(null)
 
@@ -22,7 +21,7 @@ const brushDescription = computed(() => {
   <CardChart
     title="CPU &amp; Memory Utilization"
     :description="brushDescription"
-    :index="b"
+    v-bind="stagger(0)"
   >
     <ChartSkeletonLine v-if="!isMounted" :height="240" :show-minimap="true" />
     <ClientOnly v-else>
@@ -44,7 +43,7 @@ const brushDescription = computed(() => {
 
   <!-- Sled utilization + Storage breakdown -->
   <section class="chart-row">
-    <CardChart title="Resource Utilization by Sled" description="Current period average · CPU / Mem / Disk" :index="b + 1">
+    <CardChart title="Resource Utilization by Sled" description="Current period average · CPU / Mem / Disk" v-bind="stagger(1)">
       <ClientOnly>
         <ChartBar
           v-if="isMounted"
@@ -56,14 +55,14 @@ const brushDescription = computed(() => {
       </ClientOnly>
     </CardChart>
 
-    <CardStorageBreakdown :index="b + 1" />
+    <CardStorageBreakdown v-bind="stagger(1)" />
   </section>
 
   <!-- API request heatmap -->
   <CardChart
     title="API Request Rate"
     description="Requests per hour · last 7 days rolling average"
-    :index="b + 2"
+    v-bind="stagger(2)"
   >
     <ClientOnly>
       <ChartHeatmap
