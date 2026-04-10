@@ -27,13 +27,26 @@ Dev server defaults to port 3002 (`devServer.port` in `nuxt.config.ts`; `npm run
 - `sledMultiBarData` → grouped CPU/Mem/Disk bars per sled
 - `allCpuSeries` / `allMemSeries` → full 90-day window for `ChartLine` context/brush
 
-**Global singleton state** (module-level in `useDashboard.ts`):
+**Global singleton state** (module-level in `useDashboard.ts` — not SSR-safe, client-only):
 - `liveSamples` — `shallowRef` seeded from `metricSamples`; in live mode the same array is mutated in place (`shift`/`push`) and `triggerRef(liveSamples)` runs so dependents update without allocating a new buffer each tick
-- `isLive` — whether live simulation is running
+- `liveInterval` — non-reactive timer handle (`ReturnType<typeof setInterval>`), not exposed
 
-**Global singleton state** (module-level in composables):
+**Global singleton state** (module-level in composables — not SSR-safe, client-only):
 - `useToast` — module-level `toasts` array, auto-dismiss via `setTimeout`
-- `useCommandPalette` — module-level `isOpen` ref
+- `useTooltip` — module-level `shallowReactive` state (`show`, `x`, `y`, `content`); `show(content, x, y)` / `hide()`
+
+**Nuxt `useState` singletons** (SSR-safe, keyed):
+- `useDashboard` — `'dashboard.period'` (`Period`), `'dashboard.isLive'` (`boolean`)
+- `useCommandPalette` — `'command-palette.isOpen'`
+- `useAppDrawer` — `'app-drawer'` discriminated union `{ type: 'instance' | 'volume'; item }` or `null`
+- `useInstancesView` — `'instances.view'` `'table' | 'rack'`
+- `useSidebar` — `'sidebar.isOpen'`
+
+**Generic table composable**:
+- `useTableState<TItem, TSortKey>(source, options)` — shared sort + project-filter logic used internally by `useDashboard` (instances) and `useStorage` (volumes). Returns `{ selectedProject, sortKey, sortDir, filtered, toggleSort }`. Each call creates isolated `ref` state (not shared between callers).
+
+**Storage composable**:
+- `useStorage()` — parallel to `useDashboard` for volume data. Data flow: `selectedProject` + `sortKey` + `sortDir` → `filteredVolumes`. Sort key type: `VolumeSortKey`.
 
 ### VueUse
 - `@vueuse/nuxt` is in `nuxt.config.ts` modules; it depends on `@vueuse/core` — keep only `@vueuse/nuxt` in `package.json` unless you need to pin `@vueuse/core` explicitly.
@@ -50,7 +63,7 @@ Dev server defaults to port 3002 (`devServer.port` in `nuxt.config.ts`; `npm run
 - Use the single npm package `d3` with `import * as d3 from 'd3'` in chart components (no separate `d3-*` deps)
 - D3 is used for math (scales, shapes, layouts, axes) — Vue handles rendering via SVG templates
 - Axis DOM operations go in `onMounted` + `watch` (client-only). `ChartLine.vue` batches axis + brush DOM work via stable **data fingerprints** + `requestAnimationFrame` so live ticks do not re-run D3 work on every new scale object identity
-- All chart components are wrapped in `ClientOnly` in `index.vue`
+- All chart components are wrapped in `ClientOnly` — either directly in the page (`instances.vue`) or inside their `Section*` composite components (`DashboardSectionCharts`, `StorageSectionCharts`)
 - Chart colors map semantically: chart-1 = CPU (green), chart-2 = memory (sky), chart-3 = disk (amber), chart-4 = network (violet)
 - Axis text uses `var(--font-mono)`
 - `ChartLine` supports `fullData`/`fullData2` props for the context minimap + D3 brushX
@@ -67,7 +80,7 @@ Dev server defaults to port 3002 (`devServer.port` in `nuxt.config.ts`; `npm run
 ## Patterns
 
 ### Command Palette
-`Ctrl+K` / `⌘K` opens the palette. `?` opens shortcuts view. `App/Nav.vue` has a search hint button. `App/CommandPalette.vue` (`<AppCommandPalette>`) is mounted inside `index.vue` and emits: `select-instance`, `set-period`, `toggle-view`, `toggle-live`.
+`Ctrl+K` / `⌘K` opens the palette. `?` opens shortcuts view. `App/Sidebar.vue` has a search hint button. `App/CommandPalette.vue` (`<AppCommandPalette>`) is mounted inside `index.vue` and emits: `select-instance`, `set-period`, `toggle-view`, `toggle-live`.
 
 ### Keyboard shortcuts (global)
 Registered via `useEventListener` in `App/CommandPalette.vue` (Ctrl+K, ?) and `index.vue` (R, L, ←, →).
@@ -84,6 +97,19 @@ Registered via `useEventListener` in `App/CommandPalette.vue` (Ctrl+K, ?) and `i
 ### Toast notifications
 `useToast().addToast(message, type, duration?)` from any component. `App/Toast.vue` (`<AppToast>`) is mounted in `app.vue` via `<Teleport to="body">`.
 
+### Tooltip system
+`App/Tooltip.vue` (`<AppTooltip>`) is the single global tooltip renderer; mount it once in `app.vue`. All charts and UI route through it via `useTooltip`.
+
+**`TooltipContent` type**: `string | { is: Component; props?: Record<string, unknown> }` — pass a component reference for rich tooltips, a string for plain text.
+
+Two ways to trigger:
+- **Declarative**: `<TooltipTrigger :content="..." :delay="400">` wraps any element
+- **Programmatic**: `v-bind="useTooltipTrigger(content, delay)"` spreads `onMouseenter`/`onMouseleave` directly onto an element (used in `RackTopology` for chip buttons)
+
+CSS vocabulary in `_tooltip.css`: `.tt-text` / `.tt-rich` set container style; `.tt-label`, `.tt-value`, `.tt-dot`, `.tt-row` etc. compose tooltip body markup. Use these classes in `*TooltipContent.vue` components; do not write bespoke tooltip styles.
+
+Per-chart tooltip markup lives in `Chart/{Line,Bar,Heatmap,Donut}TooltipContent.vue`. Non-chart tooltips follow the same pattern: e.g. `Instance/TooltipContent.vue` (used by rack topology chips). Create a new `*TooltipContent.vue` alongside any new chart or UI surface rather than inlining HTML in the component.
+
 ### Instance detail drawer
 `App/Drawer.vue` (`<AppDrawer>`) is the single drawer shell; it renders `<InstanceDrawerContent>` or `<StorageDrawerContent>` based on `useAppDrawer` state. Opened by clicking a table row, clicking an instance chip in rack view, or selecting from the command palette.
 
@@ -94,7 +120,7 @@ Registered via `useEventListener` in `App/CommandPalette.vue` (Ctrl+K, ?) and `i
 `toggleLive()` from `useDashboard` starts/stops a `setInterval` that appends to `liveSamples`. All charts and KPIs update reactively. Keyboard shortcut `L`.
 
 ### KPI cards and live metrics
-`DashboardKpiCard` receives `:live="isLive"` from `index.vue`. When live is on, `useAnimatedCounter` **snaps** the displayed value (no RAF easing) so rapid ticks do not spin four animation loops. Sparklines still update from the `kpis` computed data.
+`<CardKpi>` (`Card/Kpi.vue`) receives `:live="isLive"` from `index.vue`. When live is on, `useAnimatedCounter` **snaps** the displayed value (no RAF easing) so rapid ticks do not spin four animation loops. Sparklines still update from the `kpis` computed data.
 
 ### D3 brush (ChartLine)
 Pass `:full-data` and `:full-data2` to `<ChartLine>` to enable the context minimap. Brush emits `update:brush-range` with `[Date, Date] | null`. `index.vue` displays the zoomed range in the `<ChartCard>` description.
@@ -107,16 +133,20 @@ Subdirectory names are prepended to the component name: `Chart/Bar.vue` → `<Ch
 
 | Directory | Convention | Example |
 |-----------|------------|---------|
-| `App/` | App chrome | `App/Nav.vue` → `<AppNav>` |
+| `App/` | App chrome | `App/Sidebar.vue` → `<AppSidebar>` |
+| `base/` | Base primitives | `base/Button.vue` → `<BaseButton>` |
+| `Card/` | Card variants | `Card/Chart.vue` → `<CardChart>` |
 | `Chart/` | Chart primitives | `Chart/Bar.vue` → `<ChartBar>` |
 | `Dashboard/` | Dashboard composites | `Dashboard/Header.vue` → `<DashboardHeader>` |
-| `Instance/` | Instance UI | `Instance/Drawer.vue` → `<InstanceDrawer>` |
+| `Instance/` | Instance UI | `Instance/Table.vue` → `<InstanceTable>` |
+| `Sidebar/` | Sidebar UI | `Sidebar/ModePicker.vue` → `<SidebarModePicker>` |
+| `Storage/` | Storage UI | `Storage/Table.vue` → `<StorageTable>` |
 | root | Shared utilities | `StatusBadge.vue` → `<StatusBadge>` |
 
 ### Adding a new chart
 1. Create a component in `app/components/Chart/` following existing chart patterns
 2. Wire data through `useDashboard.ts`
-3. Add inside `<ChartCard>` + `<ClientOnly>` in `index.vue`
+3. Add inside `<ChartCard>` + `<ClientOnly>` in the relevant `Section*` composite component (`DashboardSectionCharts`, `StorageSectionCharts`, etc.)
 
 ### Instance states
 Use `<StatusBadge :status="inst.state" />` anywhere you need to display instance health. States: `running` (pulsing green dot), `starting` (pulsing amber dot), `stopped` (static gray dot), `faulted` (static red dot).
@@ -124,4 +154,3 @@ Use `<StatusBadge :status="inst.state" />` anywhere you need to display instance
 ## Boundaries
 - This app is standalone — no shared code or styles from other repos
 - No Tailwind
-- Prefer `var(--font-mono)` for any number or technical string shown to users
