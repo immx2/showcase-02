@@ -12,7 +12,7 @@ const pct = computed(() =>
 </script>
 
 <template>
-  <TtRow tight>
+  <TtRow>
     <TtMuted>{{ label }}</TtMuted>
   </TtRow>
   <TtRow>
