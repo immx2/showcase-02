@@ -63,7 +63,7 @@ Dev server defaults to port 3002 (`devServer.port` in `nuxt.config.ts`; `npm run
 - Use the single npm package `d3` with `import * as d3 from 'd3'` in chart components (no separate `d3-*` deps)
 - D3 is used for math (scales, shapes, layouts, axes) — Vue handles rendering via SVG templates
 - Axis DOM operations go in `onMounted` + `watch` (client-only). `ChartLine.vue` batches axis + brush DOM work via stable **data fingerprints** + `requestAnimationFrame` so live ticks do not re-run D3 work on every new scale object identity
-- All chart components are wrapped in `ClientOnly` — either directly in the page (`instances.vue`) or inside their `Section*` composite components (`DashboardSectionCharts`, `StorageSectionCharts`)
+- All chart components are wrapped in `<MountSwap>` inside their `Section*` composite components (`DashboardSectionCharts`, `StorageSectionCharts`) — see Skeleton / mount swap below
 - Chart colors map semantically: chart-1 = CPU (green), chart-2 = memory (sky), chart-3 = disk (amber), chart-4 = network (violet)
 - Axis text uses `var(--font-mono)`
 - `ChartLine` supports `fullData`/`fullData2` props for the context minimap + D3 brushX
@@ -135,6 +135,24 @@ Per-chart tooltip markup lives in `Chart/{Line,Bar,Heatmap,Donut}TooltipContent.
 ### Live mode
 `toggleLive()` from `useDashboard` starts/stops a `setInterval` that appends to `liveSamples`. All charts and KPIs update reactively. Keyboard shortcut `L`.
 
+### Skeleton / mount swap
+`<MountSwap>` (`MountSwap.vue`) is the standard wrapper for any chart or content that needs a skeleton placeholder before the client is ready. It calls `useIsMounted()` internally and crossfades between the `#skeleton` slot and the default slot using a `<Transition mode="out-in">` (120ms leave, 200ms enter).
+
+```vue
+<MountSwap>
+  <template #skeleton>
+    <BaseSkeleton height="240px" />
+  </template>
+  <ChartLine ... />
+</MountSwap>
+```
+
+**Two patterns — when to use each:**
+- **`<MountSwap>`** — for any chart or content block that needs a skeleton. Handles `useIsMounted` internally; do not prop-drill `isMounted` to section components.
+- **`ClientOnly` + `#fallback`** — only for content that requires guards against hydration mismatches (e.g. the instances view toggle), not for chart skeletons.
+
+`CardKpi` uses `<MountSwap>` internally with its own inline skeleton markup to get the crossfade between skeleton and content — the animated swap is what justifies using `MountSwap` over `ClientOnly` + `#fallback` there.
+
 ### KPI cards and live metrics
 `<CardKpi>` (`Card/Kpi.vue`) receives `:live="isLive"` from `index.vue`. When live is on, `useAnimatedCounter` **snaps** the displayed value (no RAF easing) so rapid ticks do not spin four animation loops. Sparklines still update from the `kpis` computed data.
 
@@ -177,7 +195,7 @@ Subdirectory names are prepended to the component name: `Chart/Bar.vue` → `<Ch
 ### Adding a new chart
 1. Create a component in `app/components/Chart/` following existing chart patterns
 2. Wire data through `useDashboard.ts`
-3. Add inside `<ChartCard>` + `<ClientOnly>` in the relevant `Section*` composite component (`DashboardSectionCharts`, `StorageSectionCharts`, etc.)
+3. Add inside `<CardChart>` + `<MountSwap>` in the relevant `Section*` composite component (`DashboardSectionCharts`, `StorageSectionCharts`, etc.)
 
 ### Instance states
 Use `<StatusBadge :status="inst.state" />` anywhere you need to display instance health. States: `running` (pulsing green dot), `starting` (pulsing amber dot), `stopped` (static gray dot), `faulted` (static red dot).

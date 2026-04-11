@@ -6,21 +6,21 @@ const description = computed(() => {
   return `${formatGib(totalGib)} total allocated`
 })
 
-const isMounted = useIsMounted()
 </script>
 
 <template>
   <CardChart title="Storage Breakdown" :description="description">
     <div class="donut-center">
-      <ClientOnly>
+      <MountSwap>
+        <template #skeleton>
+          <BaseSkeleton height="240px" />
+        </template>
         <ChartDonut
-          v-if="isMounted"
           :data="storageDonutData"
           :size="200"
           :format-center="(t: number) => formatGib(t, 0)"
         />
-        <BaseSkeleton v-else height="240px" />
-      </ClientOnly>
+      </MountSwap>
     </div>
   </CardChart>
 </template>

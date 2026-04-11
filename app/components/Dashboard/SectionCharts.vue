@@ -1,6 +1,5 @@
 <script setup lang="ts">
 const props = defineProps<{
-  isMounted: boolean
   baseIndex: number
 }>()
 
@@ -23,8 +22,10 @@ const brushDescription = computed(() => {
     :description="brushDescription"
     v-bind="stagger(0)"
   >
-    <ChartSkeletonLine v-if="!isMounted" :height="240" :show-minimap="true" />
-    <ClientOnly v-else>
+    <MountSwap>
+      <template #skeleton>
+        <ChartSkeletonLine :height="240" :show-minimap="true" />
+      </template>
       <ChartLine
         :data="cpuSeries"
         :data2="memSeries"
@@ -38,40 +39,42 @@ const brushDescription = computed(() => {
         animate
         @update:brush-range="brushRange = $event"
       />
-    </ClientOnly>
+    </MountSwap>
   </CardChart>
 
   <!-- Sled utilization + Storage breakdown -->
   <section class="chart-row">
     <CardChart title="Resource Utilization by Sled" description="Current period average · CPU / Mem / Disk" v-bind="stagger(1)">
-      <ClientOnly>
+      <MountSwap>
+        <template #skeleton>
+          <BaseSkeleton height="240px" />
+        </template>
         <ChartBar
-          v-if="isMounted"
           :groups="sledMultiBarData"
           :format-value="(v: number) => formatPercent(v, 0)"
           :height="240"
         />
-        <BaseSkeleton v-else height="240px" />
-      </ClientOnly>
+      </MountSwap>
     </CardChart>
 
-    <CardStorageBreakdown v-bind="stagger(1)" />
+    <CardStorageBreakdown v-bind="stagger(2)" />
   </section>
 
   <!-- API request heatmap -->
   <CardChart
     title="API Request Rate"
     description="Requests per hour · last 7 days rolling average"
-    v-bind="stagger(2)"
+    v-bind="stagger(3)"
   >
-    <ClientOnly>
+    <MountSwap>
+      <template #skeleton>
+        <BaseSkeleton height="190px" />
+      </template>
       <ChartHeatmap
-        v-if="isMounted"
         :data="heatmapData"
         :height="190"
       />
-      <BaseSkeleton v-else height="190px" />
-    </ClientOnly>
+    </MountSwap>
   </CardChart>
 </template>
 

@@ -6,7 +6,6 @@ import {
 import type { Kpi } from '~/composables/useDashboard'
 
 const props = defineProps<{
-  isMounted: boolean
   baseIndex: number
 }>()
 
@@ -62,7 +61,6 @@ const storageKpis = computed<Kpi[]>(() => [
       :key="kpi.label"
       v-bind="stagger(i)"
       :kpi="kpi"
-      :loading="!isMounted"
     />
   </section>
 </template>

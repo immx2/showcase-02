@@ -28,9 +28,9 @@ useEventListener('keydown', (e: KeyboardEvent) => {
       <InstanceViewToggle />
     </BasePageHeader>
 
-    <Transition name="view" mode="out-in">
-      <div v-if="instancesView === 'table'" key="table" class="card-enter">
-        <ClientOnly>
+    <ClientOnly>
+      <Transition name="view">
+        <div v-if="instancesView === 'table'" key="table" class="card-enter">
           <InstanceTable
             :instances="filteredInstances"
             :sort-key="sortKey"
@@ -38,21 +38,17 @@ useEventListener('keydown', (e: KeyboardEvent) => {
             @sort="toggleSort"
             @select="openInstance($event)"
           />
-          <template #fallback>
-            <BaseSkeleton height="320px" />
-          </template>
-        </ClientOnly>
-      </div>
+        </div>
 
-      <div v-else key="rack" class="card-enter">
-        <ClientOnly>
+        <div v-else key="rack" class="card-enter">
           <InstanceRackTopology @select-instance="openInstance($event)" />
-          <template #fallback>
-            <BaseSkeleton height="400px" />
-          </template>
-        </ClientOnly>
-      </div>
-    </Transition>
+        </div>
+      </Transition>
+
+      <template #fallback>
+        <BaseSkeleton height="320px" />
+      </template>
+    </ClientOnly>
   </BasePageContent>
 </template>
 

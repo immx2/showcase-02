@@ -3,8 +3,6 @@ const { period, isLive, toggleLive } = useDashboard()
 
 useHead({ title: 'SaaS Cloud Console' })
 
-const isMounted = useIsMounted()
-
 useEventListener('keydown', (e: KeyboardEvent) => {
   const focused = document.activeElement
   const inInput = focused && (focused.tagName === 'INPUT' || focused.tagName === 'TEXTAREA' || (focused as HTMLElement).isContentEditable)
@@ -29,7 +27,7 @@ useEventListener('keydown', (e: KeyboardEvent) => {
       :is-live="isLive"
       @toggle-live="toggleLive"
     />
-    <DashboardSectionKpis :is-mounted="isMounted" :base-index="0" />
-    <DashboardSectionCharts :is-mounted="isMounted" :base-index="4" />
+    <DashboardSectionKpis :base-index="0" />
+    <DashboardSectionCharts :base-index="4" />
   </BasePageContent>
 </template>

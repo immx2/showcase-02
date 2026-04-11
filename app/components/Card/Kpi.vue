@@ -4,7 +4,6 @@ import { useAnimatedCounter } from '~/composables/useAnimatedCounter'
 
 const props = withDefaults(defineProps<{
   kpi?: Kpi
-  loading?: boolean
   /** When true (live mode), numeric display snaps without RAF animation. */
   live?: boolean
 }>(), {
@@ -39,13 +38,16 @@ const isPositive = computed(() =>
 
 <template>
   <BaseCard>
-    <Transition name="kpi-swap" mode="out-in">
-      <div v-if="loading" key="skeleton" class="kpi-skeleton">
-        <div class="skel-line skel-label" />
-        <div class="skel-line skel-value" />
-        <div class="skel-line skel-spark" />
-      </div>
-      <div v-else key="content" class="kpi-content">
+    <MountSwap>
+      <template #skeleton>
+        <div class="kpi-skeleton">
+          <div class="skel-line skel-label" />
+          <div class="skel-line skel-value" />
+          <div class="skel-line skel-spark" />
+        </div>
+      </template>
+
+      <div class="kpi-content">
         <div class="kpi-top">
           <span class="kpi-label text-mono-label">{{ kpi!.label }}</span>
           <span class="kpi-trend" :class="isPositive ? 'positive' : 'negative'">
@@ -59,24 +61,18 @@ const isPositive = computed(() =>
         <div class="kpi-bottom">
           <div class="kpi-value">{{ formattedValue }}</div>
           <ChartSparkline
-          :data="kpi!.sparkline"
-          :color="isPositive ? 'var(--color-positive)' : 'var(--color-negative)'"
-          :height="28"
-          :animate="true"
+            :data="kpi!.sparkline"
+            :color="isPositive ? 'var(--color-positive)' : 'var(--color-negative)'"
+            :height="28"
+            :animate="true"
           />
         </div>
       </div>
-    </Transition>
+    </MountSwap>
   </BaseCard>
 </template>
 
 <style scoped>
-.kpi-swap-leave-active { transition: opacity 0.12s ease; }
-.kpi-swap-enter-active { transition: opacity 0.2s ease; }
-
-.kpi-swap-leave-to,
-.kpi-swap-enter-from  { opacity: 0; }
-
 .kpi-content {
   display: flex;
   flex-direction: column;

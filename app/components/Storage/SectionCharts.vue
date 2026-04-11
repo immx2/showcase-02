@@ -2,7 +2,6 @@
 import { storageHistory } from '~/data/analytics'
 
 const props = defineProps<{
-  isMounted: boolean
   baseIndex: number
 }>()
 
@@ -15,9 +14,11 @@ const stagger = useStagger(props.baseIndex)
     <CardStorageBreakdown v-bind="stagger(0)" />
 
     <CardChart title="Capacity Growth" description="Total allocated storage · TiB" v-bind="stagger(1)">
-      <ClientOnly>
+      <MountSwap>
+        <template #skeleton>
+          <BaseSkeleton height="240px" />
+        </template>
         <ChartLine
-          v-if="isMounted"
           :data="storageLineSeries"
           color="var(--chart-3)"
           :format-value="(v: number) => formatGib(v, 0)"
@@ -26,8 +27,7 @@ const stagger = useStagger(props.baseIndex)
           :margin-left="62"
           animate
         />
-        <BaseSkeleton v-else height="240px" />
-      </ClientOnly>
+      </MountSwap>
     </CardChart>
   </section>
 </template>

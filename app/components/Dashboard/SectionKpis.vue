@@ -1,6 +1,5 @@
 <script setup lang="ts">
 const props = defineProps<{
-  isMounted: boolean
   baseIndex: number
 }>()
 
@@ -15,7 +14,6 @@ const stagger = useStagger(props.baseIndex)
       :key="kpi.label"
       v-bind="stagger(i)"
       :kpi="kpi"
-      :loading="!isMounted"
       :live="isLive"
     />
   </section>
