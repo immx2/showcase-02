@@ -163,9 +163,11 @@ const stateColors: Record<string, string> = {
 
 <template>
   <Teleport to="body">
-    <Transition name="palette">
-      <div v-if="isOpen" class="palette-backdrop" @mousedown.self="close">
+    <BaseScrim :open="isOpen" blur @close="close" />
+    <div class="palette-positioner">
+      <Transition name="palette">
         <div
+          v-if="isOpen"
           class="palette-modal"
           role="dialog"
           aria-modal="true"
@@ -265,25 +267,26 @@ const stateColors: Record<string, string> = {
             </template>
           </div>
         </div>
-      </div>
-    </Transition>
+      </Transition>
+    </div>
   </Teleport>
 </template>
 
 <style scoped>
-.palette-backdrop {
+.palette-positioner {
   position: fixed;
   inset: 0;
-  z-index: 8000;
-  background: rgb(0 0 0 / 55%);
-  backdrop-filter: blur(2px);
+  top: var(--portfolio-nav-height, 32px);
+  z-index: var(--z-panel);
   display: flex;
   align-items: flex-start;
   justify-content: center;
   padding-top: 15vh;
+  pointer-events: none;
 }
 
 .palette-modal {
+  pointer-events: auto;
   width: 100%;
   max-width: 560px;
   background: var(--color-surface);
@@ -374,7 +377,7 @@ const stateColors: Record<string, string> = {
   border: none;
   cursor: pointer;
   text-align: left;
-  transition: background var(--duration-fast);
+  transition: background var(--motion-interactive);
   font-size: var(--text-sm);
   color: var(--color-text);
 }
@@ -504,26 +507,5 @@ const stateColors: Record<string, string> = {
   color: var(--color-text-muted);
 }
 
-/* Transition */
-.palette-enter-active,
-.palette-leave-active {
-  transition: opacity var(--duration-fast) var(--ease-out);
-}
 
-.palette-enter-active .palette-modal,
-.palette-leave-active .palette-modal {
-  transition: opacity var(--duration-fast) var(--ease-out),
-              transform var(--duration-fast) var(--ease-out);
-}
-
-.palette-enter-from,
-.palette-leave-to {
-  opacity: 0;
-}
-
-.palette-enter-from .palette-modal,
-.palette-leave-to .palette-modal {
-  opacity: 0;
-  transform: scale(0.97) translateY(-8px);
-}
 </style>

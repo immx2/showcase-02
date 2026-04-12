@@ -80,7 +80,7 @@ const activeIndex = computed(() => {
   background: var(--color-active-bg);
   border-radius: calc(var(--radius-md) - 2px);
   transform: translateX(calc(var(--active-index) * 100%));
-  transition: transform var(--duration-base) var(--ease-out);
+  transition: transform var(--motion-panel-in);
   pointer-events: none;
   z-index: 0;
 }
@@ -100,7 +100,7 @@ const activeIndex = computed(() => {
   font-size: var(--text-xs);
   font-family: var(--font-mono);
   cursor: pointer;
-  transition: color var(--duration-fast);
+  transition: color var(--motion-interactive);
   border-radius: calc(var(--radius-md) - 2px);
   white-space: nowrap;
 }

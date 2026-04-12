@@ -130,6 +130,7 @@
   :root {
     --color-positive:        var(--color-status-running);
     --color-negative:        var(--color-status-faulted);
+    --color-scrim:           rgb(0 0 0 / 50%);
     --nav-height: 48px;
   }
   

@@ -235,8 +235,8 @@ function onBarLeave() {
 }
 
 .bar-rect {
-  transition: y var(--duration-chart) var(--ease-out),
-              height var(--duration-chart) var(--ease-out);
+  transition: y var(--motion-chart-bar),
+              height var(--motion-chart-bar);
   cursor: pointer;
 }
 
@@ -248,7 +248,7 @@ function onBarLeave() {
   fill: var(--color-text-muted);
   font-size: var(--text-xs);
   font-family: var(--font-mono);
-  transition: y var(--duration-chart) var(--ease-out);
+  transition: y var(--motion-chart-bar);
 }
 
 .legend {

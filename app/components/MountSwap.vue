@@ -15,10 +15,4 @@ const isMounted = useIsMounted()
 
 <style scoped>
 .mount-swap-wrap { width: 100%; }
-
-.skel-swap-leave-active { transition: opacity 0.12s ease; }
-.skel-swap-enter-active { transition: opacity 0.2s ease; }
-
-.skel-swap-leave-to,
-.skel-swap-enter-from  { opacity: 0; }
 </style>

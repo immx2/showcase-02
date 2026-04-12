@@ -53,11 +53,33 @@ Dev server defaults to port 3002 (`devServer.port` in `nuxt.config.ts`; `npm run
 - VueUse composables (`useElementSize`, `useEventListener`, etc.) are Nuxt auto-imported; do not import from `@vueuse/core` in app code.
 
 ### CSS
-- Token-first: always reach for `--space-*`, `--radius-*`, `--duration-*`, `--chart-*`, `--font-mono` before hardcoding values
-- Colors live in `_global.css` — `--color-status-*` for instance states, `--color-positive/negative` for trends
+- Token-first: always reach for `--space-*`, `--radius-*`, `--motion-*`, `--z-*`, `--chart-*`, `--font-mono` before hardcoding values
+- Colors live in `_colors.css` — `--color-status-*` for instance states, `--color-positive/negative` for trends, `--color-scrim` for overlays
 - Color mode handled by `@nuxtjs/color-mode` (with `dataValue: 'color-mode'`). Dark mode is the "home" aesthetic (Oxide-adjacent dark teal-black)
 - All component styles in `<style scoped>`, no Tailwind, no CSS-in-JS
 - Use `var(--font-mono)` for all technical values: IPs, IDs, percentages, sizes, timestamps
+
+**Motion system** — use `--motion-*` semantic tokens (defined in `_animations.css`) instead of raw `--duration-*` / `--easing-*` values:
+- `--motion-interactive` — buttons, hover controls
+- `--motion-panel-in` / `--motion-panel-out` — drawer, sidebar, palette (asymmetric in/out)
+- `--motion-tooltip` — tooltip, palette overlay
+- `--motion-entrance` — card/section entrance animations
+- `--motion-mount-leave` / `--motion-mount-enter` — MountSwap crossfade
+
+**Vue transitions** — all `<Transition name="*">` CSS lives in `_transitions.css` (imported globally via `main.css`). Do not put transition CSS in component `<style scoped>` blocks. One entry per named transition; name must stay in sync with the `name` prop in the template.
+
+**Z-index layers** — use `--z-*` tokens (defined in `_tokens.css`), never raw numbers:
+| Token | Value | Who |
+|-------|-------|-----|
+| `--z-chrome` | 10 | mobile header, scroll fade gradients |
+| `--z-sidebar-scrim` | 100 | mobile sidebar scrim |
+| `--z-sidebar` | 200 | mobile sidebar panel |
+| `--z-scrim` | 300 | drawer/palette scrim (dims sidebar too) |
+| `--z-panel` | 400 | drawer, command palette |
+| `--z-tooltip` | 500 | tooltip (above panels) |
+| `--z-toast` | 600 | toast — always on top |
+
+**Scrim** — use `<BaseScrim :open="..." @close="...">` for all overlay scrims. Accepts `blur` prop (for palette) and `z` prop (string CSS value, e.g. `"var(--z-sidebar-scrim)"`) — defaults to `var(--z-scrim)` if omitted.
 
 ### D3 Charts
 - Use the single npm package `d3` with `import * as d3 from 'd3'` in chart components (no separate `d3-*` deps)
@@ -182,7 +204,7 @@ Subdirectory names are prepended to the component name: `Chart/Bar.vue` → `<Ch
 | Directory | Convention | Example |
 |-----------|------------|---------|
 | `App/` | App chrome | `App/Sidebar.vue` → `<AppSidebar>` |
-| `base/` | Base primitives | `base/Button.vue` → `<BaseButton>` |
+| `base/` | Base primitives | `base/Button.vue` → `<BaseButton>`, `base/Scrim.vue` → `<BaseScrim>` |
 | `Card/` | Card variants | `Card/Chart.vue` → `<CardChart>` |
 | `Chart/` | Chart primitives | `Chart/Bar.vue` → `<ChartBar>` |
 | `Dashboard/` | Dashboard composites | `Dashboard/Header.vue` → `<DashboardHeader>` |

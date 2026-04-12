@@ -157,7 +157,7 @@ onMounted(() => {
 }
 
 .heat-cell {
-  transition: opacity var(--duration-slow) var(--ease-out);
+  transition: opacity var(--motion-chart-heatmap);
   cursor: pointer;
 }
 

@@ -71,7 +71,7 @@ watch(effectiveWidth, (w) => {
   }
   hasAnimated.value = true
 
-  const duration = 900
+  const duration = 900 // mirrors --motion-draw-sparkline (--duration-900 --easing-in-out)
   const start    = performance.now()
 
   function frame(now: number) {
@@ -139,5 +139,5 @@ onUnmounted(() => { if (animRaf) cancelAnimationFrame(animRaf) })
   overflow: visible;
 }
 
-.area-path { transition: opacity 0.8s ease; }
+.area-path { transition: opacity var(--motion-area-fade); }
 </style>

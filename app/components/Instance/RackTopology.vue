@@ -363,7 +363,7 @@ function utilizationClass(pct: number): string {
 .metric-fill {
   height: 100%;
   border-radius: 2px;
-  transition: width var(--duration-chart) var(--ease-out);
+  transition: width var(--motion-chart-bar);
 }
 
 .metric-fill.ok   { background: var(--color-accent); }
@@ -400,7 +400,7 @@ function utilizationClass(pct: number): string {
   font-family: var(--font-mono);
   font-size: 11px;
   cursor: pointer;
-  transition: background var(--duration-fast), border-color var(--duration-fast);
+  transition: background var(--motion-interactive), border-color var(--motion-interactive);
   white-space: nowrap;
 }
 
@@ -427,14 +427,10 @@ function utilizationClass(pct: number): string {
 }
 
 .chip-dot.running  { background: var(--color-status-running); }
-.chip-dot.starting { background: var(--color-status-starting); animation: pulse 1.4s ease-in-out infinite; }
+.chip-dot.starting { background: var(--color-status-starting); animation: pulse var(--motion-pulse-ui); }
 .chip-dot.stopped  { background: var(--color-status-stopped); }
-.chip-dot.faulted  { background: var(--color-status-faulted); animation: pulse 2s ease-in-out infinite; }
+.chip-dot.faulted  { background: var(--color-status-faulted); animation: pulse var(--motion-pulse-idle); }
 
-@keyframes pulse {
-  0%, 100% { opacity: 1; }
-  50%       { opacity: 0.35; }
-}
 
 .chip-name {
   max-width: 140px;

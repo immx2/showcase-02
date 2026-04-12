@@ -21,7 +21,7 @@ defineProps<{
   font-size: var(--text-xs);
   font-family: var(--font-mono);
   cursor: pointer;
-  transition: background var(--duration-fast), color var(--duration-fast);
+  transition: background var(--motion-interactive), color var(--motion-interactive);
 }
 
 .action-btn:disabled {

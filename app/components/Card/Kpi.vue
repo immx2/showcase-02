@@ -127,15 +127,11 @@ const isPositive = computed(() =>
 .skel-line {
   border-radius: var(--radius-sm);
   background: var(--color-surface-2);
-  animation: pulse 1.4s ease-in-out infinite;
+  animation: pulse var(--motion-pulse-ui);
 }
 
 .skel-label { width: 60%; height: var(--text-xs); }
 .skel-value { width: 45%; height: 22px; }
 .skel-spark { width: 100%; height: 28px; }
 
-@keyframes pulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.4; }
-}
 </style>

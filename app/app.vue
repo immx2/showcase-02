@@ -17,6 +17,7 @@ watch(
 const route = useRoute()
 const { isOpen: sidebarOpen, toggle: toggleSidebar, close: closeSidebar } = useSidebar()
 const { open: openPalette } = useCommandPalette()
+const isMobile = useMediaQuery('(max-width: 768px)')
 
 watch(() => route.path, () => closeSidebar())
 
@@ -48,7 +49,7 @@ watch(sidebarOpen, (open) => {
           </svg>
         </button>
       </header>
-      <div class="sidebar-overlay" :class="{ 'is-visible': sidebarOpen }" aria-hidden="true" @click="closeSidebar" />
+      <BaseScrim :open="sidebarOpen && isMobile" z="var(--z-sidebar-scrim)" @close="closeSidebar" />
       <div class="console-row">
         <AppSidebar />
         <div class="page-slot">
@@ -87,17 +88,6 @@ watch(sidebarOpen, (open) => {
 
 .mobile-header { display: none; }
 
-.sidebar-overlay {
-  display: none;
-  position: fixed;
-  inset: 0;
-  background: oklch(0% 0 0deg / 60%);
-  z-index: 39;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity var(--duration-base) var(--ease-out);
-}
-
 @media (width <= 768px) {
   .console-shell { flex-direction: column; }
 
@@ -111,7 +101,7 @@ watch(sidebarOpen, (open) => {
     background: var(--color-surface);
     border-bottom: 1px solid var(--color-border);
     position: relative;
-    z-index: 30;
+    z-index: var(--z-chrome);
   }
 
   .mobile-brand {
@@ -138,7 +128,7 @@ watch(sidebarOpen, (open) => {
     color: var(--color-text-muted);
     flex-shrink: 0;
     cursor: pointer;
-    transition: background var(--duration-fast), color var(--duration-fast);
+    transition: background var(--motion-interactive), color var(--motion-interactive);
   }
 
   .hamburger:hover,
@@ -147,15 +137,7 @@ watch(sidebarOpen, (open) => {
     color: var(--color-text);
   }
 
-  .sidebar-overlay {
-    display: block;
-    top: var(--portfolio-nav-height, 32px);
-  }
 
-  .sidebar-overlay.is-visible {
-    opacity: 1;
-    pointer-events: auto;
-  }
 }
 
 .page-slot {
@@ -173,7 +155,7 @@ watch(sidebarOpen, (open) => {
   right: 0;
   height: 24px;
   pointer-events: none;
-  z-index: 10;
+  z-index: var(--z-chrome);
 }
 
 .page-slot::after {

@@ -89,7 +89,7 @@ const emit = defineEmits<{ close: [] }>()
   background: transparent;
   color: var(--color-text-muted);
   cursor: pointer;
-  transition: background var(--duration-fast), color var(--duration-fast);
+  transition: background var(--motion-interactive), color var(--motion-interactive);
 }
 
 .close-btn:hover {

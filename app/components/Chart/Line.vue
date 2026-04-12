@@ -415,7 +415,7 @@ watch(innerWidth, (w) => {
   }
   hasAnimated.value = true
 
-  const duration = 1000
+  const duration = 1000 // mirrors --motion-draw-chart (--duration-1000 --easing-in-out)
   const start    = performance.now()
 
   // Cubic ease-in-out matching cubic-bezier(0.4, 0, 0.2, 1)
@@ -490,7 +490,7 @@ function onMouseLeave() { crosshair.value = null; hideTip() }
       </div>
       <div v-else class="legend" />
 
-      <Transition name="fade">
+      <Transition name="chart-reset">
         <button v-if="brushRange" class="reset-btn" @click="clearBrush">
           <svg width="10" height="10" viewBox="0 0 10 10" fill="none" aria-hidden="true">
             <path d="M1 1l8 8M9 1L1 9" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
@@ -629,7 +629,7 @@ function onMouseLeave() { crosshair.value = null; hideTip() }
 }
 
 .line-path  { vector-effect: non-scaling-stroke; }
-.area-path  { transition: opacity 0.8s ease; }
+.area-path  { transition: opacity var(--motion-area-fade); }
 
 /* Top bar: legend + reset button */
 .chart-top-bar {
@@ -685,7 +685,7 @@ function onMouseLeave() { crosshair.value = null; hideTip() }
   font-size: 11px;
   white-space: nowrap;
   cursor: pointer;
-  transition: background var(--duration-fast);
+  transition: background var(--motion-interactive);
 }
 
 .reset-btn:hover {
@@ -711,14 +711,5 @@ function onMouseLeave() { crosshair.value = null; hideTip() }
   fill: var(--color-accent);
 }
 
-/* Fade transition for reset button */
-.fade-enter-active,
-.fade-leave-active {
-  transition: opacity var(--duration-fast);
-}
 
-.fade-enter-from,
-.fade-leave-to {
-  opacity: 0;
-}
 </style>

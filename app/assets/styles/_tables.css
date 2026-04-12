@@ -47,7 +47,7 @@
 
 .table-wrap th.sortable {
   cursor: pointer;
-  transition: color var(--duration-fast);
+  transition: color var(--motion-interactive);
 }
 
 .table-wrap th.sortable:hover,
@@ -123,7 +123,7 @@
 .table-wrap .bar-fill {
   height: 100%;
   border-radius: 2px;
-  transition: width var(--duration-slow) var(--ease-out);
+  transition: width var(--motion-data-bar);
 }
 
 /* ── Name / ID cell ────────────────────────────────────────────────────── */

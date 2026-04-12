@@ -33,13 +33,9 @@ defineProps<{
 .stopped  { color: var(--color-status-stopped); }
 .faulted  { color: var(--color-status-faulted); }
 
-.running  .dot { background: var(--color-status-running); animation: pulse-dot 2s ease-in-out infinite; }
-.starting .dot { background: var(--color-status-starting); animation: pulse-dot 1.2s ease-in-out infinite; }
+.running  .dot { background: var(--color-status-running); animation: pulse-dot var(--motion-pulse-idle); }
+.starting .dot { background: var(--color-status-starting); animation: pulse-dot var(--motion-pulse-starting); }
 .stopped  .dot { background: var(--color-status-stopped); }
 .faulted  .dot { background: var(--color-status-faulted); }
 
-@keyframes pulse-dot {
-  0%, 100% { opacity: 1; transform: scale(1); }
-  50% { opacity: 0.4; transform: scale(0.75); }
-}
 </style>

@@ -1,15 +1,59 @@
 /* ─────────────────────────────────────────────────────────────────────────
+   Motion system — semantic pairs
+   Composed from --duration-* and --easing-* primitives in _tokens.css.
+   Use these in component transitions and animations instead of raw values.
+
+   Usage pattern:
+     transition: opacity var(--motion-tooltip);
+     animation:  pulse var(--motion-pulse-ui) infinite;
+   ───────────────────────────────────────────────────────────────────────── */
+
+:root {
+  --motion-interactive:    var(--duration-fast)  var(--easing-standard); /* buttons, nav, all hover controls         */
+  --motion-panel-in:       300ms   var(--easing-prem-in);       /* drawers, sidebar slide, overlay panels   */
+  --motion-panel-out:      200ms   var(--easing-prem-out);      /* drawers, sidebar slide, overlay panels   */
+  --motion-page:           var(--duration-base)  var(--easing-out);      /* page route transitions                   */
+  --motion-tooltip:        var(--duration-fast)  var(--easing-out);      /* tooltip + command-palette overlay        */
+  --motion-toast-enter:    var(--duration-base)  var(--easing-out);      /* toast enter / move                       */
+  --motion-toast-leave:    var(--duration-base)  var(--easing-in);       /* toast leave                              */
+  --motion-mount-leave:    var(--duration-120)   var(--easing-standard); /* MountSwap crossfade out                  */
+  --motion-mount-enter:    var(--duration-200)   var(--easing-standard); /* MountSwap crossfade in                   */
+  --motion-entrance:       var(--duration-400)   var(--easing-out);      /* card / section entrance                  */
+  --motion-chart-bar:      var(--duration-chart) var(--easing-out);      /* bar rects, rack metric bar               */
+  --motion-chart-heatmap:  var(--duration-slow)  var(--easing-out);      /* heatmap cell reveal                      */
+  --motion-data-bar:       var(--duration-slow)  var(--easing-out);      /* inline table bar-fill width              */
+  --motion-area-fade:      var(--duration-800)   var(--easing-standard); /* chart area path opacity                  */
+  --motion-draw-sparkline: var(--duration-900)   var(--easing-in-out);   /* sparkline draw-in RAF (JS mirror)        */
+  --motion-draw-chart:     var(--duration-1000)  var(--easing-in-out);   /* line / donut draw-in RAF / D3 (JS mirror) */
+  --motion-pulse-ui:       var(--duration-1400)  var(--easing-in-out)   infinite; /* skeleton shimmer, chip dots, live indicator */
+  --motion-pulse-starting: var(--duration-1200)  var(--easing-in-out)   infinite; /* status badge: starting                      */
+  --motion-pulse-idle:     var(--duration-2000)  var(--easing-in-out)   infinite; /* status badge: running / faulted             */
+}
+
+/* ─────────────────────────────────────────────────────────────────────────
    Shared entrance animations
    Apply .card-enter to any element that should animate in with stagger.
    Set --stagger-index via inline style to control delay.
    ───────────────────────────────────────────────────────────────────────── */
 
 .card-enter {
-  animation: card-enter 0.4s var(--ease-out) backwards;
-  animation-delay: calc(var(--stagger-index, 0) * 80ms);
+  animation: card-enter var(--motion-entrance) backwards;
+  animation-delay: calc(var(--stagger-index, 0) * var(--duration-80));
 }
 
 @keyframes card-enter {
   from { opacity: 0; transform: translateY(8px); }
   to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Opacity shimmer — skeleton loaders, chip state dots */
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50%      { opacity: 0.4; }
+}
+
+/* Opacity + scale — status indicator dots, live dot */
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1;   transform: scale(1); }
+  50%      { opacity: 0.4; transform: scale(0.75); }
 }

@@ -25,7 +25,7 @@ const { toasts } = useToast()
   position: fixed;
   bottom: var(--space-6);
   right: var(--space-6);
-  z-index: 9000;
+  z-index: var(--z-toast);
   pointer-events: none;
 }
 
@@ -59,27 +59,5 @@ const { toasts } = useToast()
 .toast.success .toast-dot { background: var(--color-status-running); }
 .toast.error   .toast-dot { background: var(--color-status-faulted); }
 
-/* Transitions */
-.toast-enter-active {
-  transition: all var(--duration-base) var(--ease-out);
-}
 
-.toast-leave-active {
-  transition: all var(--duration-base) ease-in;
-  position: absolute;
-}
-
-.toast-enter-from {
-  opacity: 0;
-  transform: translateY(8px) scale(0.97);
-}
-
-.toast-leave-to {
-  opacity: 0;
-  transform: translateY(4px) scale(0.97);
-}
-
-.toast-move {
-  transition: transform var(--duration-base) var(--ease-out);
-}
 </style>

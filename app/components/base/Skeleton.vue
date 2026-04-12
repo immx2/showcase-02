@@ -20,11 +20,7 @@ withDefaults(defineProps<{
 <style scoped>
 .skeleton {
   background: var(--color-surface-2);
-  animation: pulse 1.4s ease-in-out infinite;
+  animation: pulse var(--motion-pulse-ui);
 }
 
-@keyframes pulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.4; }
-}
 </style>

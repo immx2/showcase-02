@@ -79,13 +79,9 @@ const periods: { value: Period; label: string }[] = [
   height: 6px;
   border-radius: 50%;
   background: var(--color-status-running);
-  animation: live-pulse 1.5s ease-in-out infinite;
+  animation: pulse-dot var(--motion-pulse-ui);
 }
 
-@keyframes live-pulse {
-  0%, 100% { opacity: 1; transform: scale(1); }
-  50%       { opacity: 0.5; transform: scale(0.75); }
-}
 
 .header-controls {
   display: flex;
@@ -105,7 +101,7 @@ const periods: { value: Period; label: string }[] = [
   font-family: var(--font-mono);
   font-weight: 500;
   cursor: pointer;
-  transition: all var(--duration-fast);
+  transition: background var(--motion-interactive), color var(--motion-interactive), border-color var(--motion-interactive);
 }
 
 .live-btn:hover {
@@ -125,11 +121,11 @@ const periods: { value: Period; label: string }[] = [
   border-radius: 50%;
   background: currentcolor;
   flex-shrink: 0;
-  transition: background var(--duration-fast);
+  transition: background var(--motion-interactive);
 }
 
 .live-btn.active .live-btn-dot {
-  animation: live-pulse 1.5s ease-in-out infinite;
+  animation: pulse-dot var(--motion-pulse-ui);
 }
 
 .btn-kbd {
@@ -163,7 +159,7 @@ const periods: { value: Period; label: string }[] = [
   font-weight: 500;
   font-family: var(--font-mono);
   cursor: pointer;
-  transition: background var(--duration-fast), color var(--duration-fast);
+  transition: background var(--motion-interactive), color var(--motion-interactive);
 }
 
 .period-pill button + button {

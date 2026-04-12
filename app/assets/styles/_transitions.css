@@ -1,0 +1,154 @@
+/* ─────────────────────────────────────────────────────────────────────────
+   Vue <Transition> / <TransitionGroup> rules — global registry
+   One entry per named transition. Names must stay in sync with the
+   `name` prop on each <Transition> in the component template.
+   ───────────────────────────────────────────────────────────────────────── */
+
+/* ── page (Nuxt page router) ─────────────────────────────────────────────── */
+
+.page-enter-active,
+.page-leave-active {
+  transition: opacity var(--motion-page), transform var(--motion-page);
+}
+
+.page-enter-from {
+  opacity: 0;
+  transform: translateY(6px);
+}
+
+.page-leave-to {
+  opacity: 0;
+  transform: translateY(-4px);
+}
+
+/* ── scrim (base/Scrim.vue) ──────────────────────────────────────────────── */
+
+.scrim-enter-active {
+  transition: opacity var(--motion-panel-in);
+}
+
+.scrim-leave-active {
+  transition: opacity var(--motion-panel-out);
+}
+
+.scrim-enter-from,
+.scrim-leave-to {
+  opacity: 0;
+}
+
+/* ── drawer (base/Drawer.vue) ────────────────────────────────────────────── */
+
+.drawer-enter-active {
+  transition: transform var(--motion-panel-in);
+}
+
+.drawer-leave-active {
+  transition: transform var(--motion-panel-out);
+}
+
+.drawer-enter-from,
+.drawer-leave-to {
+  transform: translateX(100%);
+}
+
+/* ── sidebar (App/Sidebar.vue — mobile panel) ────────────────────────────── */
+
+.sidebar-enter-active {
+  transition: transform var(--motion-panel-in);
+}
+
+.sidebar-leave-active {
+  transition: transform var(--motion-panel-out);
+}
+
+.sidebar-enter-from,
+.sidebar-leave-to {
+  transform: translateX(-100%);
+}
+
+/* ── toast (App/Toast.vue) ───────────────────────────────────────────────── */
+
+.toast-enter-active {
+  transition: opacity var(--motion-toast-enter),
+            transform var(--motion-toast-enter);
+}
+
+.toast-leave-active {
+  transition: opacity var(--motion-toast-leave),
+            transform var(--motion-toast-leave);
+  position: absolute;
+}
+
+.toast-enter-from {
+  opacity: 0;
+  transform: translateY(8px) scale(0.97);
+}
+
+.toast-leave-to {
+  opacity: 0;
+  transform: translateY(4px) scale(0.97);
+}
+
+.toast-move {
+  transition: transform var(--motion-toast-enter);
+}
+
+/* ── tt (App/Tooltip.vue) ────────────────────────────────────────────────── */
+
+.tt-enter-active,
+.tt-leave-active {
+  transition: opacity var(--motion-tooltip);
+}
+
+.tt-enter-from,
+.tt-leave-to {
+  opacity: 0;
+}
+
+/* ── palette (App/CommandPalette.vue) ────────────────────────────────────── */
+
+.palette-enter-active {
+  transition: opacity var(--motion-panel-in),
+            transform var(--motion-panel-in);
+}
+
+.palette-leave-active {
+  transition: opacity var(--motion-panel-out),
+            transform var(--motion-panel-out);
+}
+
+.palette-enter-from,
+.palette-leave-to {
+  opacity: 0;
+  transform: scale(0.97) translateY(-8px);
+}
+
+/* ── skel-swap (MountSwap.vue) ───────────────────────────────────────────── */
+
+.skel-swap-leave-active { transition: opacity var(--motion-mount-leave); }
+.skel-swap-enter-active { transition: opacity var(--motion-mount-enter); }
+
+.skel-swap-leave-to,
+.skel-swap-enter-from   { opacity: 0; }
+
+/* ── chart-reset (Chart/Line.vue — reset zoom button) ────────────────────── */
+
+.chart-reset-enter-active,
+.chart-reset-leave-active {
+  transition: opacity var(--motion-interactive);
+}
+
+.chart-reset-enter-from,
+.chart-reset-leave-to {
+  opacity: 0;
+}
+
+/* ── view (pages/instances.vue — rack ↔ table crossfade) ─────────────────── */
+
+.view-leave-active {
+  transition: opacity var(--motion-tooltip);
+}
+
+.view-leave-to {
+  opacity: 0;
+}

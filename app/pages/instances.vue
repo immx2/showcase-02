@@ -52,12 +52,3 @@ useEventListener('keydown', (e: KeyboardEvent) => {
   </BasePageContent>
 </template>
 
-<style scoped>
-.view-leave-active {
-  transition: opacity var(--duration-fast) var(--ease-out);
-}
-
-.view-leave-to {
-  opacity: 0;
-}
-</style>

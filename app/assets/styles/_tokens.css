@@ -3,6 +3,19 @@
   --sidebar-width: 220px;
   --mobile-header-height: 48px;
 
+  /* ── Z-index layers ──────────────────────────────────────
+        Sidebar can be open when palette opens (mobile), so
+        they sit at distinct levels. Each scrim is below its
+        paired panel; the palette scrim is above the sidebar
+        so it dims it when the palette opens. */
+  --z-chrome:        10;  /* mobile header, scroll fade gradients         */
+  --z-sidebar-scrim: 100; /* dims content behind sidebar (below sidebar)  */
+  --z-sidebar:       200; /* mobile sidebar panel                         */
+  --z-scrim:         300; /* dims everything incl. sidebar (palette/drawer) */
+  --z-panel:         400; /* drawer, command palette                      */
+  --z-tooltip:       500; /* above panels (renders inside drawers)        */
+  --z-toast:         600; /* always on top                                */
+
   /* ── Spacing ──────────────────────────────────────────────── */
   --space-1:  0.25rem;
   --space-2:  0.5rem;
@@ -22,18 +35,33 @@
   --radius-xl: 12px;
 
   /* ── Duration ─────────────────────────────────────────────── */
+  --duration-80:    80ms;   /* stagger unit                      */
   --duration-fast:  100ms;
+  --duration-120:   120ms;  /* mount-swap leave                  */
   --duration-base:  180ms;
+  --duration-200:   200ms;  /* mount-swap enter                  */
   --duration-slow:  350ms;
+  --duration-400:   400ms;  /* card entrance                     */
   --duration-chart: 550ms;
+  --duration-800:   800ms;  /* area path fade                    */
+  --duration-900:   900ms;  /* sparkline draw-in (JS)            */
+  --duration-1000:  1000ms; /* line / donut draw-in (JS / D3)    */
+  --duration-1200:  1200ms; /* pulse: starting badge             */
+  --duration-1400:  1400ms; /* pulse: skeleton, chip dots, live  */
+  --duration-2000:  2000ms; /* pulse: running / faulted          */
 
   /* ── Easing ───────────────────────────────────────────────── */
-  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --easing-prem-in:  cubic-bezier(0.4, 0, 0.2, 1);
+  --easing-prem-out: cubic-bezier(0.4, 0, 1, 1);
+  --easing-out:      cubic-bezier(0.16, 1, 0.3, 1);
+  --easing-in:       ease-in;
+  --easing-in-out:   ease-in-out;
+  --easing-standard: ease;
 
   /* ── Shadows ──────────────────────────────────────────────── */
   --shadow-sm: 0 0 5px 0 rgb(0 0 0 / 5%);
   --shadow-md: 0 0 10px 0 rgb(0 0 0 / 10%);
-  --shadow-lg: 0 0 36px 0 rgb(0 0 0 / 36%);
+  --shadow-lg: 0 0 36px 0 rgb(0 0 0 / 50%);
 
   /* ── Type scale ───────────────────────────────────────────── 
         xs   → tiny metadata: IDs, secondary annotations        

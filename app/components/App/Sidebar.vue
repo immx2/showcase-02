@@ -1,24 +1,16 @@
 <script setup lang="ts">
 const { open: openPalette } = useCommandPalette()
 const { isOpen, close } = useSidebar()
+const isMobile = useMediaQuery('(max-width: 768px)')
 
-function onKeydown(e: KeyboardEvent) {
-  if (e.key === 'Escape') close()
-}
-
-watch(isOpen, (open) => {
-  if (!import.meta.client) return
-  if (open) document.addEventListener('keydown', onKeydown)
-  else document.removeEventListener('keydown', onKeydown)
-})
-
-onUnmounted(() => {
-  if (import.meta.client) document.removeEventListener('keydown', onKeydown)
+useEventListener('keydown', (e: KeyboardEvent) => {
+  if (e.key === 'Escape' && isOpen.value) close()
 })
 </script>
 
 <template>
-  <aside class="sidebar" :class="{ 'is-open': isOpen }">
+  <Transition name="sidebar">
+  <aside v-show="isOpen || !isMobile" class="sidebar">
     <!-- Header: brand + search -->
     <div class="sidebar-header">
       <div class="sidebar-header-top">
@@ -85,6 +77,7 @@ onUnmounted(() => {
       </button>
     </div>
   </aside>
+  </Transition>
 </template>
 
 <style scoped>
@@ -111,20 +104,9 @@ onUnmounted(() => {
     left: 0;
     bottom: 0;
     height: calc(100dvh - var(--portfolio-nav-height, 32px));
-    z-index: 40;
+    z-index: var(--z-sidebar);
     border-right: none;
     box-shadow: var(--shadow-lg);
-    transform: translateX(-100%);
-    transition: transform var(--duration-base) var(--ease-out),
-                box-shadow var(--duration-base) var(--ease-out);
-  }
-
-  .sidebar.is-open {
-    transform: translateX(0);
-  }
-
-  .sidebar:not(.is-open) {
-    box-shadow: none;
   }
 
   .sidebar-header-top {
@@ -145,7 +127,7 @@ onUnmounted(() => {
     color: var(--color-text-muted);
     flex-shrink: 0;
     cursor: pointer;
-    transition: background var(--duration-fast), color var(--duration-fast);
+    transition: background var(--motion-interactive), color var(--motion-interactive);
   }
 
   .sidebar-close:hover {
@@ -191,7 +173,7 @@ onUnmounted(() => {
   font-family: var(--font-mono);
   cursor: pointer;
   width: 100%;
-  transition: background var(--duration-fast), color var(--duration-fast), border-color var(--duration-fast);
+  transition: background var(--motion-interactive), color var(--motion-interactive), border-color var(--motion-interactive);
 }
 
 .cmd-hint:hover {
@@ -235,7 +217,7 @@ onUnmounted(() => {
   font-size: var(--text-sm);
   font-weight: 500;
   color: var(--color-text-muted);
-  transition: background var(--duration-fast), color var(--duration-fast);
+  transition: background var(--motion-interactive), color var(--motion-interactive);
 }
 
 .nav-item:hover {
@@ -276,7 +258,7 @@ onUnmounted(() => {
   color: var(--color-text-muted);
   cursor: pointer;
   width: 100%;
-  transition: background var(--duration-fast), color var(--duration-fast);
+  transition: background var(--motion-interactive), color var(--motion-interactive);
 }
 
 .user-btn:hover {

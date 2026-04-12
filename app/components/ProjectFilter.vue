@@ -42,7 +42,7 @@ const options: { value: Project; label: string }[] = [
   font-weight: 500;
   font-family: var(--font-mono);
   cursor: pointer;
-  transition: background var(--duration-fast), color var(--duration-fast);
+  transition: background var(--motion-interactive), color var(--motion-interactive);
   white-space: nowrap;
 }
 

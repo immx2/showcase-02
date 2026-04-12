@@ -49,16 +49,6 @@ const pos = computed(() => ({
   position: fixed;
   width: max-content;
   pointer-events: none;
-  z-index: 8000;
-}
-
-.tt-enter-active,
-.tt-leave-active {
-  transition: opacity var(--duration-fast) var(--ease-out);
-}
-
-.tt-enter-from,
-.tt-leave-to {
-  opacity: 0;
+  z-index: var(--z-tooltip);
 }
 </style>

@@ -2,5 +2,6 @@
 @import url('./_tokens.css');
 @import url('./_global.css');
 @import url('./_animations.css');
+@import url('./_transitions.css');
 @import url('./_tables.css');
 @import url('./_tooltip.css');

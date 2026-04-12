@@ -111,7 +111,7 @@ const focusInnerHeight = computed(() =>
 .skel {
   border-radius: var(--radius-sm);
   background: var(--color-surface-2);
-  animation: pulse 1.4s ease-in-out infinite;
+  animation: pulse var(--motion-pulse-ui);
 }
 
 /* ── Top bar (mirrors .chart-top-bar: 22px + --space-3 margin) */
@@ -205,8 +205,4 @@ const focusInnerHeight = computed(() =>
   animation-delay: 0.06s;
 }
 
-@keyframes pulse {
-  0%, 100% { opacity: 1; }
-  50%       { opacity: 0.4; }
-}
 </style>
