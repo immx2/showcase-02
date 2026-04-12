@@ -363,7 +363,7 @@ function utilizationClass(pct: number): string {
 .metric-fill {
   height: 100%;
   border-radius: 2px;
-  transition: width var(--motion-chart-bar);
+  transition: width var(--motion-chart-draw);
 }
 
 .metric-fill.ok   { background: var(--color-accent); }

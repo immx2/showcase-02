@@ -14,6 +14,9 @@ const emit = defineEmits<{
   select: [volume: Volume]
 }>()
 
+const mounted = ref(false)
+onMounted(() => { mounted.value = true })
+
 interface Column {
   key: VolumeSortKey | null
   label: string
@@ -109,7 +112,7 @@ function ariaSortAttr(key: VolumeSortKey | null, sortKey: VolumeSortKey, sortDir
               <div class="bar-track" aria-hidden="true">
                 <div
                   class="bar-fill storage"
-                  :style="{ width: `${usedPct(vol)}%` }"
+                  :style="{ width: mounted ? `${usedPct(vol)}%` : '0%' }"
                   :class="{ high: usedPct(vol) >= 80 }"
                 />
               </div>

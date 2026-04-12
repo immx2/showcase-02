@@ -9,6 +9,13 @@
    :root {
    /* UNDER CONSTRUCTION -- tweaking colors now -- inspired by Oxide console */
 
+   /* Hues */
+   --hue-red: 22;
+   --hue-green: 164;
+   --hue-amber: 60;
+   --hue-blue: 221;
+   --hue-purple: 288;
+   
    /* from oxide console */
    --color-bg-dark-blue:   oklch(16.24% 0.0098 255.66deg);
    --color-text-bright:    oklch(90% 0.0001 260deg);
@@ -19,53 +26,20 @@
    /* from oxide.computer */
    --color-bg-green: oklch(24% 0.0722 183.7deg);
 
-    /* Neutrals — light (hue 260) */
-    --palette-neutral-50:  oklch(98.5% 0.000 260deg);
-    --palette-neutral-100: oklch(96.9% 0.001 260deg);
-    --palette-neutral-200: oklch(92.4% 0.003 260deg);
-    --palette-neutral-300: oklch(85.3% 0.004 260deg);
-    --palette-neutral-500: oklch(69.4% 0.007 260deg);
-    --palette-neutral-600: oklch(55.1% 0.011 260deg);
-    --palette-neutral-700: oklch(42.1% 0.011 260deg);
-    --palette-neutral-900: oklch(9.9% 0.003 260deg);
-    --palette-white:       oklch(100% 0.000   0deg);
-  
-    /* Teal — dark (hue 205, dark aesthetic) */
-    --palette-teal-0:   oklch(9% 0.018 205deg);
-    --palette-teal-50:  oklch(14.5% 0.025 205deg);
-    --palette-teal-100: oklch(18.5% 0.025 205deg);
-    --palette-teal-150: oklch(17.5% 0.022 208deg);
-    --palette-teal-200: oklch(22% 0.030 205deg);
-    --palette-teal-500: oklch(48.8% 0.048 205deg);
-    --palette-teal-600: oklch(66.8% 0.045 200deg);
-    --palette-teal-900: oklch(95.4% 0.012 195deg);
-  
-    /* Green (hue 163.7 — --color-green-* hue) */
-    --palette-green-600: oklch(62.7% 0.171 163.7deg);
-    --palette-green-700: oklch(73.6% 0.179 163.7deg);
-    --palette-green-800: oklch(81.2% 0.155 163.7deg);
-  
-    /* Red (hue 22 — --color-red-* aligned) */
-    --palette-red-600: oklch(64.7% 0.212 22deg);
-    --palette-red-700: oklch(70.4% 0.175 22deg);
-  
-    /* Amber (hue 62–75 — --color-yellow-* aligned) */
-    --palette-amber-600: oklch(67.2% 0.162 62deg);
-    --palette-amber-700: oklch(80.9% 0.170 75deg);
-
-   /* ── Chart colors — infrastructure-semantic ──────────────── 
-       chart-1 = CPU      (green hue 163.7)
-       chart-2 = memory   (sky)
-       chart-3 = disk     (amber)
-       chart-4 = network  (violet)
+   /* ── Chart colors — infrastructure-semantic ──────────────────────────────
+       chart-1 = CPU      (green)  — line primary, CPU sparkline, CPU bar fill, heatmap hi
+       chart-2 = memory   (sky)    — line secondary, mem sparkline, mem bar fill
+       chart-3 = disk     (amber)  — storage line, storage bar fill, project tag: data
+       chart-4 = network  (violet) — reserved
+       chart-5 / chart-6           — reserved
    */
 
    --chart-br: 70%;
-   --chart-ch: 0.15;
-   --chart-1: oklch(var(--chart-br) var(--chart-ch) 163.7deg);
-   --chart-2: oklch(var(--chart-br) var(--chart-ch) 221deg);
-   --chart-3: oklch(var(--chart-br) var(--chart-ch) 55deg);
-   --chart-4: oklch(var(--chart-br) var(--chart-ch) 288deg);
+   --chart-ch: 0.17;
+   --chart-1: oklch(var(--chart-br) var(--chart-ch) var(--hue-green));
+   --chart-2: oklch(var(--chart-br) var(--chart-ch) var(--hue-blue));
+   --chart-3: oklch(var(--chart-br) var(--chart-ch) var(--hue-amber));
+   --chart-4: oklch(var(--chart-br) var(--chart-ch) var(--hue-purple));
    --chart-5: oklch(var(--chart-br) var(--chart-ch) 345deg);
    --chart-6: oklch(var(--chart-br) var(--chart-ch) 92deg);
 
@@ -77,35 +51,42 @@
    --chart-4-muted: oklch(from var(--chart-4) l c h / var(--chart-muted-br));
    --chart-5-muted: oklch(from var(--chart-5) l c h / var(--chart-muted-br));
    --chart-6-muted: oklch(from var(--chart-6) l c h / var(--chart-muted-br));
+
   }
   
   /* ─────────────────────────────────────────────────────────────────────────
      2. Semantic tokens — light mode
      ───────────────────────────────────────────────────────────────────────── */
   :root {
-    --hue: 95;
-    --color-bg:               oklch(95% 0.000 var(--hue));
-    --color-table-row:        oklch(98% 0.000 var(--hue));
-    --color-surface:          oklch(100% 0.00 var(--hue));
-    --color-surface-2:        oklch(92% 0.000 var(--hue));
-    --color-text:             oklch(30% 0.000 var(--hue));
-    --color-text-muted:       oklch(53% 0.000 var(--hue));
-    --color-active-bg:        oklch(86% 0.000 var(--hue));
-    --color-active-text:      oklch(30% 0.000 var(--hue));
-    --color-border:           oklch(86% 0.000 var(--hue));
+    --color-bg:               oklch(95% 0.000 none);
+    --color-table-row:        oklch(98% 0.000 none);
+    --color-surface:          oklch(100% 0.00 none);
+    --color-surface-2:        oklch(92% 0.000 none);
+    --color-text:             oklch(33% 0.000 none);
+    --color-text-muted:       oklch(53% 0.000 none);
+    --color-active-bg:        oklch(86% 0.000 none);
+    --color-active-text:      oklch(30% 0.000 none);
+    --color-border:           oklch(86% 0.000 none);
     --color-border-subtle:    oklch(from var(--color-border) l c h / 60%);
-    --color-accent:           var(--palette-green-600);
-    --color-status-running:   var(--palette-green-700);
-    --color-status-starting:  var(--palette-amber-600);
-    --color-status-faulted:   var(--palette-red-600);
-    --color-status-stopped:   var(--palette-neutral-500);
+    
+    /* coloration */
+    --color-accent:           oklch(70% 0.17 var(--hue-green));
+    --color-status-running:   oklch(70% 0.17 var(--hue-green));
+    --color-status-starting:  oklch(70% 0.17 var(--hue-amber));
+    --color-status-faulted:   oklch(70% 0.17 var(--hue-red));
+    --color-status-stopped:   oklch(70% 0.00 none);
+    --color-brush:            oklch(65% 0.000 none); /* minimap brush selection/handles */
+
+    /* chart tokens */
+    --chart-heatmap-hi: var(--chart-1);
+    --chart-heatmap-lo: color-mix(in oklch, var(--chart-1) 10%, var(--color-surface));
   }
   
   /* ─────────────────────────────────────────────────────────────────────────
      3. Semantic tokens — dark mode
      ───────────────────────────────────────────────────────────────────────── */
   [data-color-mode="dark"] {
-    --hue: 220;   
+    --hue: 220;
     --color-bg:               oklch(16% 0.013 var(--hue));
     --color-table-row:        oklch(19% 0.014 var(--hue));
     --color-surface:          oklch(22% 0.015 var(--hue));
@@ -116,11 +97,14 @@
     --color-active-text:      var(--color-text);
     --color-border:           oklch(30% 0.020 var(--hue)); /* border, scrollbars */
     --color-border-subtle:    oklch(from var(--color-border) l c h / 50%); /* border on a lot mostly invisible, chart tick line */
-    --color-accent:           var(--palette-green-800); /* slash, date range, grn cpu % in table */
-    --color-status-running:   var(--palette-green-800); /* KPI greens, running in table */
-    --color-status-starting:  var(--palette-amber-700);
-    --color-status-faulted:   var(--palette-red-700); /* KPI reds, faulted in table, high usage in rack, critical */
-    --color-status-stopped:   var(--palette-teal-500);
+    
+    /* coloration */
+    --color-accent:           oklch(70% 0.17 var(--hue-green)); /* slash, date range, grn cpu % in table */
+    --color-status-running:   oklch(70% 0.17 var(--hue-green)); /* KPI greens, running in table */
+    --color-status-starting:  oklch(70% 0.17 var(--hue-amber));
+    --color-status-faulted:   oklch(70% 0.17 var(--hue-red));
+    --color-status-stopped:   oklch(70% 0.00 none);
+    --color-brush:            oklch(65% 0.02 var(--hue)); /* minimap brush selection/handles */
   }
   
   /* ─────────────────────────────────────────────────────────────────────────

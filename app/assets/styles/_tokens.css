@@ -51,12 +51,9 @@
   --duration-2000:  2000ms; /* pulse: running / faulted          */
 
   /* ── Easing ───────────────────────────────────────────────── */
-  --easing-prem-in:  cubic-bezier(0.4, 0, 0.2, 1);
-  --easing-prem-out: cubic-bezier(0.4, 0, 1, 1);
-  --easing-out:      cubic-bezier(0.16, 1, 0.3, 1);
-  --easing-in:       ease-in;
-  --easing-in-out:   ease-in-out;
-  --easing-standard: ease;
+  --ease-standard:   cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-exit:       cubic-bezier(0.4, 0, 1, 1);
+  --ease-snappy:     cubic-bezier(0.16, 1, 0.3, 1);
 
   /* ── Shadows ──────────────────────────────────────────────── */
   --shadow-sm: 0 0 5px 0 rgb(0 0 0 / 5%);

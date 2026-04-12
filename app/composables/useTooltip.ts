@@ -1,3 +1,4 @@
+import { markRaw } from 'vue'
 import type { Component } from 'vue'
 
 export type TooltipContent = string | { is: Component; props?: Record<string, unknown> }
@@ -12,7 +13,7 @@ const state = shallowReactive({
 
 export function useTooltip() {
   function show(content: TooltipContent, x: number, yTop: number, yBottom: number = yTop) {
-    state.content = content
+    state.content = typeof content === 'string' ? content : { ...content, is: markRaw(content.is) }
     state.x = x
     state.yTop = yTop
     state.yBottom = yBottom

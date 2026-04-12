@@ -54,19 +54,21 @@ Dev server defaults to port 3002 (`devServer.port` in `nuxt.config.ts`; `npm run
 
 ### CSS
 - Token-first: always reach for `--space-*`, `--radius-*`, `--motion-*`, `--z-*`, `--chart-*`, `--font-mono` before hardcoding values
-- Colors live in `_colors.css` — `--color-status-*` for instance states, `--color-positive/negative` for trends, `--color-scrim` for overlays
+- Colors live in `_colors.css` — `--color-status-*` for instance states, `--color-positive/negative` for trends, `--color-scrim` for overlays, `--color-brush` for the ChartLine minimap brush
 - Color mode handled by `@nuxtjs/color-mode` (with `dataValue: 'color-mode'`). Dark mode is the "home" aesthetic (Oxide-adjacent dark teal-black)
 - All component styles in `<style scoped>`, no Tailwind, no CSS-in-JS
 - Use `var(--font-mono)` for all technical values: IPs, IDs, percentages, sizes, timestamps
 
 **Motion system** — use `--motion-*` semantic tokens (defined in `_animations.css`) instead of raw `--duration-*` / `--easing-*` values:
 - `--motion-interactive` — buttons, hover controls
-- `--motion-panel-in` / `--motion-panel-out` — drawer, sidebar, palette (asymmetric in/out)
+- `--motion-panel-enter` / `--motion-panel-leave` — drawer, sidebar, palette (asymmetric in/out)
 - `--motion-tooltip` — tooltip, palette overlay
 - `--motion-entrance` — card/section entrance animations
 - `--motion-mount-leave` / `--motion-mount-enter` — MountSwap crossfade
+- `--motion-chart-draw` — line/donut/bar/heatmap draw; read in JS via `getMotion('--motion-chart-draw')`
+- `--motion-view-leave` — rack ↔ table view crossfade (enter is handled by `.card-enter`)
 
-**Vue transitions** — all `<Transition name="*">` CSS lives in `_transitions.css` (imported globally via `main.css`). Do not put transition CSS in component `<style scoped>` blocks. One entry per named transition; name must stay in sync with the `name` prop in the template.
+**Vue transitions** — all `<Transition name="*">` CSS lives in `_transitions.css` (imported globally via `main.css`). Do not put transition CSS in component `<style scoped>` blocks. One entry per named transition; name must stay in sync with the `name` prop in the template. Exception: `App/Sidebar.vue` uses a plain CSS class toggle (`.sidebar-open`) instead of `<Transition>` to avoid an SSR hydration flash on mobile.
 
 **Z-index layers** — use `--z-*` tokens (defined in `_tokens.css`), never raw numbers:
 | Token | Value | Who |
@@ -84,7 +86,9 @@ Dev server defaults to port 3002 (`devServer.port` in `nuxt.config.ts`; `npm run
 ### D3 Charts
 - Use the single npm package `d3` with `import * as d3 from 'd3'` in chart components (no separate `d3-*` deps)
 - D3 is used for math (scales, shapes, layouts, axes) — Vue handles rendering via SVG templates
+- Two chart utilities in `app/utils/`: `resolveCssColor(token)` converts a CSS custom property (oklch etc.) to an sRGB string D3 can parse; `getMotion(token)` returns `{ duration, easing }` from a `--motion-*` token so JS animations respect `prefers-reduced-motion`
 - Axis DOM operations go in `onMounted` + `watch` (client-only). `ChartLine.vue` batches axis + brush DOM work via stable **data fingerprints** + `requestAnimationFrame` so live ticks do not re-run D3 work on every new scale object identity
+- Brush colors in `ChartLine` are CSS-only (`:deep()` rules) — do not set fill/stroke via D3 `.attr()` as CSS has higher specificity over SVG presentation attributes
 - All chart components are wrapped in `<MountSwap>` inside their `Section*` composite components (`DashboardSectionCharts`, `StorageSectionCharts`) — see Skeleton / mount swap below
 - Chart colors map semantically: chart-1 = CPU (green), chart-2 = memory (sky), chart-3 = disk (amber), chart-4 = network (violet)
 - Axis text uses `var(--font-mono)`

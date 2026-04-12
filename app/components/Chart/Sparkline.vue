@@ -60,8 +60,6 @@ const areasVisible   = ref(false)
 const hasAnimated    = ref(false)
 let   animRaf        = 0
 
-function easeInOut(t: number) { return t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t }
-
 watch(effectiveWidth, (w) => {
   if (!props.animate || w <= 0) return
 
@@ -71,12 +69,12 @@ watch(effectiveWidth, (w) => {
   }
   hasAnimated.value = true
 
-  const duration = 900 // mirrors --motion-draw-sparkline (--duration-900 --easing-in-out)
-  const start    = performance.now()
+  const { duration, easing } = getMotion('--motion-chart-draw')
+  const start                = performance.now()
 
   function frame(now: number) {
     const t = Math.min((now - start) / duration, 1)
-    animClipRectEl.value?.setAttribute('width', String(w * easeInOut(t)))
+    animClipRectEl.value?.setAttribute('width', String(w * easing(t)))
     if (t < 1) {
       animRaf = requestAnimationFrame(frame)
     }
@@ -88,7 +86,7 @@ watch(effectiveWidth, (w) => {
 
   nextTick(() => {
     animRaf = requestAnimationFrame(frame)
-    setTimeout(() => { areasVisible.value = true }, 450)
+    areasVisible.value = true
   })
 }, { immediate: true })
 
@@ -139,5 +137,5 @@ onUnmounted(() => { if (animRaf) cancelAnimationFrame(animRaf) })
   overflow: visible;
 }
 
-.area-path { transition: opacity var(--motion-area-fade); }
+.area-path { transition: opacity var(--motion-chart-area); }
 </style>

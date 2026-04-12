@@ -57,6 +57,8 @@ function onArcLeave() {
 }
 
 onMounted(() => {
+  const { duration, easing } = getMotion('--motion-chart-draw')
+  const stagger = getMotionMs('--motion-chart-stagger')
   requestAnimationFrame(() => {
     pathRefs.value.forEach((pathEl, i) => {
       const arc = arcs.value[i]
@@ -64,9 +66,9 @@ onMounted(() => {
       const fn = arcGen.value
       d3.select(pathEl)
         .transition()
-        .delay(i * 90)
-        .duration(1000)
-        .ease(d3.easeCubicInOut)
+        .delay(i * stagger)
+        .duration(duration)
+        .ease(easing)
         .attrTween('d', () => {
           const interp = d3.interpolate(arc.startAngle, arc.endAngle)
           return (t: number) => fn({ ...arc, endAngle: interp(t) }) ?? ''

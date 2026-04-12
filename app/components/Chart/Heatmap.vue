@@ -16,7 +16,8 @@ const isDark = computed(() => colorMode.value === 'dark')
 const containerRef = ref<HTMLElement>()
 const { width: cw } = useElementSize(containerRef)
 
-const dayLabels = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
+const dayLabels    = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
+const dayLabelsShort = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
 
 const margin = { top: 4, right: 8, bottom: 24, left: 36 }
 const width = computed(() => Math.max(cw.value - margin.left - margin.right, 0))
@@ -38,17 +39,16 @@ const yScale = computed(() =>
 
 const maxCount = computed(() => d3.max(props.data, d => d.count) ?? 1)
 
-// Dark mode: low values fade into the surface background, highs glow in Oxide green.
-// Light mode: light to chart-1 green gradient.
-const colorScale = computed(() =>
-  d3.scaleSequential()
+// Gradient stops are mode-aware CSS tokens (--chart-heatmap-lo/mid/hi).
+// isDark is referenced to trigger recompute on mode change.
+const colorScale = computed(() => {
+  void isDark.value
+  const lo = resolveCssColor('--chart-heatmap-lo')
+  const hi = resolveCssColor('--chart-heatmap-hi')
+  return d3.scaleSequential()
     .domain([0, maxCount.value])
-    .interpolator(
-      isDark.value
-        ? d3.interpolateRgbBasis(['#0e1c1f', '#144030', '#48d597'])
-        : d3.interpolateRgbBasis(['#f0fdf9', '#50d4a3']),
-    ),
-)
+    .interpolator(d3.interpolateRgb(lo, hi))
+})
 
 const cells = computed(() =>
   props.data.map(d => ({
@@ -100,7 +100,7 @@ onMounted(() => {
     <svg :width="cw" :height="props.height">
       <g :transform="`translate(${margin.left},${margin.top})`">
         <text
-          v-for="(label, i) in dayLabels"
+          v-for="(label, i) in dayLabelsShort"
           :key="label"
           :x="-6"
           :y="(yScale(i) ?? 0) + yScale.bandwidth() / 2"
@@ -157,7 +157,7 @@ onMounted(() => {
 }
 
 .heat-cell {
-  transition: opacity var(--motion-chart-heatmap);
+  transition: opacity var(--motion-chart-draw);
   cursor: pointer;
 }
 

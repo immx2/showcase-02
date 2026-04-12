@@ -15,6 +15,9 @@ const emit = defineEmits<{
   select: [instance: Instance]
 }>()
 
+const mounted = ref(false)
+onMounted(() => { mounted.value = true })
+
 interface Column {
   key: SortKey | null
   label: string
@@ -131,7 +134,7 @@ function sparklineColor(state: Instance['state']): string {
               <div class="bar-track" aria-hidden="true">
                 <div
                   class="bar-fill cpu"
-                  :style="{ width: `${inst.cpuPct}%` }"
+                  :style="{ width: mounted ? `${inst.cpuPct}%` : '0%' }"
                   :class="{
                     high: inst.cpuPct >= 80,
                     med: inst.cpuPct >= 50 && inst.cpuPct < 80,
@@ -148,7 +151,7 @@ function sparklineColor(state: Instance['state']): string {
               <div class="bar-track" aria-hidden="true">
                 <div
                   class="bar-fill mem"
-                  :style="{ width: `${inst.memPct}%` }"
+                  :style="{ width: mounted ? `${inst.memPct}%` : '0%' }"
                   :class="{ high: inst.memPct >= 90 }"
                 />
               </div>

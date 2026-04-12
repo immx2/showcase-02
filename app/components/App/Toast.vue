@@ -30,6 +30,7 @@ const { toasts } = useToast()
 }
 
 .toast-inner {
+  position: relative;
   display: flex;
   flex-direction: column;
   gap: var(--space-2);

@@ -24,11 +24,11 @@
 /* ── scrim (base/Scrim.vue) ──────────────────────────────────────────────── */
 
 .scrim-enter-active {
-  transition: opacity var(--motion-panel-in);
+  transition: opacity var(--motion-panel-enter);
 }
 
 .scrim-leave-active {
-  transition: opacity var(--motion-panel-out);
+  transition: opacity var(--motion-panel-leave);
 }
 
 .scrim-enter-from,
@@ -39,31 +39,16 @@
 /* ── drawer (base/Drawer.vue) ────────────────────────────────────────────── */
 
 .drawer-enter-active {
-  transition: transform var(--motion-panel-in);
+  transition: transform var(--motion-panel-enter);
 }
 
 .drawer-leave-active {
-  transition: transform var(--motion-panel-out);
+  transition: transform var(--motion-panel-leave);
 }
 
 .drawer-enter-from,
 .drawer-leave-to {
   transform: translateX(100%);
-}
-
-/* ── sidebar (App/Sidebar.vue — mobile panel) ────────────────────────────── */
-
-.sidebar-enter-active {
-  transition: transform var(--motion-panel-in);
-}
-
-.sidebar-leave-active {
-  transition: transform var(--motion-panel-out);
-}
-
-.sidebar-enter-from,
-.sidebar-leave-to {
-  transform: translateX(-100%);
 }
 
 /* ── toast (App/Toast.vue) ───────────────────────────────────────────────── */
@@ -76,7 +61,6 @@
 .toast-leave-active {
   transition: opacity var(--motion-toast-leave),
             transform var(--motion-toast-leave);
-  position: absolute;
 }
 
 .toast-enter-from {
@@ -108,13 +92,13 @@
 /* ── palette (App/CommandPalette.vue) ────────────────────────────────────── */
 
 .palette-enter-active {
-  transition: opacity var(--motion-panel-in),
-            transform var(--motion-panel-in);
+  transition: opacity var(--motion-panel-enter),
+            transform var(--motion-panel-enter);
 }
 
 .palette-leave-active {
-  transition: opacity var(--motion-panel-out),
-            transform var(--motion-panel-out);
+  transition: opacity var(--motion-panel-leave),
+            transform var(--motion-panel-leave);
 }
 
 .palette-enter-from,
@@ -125,8 +109,13 @@
 
 /* ── skel-swap (MountSwap.vue) ───────────────────────────────────────────── */
 
-.skel-swap-leave-active { transition: opacity var(--motion-mount-leave); }
-.skel-swap-enter-active { transition: opacity var(--motion-mount-enter); }
+.skel-swap-leave-active {
+  transition: opacity var(--motion-mount-leave);
+}
+
+.skel-swap-enter-active {
+  transition: opacity var(--motion-mount-enter);
+}
 
 .skel-swap-leave-to,
 .skel-swap-enter-from   { opacity: 0; }
@@ -146,7 +135,7 @@
 /* ── view (pages/instances.vue — rack ↔ table crossfade) ─────────────────── */
 
 .view-leave-active {
-  transition: opacity var(--motion-tooltip);
+  transition: opacity var(--motion-view-leave);
 }
 
 .view-leave-to {

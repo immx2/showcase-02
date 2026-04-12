@@ -287,17 +287,9 @@ function initBrush() {
   const g = d3.select(brushGroupRef.value)
   g.call(brushInstance)
 
-  // Style the brush
-  g.select<SVGRectElement>('.selection')
-    .attr('fill', 'var(--color-accent)')
-    .attr('fill-opacity', 0.18)
-    .attr('stroke', 'var(--color-accent)')
-    .attr('stroke-width', 1)
-    .attr('rx', 2)
-
-  g.selectAll<SVGRectElement, unknown>('.handle')
-    .attr('fill', 'var(--color-accent)')
-    .attr('rx', 2)
+  // Style the brush — colors/opacity handled by CSS :deep() rules below
+  g.select<SVGRectElement>('.selection').attr('rx', 2)
+  g.selectAll<SVGRectElement, unknown>('.handle').attr('rx', 2)
 
   // Set initial position (programmatic — won't trigger brushRange update)
   // Restore existing selection if any, otherwise default to the current period extent
@@ -415,15 +407,12 @@ watch(innerWidth, (w) => {
   }
   hasAnimated.value = true
 
-  const duration = 1000 // mirrors --motion-draw-chart (--duration-1000 --easing-in-out)
-  const start    = performance.now()
-
-  // Cubic ease-in-out matching cubic-bezier(0.4, 0, 0.2, 1)
-  function ease(t: number) { return t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t }
+  const { duration, easing } = getMotion('--motion-chart-draw')
+  const start                = performance.now()
 
   function frame(now: number) {
     const t = Math.min((now - start) / duration, 1)
-    animClipRectEl.value?.setAttribute('width', String(w * ease(t)))
+    animClipRectEl.value?.setAttribute('width', String(w * easing(t)))
     if (t < 1) {
       animRaf = requestAnimationFrame(frame)
     }
@@ -436,8 +425,7 @@ watch(innerWidth, (w) => {
 
   nextTick(() => {
     animRaf = requestAnimationFrame(frame)
-    // Fade in the area fills after the lines are ~halfway drawn
-    setTimeout(() => { areasVisible.value = true }, 500)
+    areasVisible.value = true
   })
 }, { immediate: true })
 
@@ -619,7 +607,7 @@ function onMouseLeave() { crosshair.value = null; hideTip() }
 }
 
 .line-chart-wrap :deep(.axis text) {
-  fill: var(--color-text-muted);
+  fill: var(--color-brush);
   font-size: var(--text-xs);
   font-family: var(--font-mono);
 }
@@ -629,7 +617,7 @@ function onMouseLeave() { crosshair.value = null; hideTip() }
 }
 
 .line-path  { vector-effect: non-scaling-stroke; }
-.area-path  { transition: opacity var(--motion-area-fade); }
+.area-path  { transition: opacity var(--motion-chart-area); }
 
 /* Top bar: legend + reset button */
 .chart-top-bar {
@@ -652,7 +640,7 @@ function onMouseLeave() { crosshair.value = null; hideTip() }
   align-items: center;
   gap: var(--space-2);
   font-size: var(--text-xs);
-  color: var(--color-text-muted);
+  color: var(--color-brush);
   font-family: var(--font-mono);
 }
 
@@ -677,19 +665,20 @@ function onMouseLeave() { crosshair.value = null; hideTip() }
   gap: var(--space-2);
   height: 22px;
   padding: 0 var(--space-3);
-  border: 1px solid var(--color-accent);
+  border: 1px solid var(--color-brush);
   border-radius: var(--radius-sm);
-  background: color-mix(in srgb, var(--color-accent) 8%, transparent);
-  color: var(--color-accent);
+  background: transparent;
+  color: var(--color-brush);
   font-family: var(--font-mono);
   font-size: 11px;
   white-space: nowrap;
   cursor: pointer;
-  transition: background var(--motion-interactive);
+  transition: background var(--motion-interactive), color var(--motion-interactive);
 }
 
 .reset-btn:hover {
-  background: color-mix(in srgb, var(--color-accent) 16%, transparent);
+  background: var(--color-surface-2);
+  color: var(--color-text);
 }
 
 /* Brush styling overrides (deep because D3 generates these) */
@@ -701,14 +690,14 @@ function onMouseLeave() { crosshair.value = null; hideTip() }
 }
 
 .line-chart-wrap :deep(.brush-group .selection) {
-  fill: var(--color-accent);
-  fill-opacity: 0.18;
-  stroke: var(--color-accent);
+  fill: var(--color-brush);
+  fill-opacity: 0.4;
+  stroke: var(--color-brush);
   stroke-width: 1;
 }
 
 .line-chart-wrap :deep(.brush-group .handle) {
-  fill: var(--color-accent);
+  fill: var(--color-brush);
 }
 
 

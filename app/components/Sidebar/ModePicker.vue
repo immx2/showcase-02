@@ -80,7 +80,7 @@ const activeIndex = computed(() => {
   background: var(--color-active-bg);
   border-radius: calc(var(--radius-md) - 2px);
   transform: translateX(calc(var(--active-index) * 100%));
-  transition: transform var(--motion-panel-in);
+  transition: transform var(--motion-panel-enter);
   pointer-events: none;
   z-index: 0;
 }

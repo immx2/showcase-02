@@ -1,7 +1,6 @@
 <script setup lang="ts">
 const { open: openPalette } = useCommandPalette()
 const { isOpen, close } = useSidebar()
-const isMobile = useMediaQuery('(max-width: 768px)')
 
 useEventListener('keydown', (e: KeyboardEvent) => {
   if (e.key === 'Escape' && isOpen.value) close()
@@ -9,8 +8,7 @@ useEventListener('keydown', (e: KeyboardEvent) => {
 </script>
 
 <template>
-  <Transition name="sidebar">
-  <aside v-show="isOpen || !isMobile" class="sidebar">
+  <aside :class="['sidebar', { 'sidebar-open': isOpen }]">
     <!-- Header: brand + search -->
     <div class="sidebar-header">
       <div class="sidebar-header-top">
@@ -77,7 +75,6 @@ useEventListener('keydown', (e: KeyboardEvent) => {
       </button>
     </div>
   </aside>
-  </Transition>
 </template>
 
 <style scoped>
@@ -106,6 +103,13 @@ useEventListener('keydown', (e: KeyboardEvent) => {
     height: calc(100dvh - var(--portfolio-nav-height, 32px));
     z-index: var(--z-sidebar);
     border-right: none;
+    transform: translateX(-100%);
+    transition: transform var(--motion-panel-leave);
+  }
+
+  .sidebar-open {
+    transform: translateX(0);
+    transition: transform var(--motion-panel-enter);
     box-shadow: var(--shadow-lg);
   }
 
