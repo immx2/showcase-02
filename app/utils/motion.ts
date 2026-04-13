@@ -35,11 +35,22 @@ function parseEasing(str: string): EasingFn {
 }
 
 /**
+ * Parse a CSS time value (e.g. "1000ms" or "1s") to milliseconds.
+ * CSS minifiers convert 1000ms → 1s, so both units must be handled.
+ */
+function parseDurationMs(raw: string): number {
+  const m = raw.match(/^([\d.]+)(ms|s)?/)
+  if (!m) return 0
+  const value = parseFloat(m[1]!)
+  return m[2] === 'ms' ? value : value * 1000
+}
+
+/**
  * Read a --motion-* CSS custom property and return its duration in milliseconds.
  */
 export function getMotionMs(token: string): number {
-  const raw = getComputedStyle(document.documentElement).getPropertyValue(token)
-  return parseFloat(raw) || 0
+  const raw = getComputedStyle(document.documentElement).getPropertyValue(token).trim()
+  return parseDurationMs(raw)
 }
 
 /**
@@ -48,7 +59,7 @@ export function getMotionMs(token: string): number {
  */
 export function getMotion(token: string): { duration: number; easing: EasingFn } {
   const raw = getComputedStyle(document.documentElement).getPropertyValue(token).trim()
-  const duration = parseFloat(raw) || 0
-  const easingStr = raw.replace(/^[\d.]+ms?\s*/, '').trim()
+  const duration = parseDurationMs(raw)
+  const easingStr = raw.replace(/^[\d.]+m?s\s*/, '').trim()
   return { duration, easing: parseEasing(easingStr) }
 }
