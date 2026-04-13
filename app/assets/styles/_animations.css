@@ -24,8 +24,8 @@
 
   /* ── Charts & data ────────────────────────────────────────────────────── */
   --motion-chart-draw:     1000ms var(--ease-standard); /* line/donut/bar/heatmap draw (JS mirror)   */
+  --motion-chart-area:     1000ms cubic-bezier(0.7, 0, 0.7, 0.3);     /* chart area path opacity                   */
   --motion-chart-stagger:  100ms;                        /* per-slice delay in donut draw             */
-  --motion-chart-area:     1000ms var(--ease-exit);     /* chart area path opacity                   */
   --motion-data-bar:       1000ms var(--ease-standard); /* inline table bar-fill width               */
 
   /* ── Pulse / keyframe ─────────────────────────────────────────────────── */

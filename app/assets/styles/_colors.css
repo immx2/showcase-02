@@ -104,7 +104,7 @@
     --color-status-starting:  oklch(70% 0.17 var(--hue-amber));
     --color-status-faulted:   oklch(70% 0.17 var(--hue-red));
     --color-status-stopped:   oklch(70% 0.00 none);
-    --color-brush:            oklch(65% 0.02 var(--hue)); /* minimap brush selection/handles */
+    --color-brush:            oklch(55% 0.02 var(--hue)); /* minimap brush selection/handles */
   }
   
   /* ─────────────────────────────────────────────────────────────────────────
