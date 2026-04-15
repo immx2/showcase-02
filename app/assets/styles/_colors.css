@@ -3,12 +3,9 @@
       Raw OKLCH steps — mode-agnostic named values.
       Neutral hue 260 = --color-neutral-* alignment (light mode).
       Teal hue ~205   = console dark aesthetic (dark mode).
-      Green hue 163.7 = exact --color-green-* hue match.
       Red hue 22, amber hue 62–75 = --color-red/yellow-* alignment.
    ───────────────────────────────────────────────────────────────────────── */
    :root {
-   /* UNDER CONSTRUCTION -- tweaking colors now -- inspired by Oxide console */
-
    /* Hues */
    --hue-red: 22;
    --hue-green: 164;
@@ -16,16 +13,6 @@
    --hue-blue: 221;
    --hue-purple: 288;
    
-   /* from oxide console */
-   --color-bg-dark-blue:   oklch(16.24% 0.0098 255.66deg);
-   --color-text-bright:    oklch(90% 0.0001 260deg);
-   --color-text:           oklch(79% 0.0011 260deg);
-   --color-text-muted:     oklch(60.6% 0.0031 260deg);
-   --color-green:          oklch(77% .1919 163.7deg);
-
-   /* from oxide.computer */
-   --color-bg-green: oklch(24% 0.0722 183.7deg);
-
    /* ── Chart colors — infrastructure-semantic ──────────────────────────────
        chart-1 = CPU      (green)  — line primary, CPU sparkline, CPU bar fill, heatmap hi
        chart-2 = memory   (sky)    — line secondary, mem sparkline, mem bar fill
@@ -78,6 +65,7 @@
     --color-brush:            oklch(65% 0.000 none); /* minimap brush selection/handles */
 
     /* chart tokens */
+    /* chart-heatmap-* intentionally not redefined in dark mode — chart colors are mode-agnostic */
     --chart-heatmap-hi: var(--chart-1);
     --chart-heatmap-lo: color-mix(in oklch, var(--chart-1) 10%, var(--color-surface));
   }
@@ -115,6 +103,5 @@
     --color-positive:        var(--color-status-running);
     --color-negative:        var(--color-status-faulted);
     --color-scrim:           rgb(0 0 0 / 50%);
-    --nav-height: 48px;
   }
   
