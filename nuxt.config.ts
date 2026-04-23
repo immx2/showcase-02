@@ -3,7 +3,7 @@ export default defineNuxtConfig({
   future: { compatibilityVersion: 4 },
   devServer: { port: 3002 },
   devtools: { enabled: true },
-  modules: ['@nuxt/fonts', '@nuxtjs/color-mode', '@vueuse/nuxt', '@nuxt/eslint'],
+  modules: ['@nuxt/fonts', '@nuxtjs/color-mode', '@vueuse/nuxt', '@nuxt/eslint', '@vercel/analytics'],
   colorMode: {
     dataValue: 'color-mode',
     storageKey: 'showcase-color-mode',
