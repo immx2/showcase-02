@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { PortfolioNav } from '@immx2/portfolio-nav'
 
-// Mirror color-mode preference to html[data-color-pref] for _global.css nav pill styles.
+// Mirror color-mode preference to html[data-color-pref] for global.css nav pill styles.
 const colorMode = useColorMode()
 
 watch(

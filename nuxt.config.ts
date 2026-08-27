@@ -19,7 +19,15 @@ export default defineNuxtConfig({
       }],
     },
   },
-  css: ['~/assets/styles/main.css'],
+  css: [
+    '~/assets/styles/colors.css',
+    '~/assets/styles/tokens.css',
+    '~/assets/styles/global.css',
+    '~/assets/styles/animations.css',
+    '~/assets/styles/transitions.css',
+    '~/assets/styles/tables.css',
+    '~/assets/styles/tooltip.css',
+  ],
   fonts: {
     families: [
       { name: 'Inter', provider: 'google' },

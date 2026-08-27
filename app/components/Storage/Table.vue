@@ -143,7 +143,7 @@ function ariaSortAttr(key: VolumeSortKey | null, sortKey: VolumeSortKey, sortDir
 </template>
 
 <style scoped>
-/* ── Storage-specific overrides (shared base lives in _tables.css) ───────── */
+/* ── Storage-specific overrides (shared base lives in tables.css) ───────── */
 
 /* Name cell */
 .td-name { min-width: 160px; }

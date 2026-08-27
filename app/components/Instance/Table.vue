@@ -174,7 +174,7 @@ function sparklineColor(state: Instance['state']): string {
 </template>
 
 <style scoped>
-/* ── Instance-specific overrides (shared base lives in _tables.css) ─────── */
+/* ── Instance-specific overrides (shared base lives in tables.css) ─────── */
 
 /* Name cell */
 .td-name { min-width: 160px; }
