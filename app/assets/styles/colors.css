@@ -65,6 +65,7 @@
     --color-brush:            oklch(65% 0.000 none); /* minimap brush selection/handles */
 
     /* chart tokens */
+
     /* chart-heatmap-* intentionally not redefined in dark mode — chart colors are mode-agnostic */
     --chart-heatmap-hi: var(--chart-1);
     --chart-heatmap-lo: color-mix(in oklch, var(--chart-1) 10%, var(--color-surface));

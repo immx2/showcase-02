@@ -30,9 +30,11 @@
   },
   "devDependencies": {
     "@types/d3": "^7.4.3",
+    "eslint": "^10.11.0",
     "postcss-html": "^1.8.1",
     "stylelint": "^17.6.0",
     "stylelint-config-standard": "^40.0.0",
+    "typescript": "^6.0.3",
     "vue-tsc": "^3.2.6"
   }
 }
