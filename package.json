@@ -17,24 +17,24 @@
   },
   "dependencies": {
     "@immx2/portfolio-nav": "^0.1.4",
-    "@nuxt/eslint": "^1.15.2",
-    "@nuxt/fonts": "^0.14.0",
-    "@nuxtjs/color-mode": "^4.0.0",
+    "@nuxt/eslint": "^1.17.0",
+    "@nuxt/fonts": "^1.2.0",
+    "@nuxtjs/color-mode": "^4.1.0",
     "@vercel/analytics": "^2.0.1",
-    "@vercel/speed-insights": "^2.0.0",
-    "@vueuse/nuxt": "^14.2.1",
-    "d3": "^7.9.0",
-    "nuxt": "^4.4.2",
-    "vue": "^3.5.30",
-    "vue-router": "^5.0.3"
+    "@vercel/speed-insights": "^2.1.0",
+    "@vueuse/nuxt": "^15.0.0",
+    "d3": "^7.9.2",
+    "nuxt": "^4.6.4",
+    "vue": "^3.5.45",
+    "vue-router": "^5.4.0"
   },
   "devDependencies": {
     "@types/d3": "^7.4.3",
-    "eslint": "^10.11.0",
-    "postcss-html": "^1.8.1",
-    "stylelint": "^17.6.0",
-    "stylelint-config-standard": "^40.0.0",
+    "eslint": "^10.14.0",
+    "postcss-html": "^2.0.0",
+    "stylelint": "^18.0.0",
+    "stylelint-config-standard": "^41.0.0",
     "typescript": "^6.0.3",
-    "vue-tsc": "^3.2.6"
+    "vue-tsc": "^3.3.14"
   }
 }
